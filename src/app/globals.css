@@ -226,3 +226,51 @@
     transform: translateY(0);
   }
 }
+
+/* === HERO OVERLAY SETUP (transparent background) === */
+:root {
+  --hero-overlay-color: var(--brand-primary-light);
+  --hero-overlay-opacity-soft: 0.08;
+  --hero-overlay-opacity-medium: 0.14;
+  --hero-overlay-opacity-strong: 0.22;
+}
+.dark {
+  --hero-overlay-color: var(--brand-primary);
+  --hero-overlay-opacity-soft: 0.12;
+  --hero-overlay-opacity-medium: 0.18;
+  --hero-overlay-opacity-strong: 0.28;
+}
+
+.hero-overlay {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Overlay-Layer */
+.hero-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--hero-overlay-color);
+  opacity: var(--hero-overlay-opacity-medium); /* default */
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 1;              /* <— Overlay IMMER über Bild */
+  transition: opacity 0.3s ease;
+}
+
+.hero-overlay[data-overlay="soft"]::after { opacity: var(--hero-overlay-opacity-soft); }
+.hero-overlay[data-overlay="strong"]::after { opacity: var(--hero-overlay-opacity-strong); }
+
+/* Optionaler Verlauf */
+.hero-overlay--gradient::after {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--hero-overlay-color) 90%, transparent) 0%,
+    transparent 100%
+  );
+  mix-blend-mode: normal;
+}
+
+/* Inhalt über Overlay (und über Bild) */
+.hero-overlay > * { position: relative; z-index: 2; }  /* <— vorher 1 */
