@@ -1,37 +1,35 @@
 'use client'
 
-import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
+import { useTheme } from 'next-themes'
+import { Sun, Moon } from 'lucide-react'
 
 export default function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
 
-  const current = mounted ? (theme === 'system' ? resolvedTheme : theme) : 'system'
-  const next = current === 'dark' ? 'light' : 'dark'
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
+
+  const isDark = resolvedTheme === 'dark'
+  const toggle = () => setTheme(isDark ? 'light' : 'dark')
 
   return (
-    <div className="flex items-center gap-2">
-      <button
-        aria-label="Toggle dark mode"
-        onClick={() => setTheme(next!)}
-        className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm
-                   hover:bg-black/5 dark:hover:bg-white/10"
-      >
-        {/* simple dot icon that inverts */}
-        <span className="h-3.5 w-3.5 rounded-full bg-zinc-900 dark:hidden" />
-        <span className="hidden h-3.5 w-3.5 rounded-full bg-yellow-300 dark:inline-block" />
-        {current === 'dark' ? 'Light' : 'Dark'}
-      </button>
-
-      <button
-        aria-label="Use system theme"
-        onClick={() => setTheme('system')}
-        className="rounded-full border px-3 py-1 text-sm hover:bg-black/5 dark:hover:bg-white/10"
-      >
-        System
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className="menu-anchor p-2 rounded-full inline-flex items-center justify-center"
+    >
+      {/* simple cross-fade */}
+      <span className="relative h-5 w-5">
+        <Sun
+          className={`absolute inset-0 h-5 w-5 transition-opacity duration-200 ${isDark ? 'opacity-0' : 'opacity-100'}`}
+        />
+        <Moon
+          className={`absolute inset-0 h-5 w-5 transition-opacity duration-200 ${isDark ? 'opacity-100' : 'opacity-0'}`}
+        />
+      </span>
+    </button>
   )
 }

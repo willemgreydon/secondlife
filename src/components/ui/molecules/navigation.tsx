@@ -1,11 +1,14 @@
+// src/components/ui/molecules/Navigation.tsx
 'use client'
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import ThemeToggle from '@/components/site/ThemeToggle'
 
+
 // --------------------------------------------
-// Navigation structure (with nested submenus)
+// NAV STRUCTURE (Contact + ThemeToggle removed)
 // --------------------------------------------
 type NavItem =
   | { href: string; label: string }
@@ -34,14 +37,13 @@ const NAV: NavItem[] = [
       { href: '/partners', label: 'Partners' },
     ],
   },
-  { href: '/join-us', label: 'Join Us' },
-  { href: '/contact', label: 'Contact' },
 ]
 
 // --------------------------------------------
-// Navigation component
+// COMPONENT
 // --------------------------------------------
 export default function Navigation() {
+  const pathname = usePathname()
   const [openKey, setOpenKey] = useState<string | null>(null)
   const closeTimer = useRef<number | null>(null)
 
@@ -49,7 +51,6 @@ export default function Navigation() {
     if (closeTimer.current) window.clearTimeout(closeTimer.current)
     setOpenKey(key)
   }
-
   const closeWithDelay = () => {
     if (closeTimer.current) window.clearTimeout(closeTimer.current)
     closeTimer.current = window.setTimeout(() => setOpenKey(null), 150)
@@ -63,12 +64,18 @@ export default function Navigation() {
     return () => window.removeEventListener('keydown', onEsc)
   }, [])
 
+  const isExactActive = (href: string) => pathname === href
+  const isSectionActive = (children: { href: string; label: string }[]) =>
+    children.some((c) => pathname === c.href || pathname.startsWith(c.href + '/'))
+
   return (
     <nav className="hidden items-center gap-6 md:flex">
       {NAV.map((item) => {
+        // Dropdown
         if ('children' in item) {
           const key = item.label
-          const isOpen = openKey === key
+          const openNow = openKey === key
+          const activeParent = isSectionActive(item.children)
 
           return (
             <div
@@ -82,60 +89,71 @@ export default function Navigation() {
               <button
                 type="button"
                 aria-haspopup="menu"
-                aria-expanded={isOpen}
-                className={[
-                  'rounded px-2 py-1 text-sm font-medium transition-colors duration-150',
-                  isOpen
-                    ? 'text-[var(--color-primary)]'
-                    : 'hover:text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10',
-                ].join(' ')}
-                onClick={() => (isOpen ? setOpenKey(null) : open(key))}
+                aria-expanded={openNow}
+                className={`menu-anchor ${activeParent ? 'active' : ''}`}
+                onClick={() => (openNow ? setOpenKey(null) : open(key))}
               >
                 {item.label}
               </button>
 
-              {isOpen && (
+              {openNow && (
                 <div
                   role="menu"
                   aria-label={item.label}
-                  className="absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border border-border bg-popover p-2 shadow-lg backdrop-blur-md"
+                  className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-border bg-popover p-2 shadow-lg backdrop-blur-md"
                   onMouseEnter={() => open(key)}
                   onMouseLeave={closeWithDelay}
                 >
-                  {item.children.map((c) => (
-                    <Link
-                      key={c.href}
-                      href={c.href}
-                      className="block rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]"
-                      onClick={() => setOpenKey(null)}
-                    >
-                      {c.label}
-                    </Link>
-                  ))}
+                  {item.children.map((c) => {
+                    const active = isExactActive(c.href)
+                    return (
+                      <Link
+                        key={c.href}
+                        href={c.href}
+                        className={`menu-anchor block w-full text-left ${active ? 'active' : ''}`}
+                        aria-current={active ? 'page' : undefined}
+                        onClick={() => setOpenKey(null)}
+                      >
+                        {c.label}
+                      </Link>
+                    )
+                  })}
                 </div>
               )}
             </div>
           )
         }
 
+        // Simple link
+        const active = isExactActive(item.href)
         return (
           <Link
             key={item.href}
             href={item.href}
-            className="text-sm font-medium transition-colors duration-150 hover:text-[var(--color-primary)] hover:underline underline-offset-4"
+            className={`menu-anchor ${active ? 'active' : ''}`}
+            aria-current={active ? 'page' : undefined}
           >
             {item.label}
           </Link>
         )
       })}
 
+      {/* Secondary Button: JOIN US */}
+      <Link
+        href="/join-us"
+        className="ml-2 rounded-full border border-[var(--brand-primary)] bg-transparent px-4 py-1.5 text-sm font-semibold text-[var(--brand-primary)] transition-all hover:bg-[var(--brand-primary)] hover:text-white active:scale-[0.97]"
+      >
+        Join&nbsp;Us
+      </Link>
+
+      {/* Primary Button: DONATE */}
       <Link
         href="/donate"
-        className="rounded-full border border-[var(--color-primary)] px-3 py-1 text-sm font-medium text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)] hover:text-white"
+        className="ml-2 rounded-full bg-[var(--brand-primary)] px-4 py-1.5 text-sm font-semibold text-white transition-all hover:bg-[var(--brand-primary-dark)] active:scale-[0.97]"
       >
         Donate
       </Link>
-
+      {/* Dark/Light toggle with sun/moon */}
       <ThemeToggle />
     </nav>
   )

@@ -191,6 +191,57 @@
     font-weight: 400;
     letter-spacing: 0.03em;
   }
+  /* ===========================================================
+   MENU ANCHOR STATES
+   =========================================================== */
+
+  /* Base anchor style (shared by nav + dropdowns) */
+  .menu-anchor {
+    position: relative;
+    font-family: var(--font-instrument-sans);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--foreground);
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.5rem;
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  /* Hover: brand blue text only */
+  .menu-anchor:hover {
+    color: var(--brand-primary);
+    background-color: var(--brand-primary-tint);
+  }
+
+  /* Active / focus-visible: filled blue background, white text */
+  .menu-anchor:active,
+  .menu-anchor[aria-current='page'],
+  .menu-anchor.active,
+  .menu-anchor:focus-visible {
+    color: var(--brand-primary-foreground);
+    background-color: var(--brand-primary);
+    box-shadow: 0 0 0 2px color-mix(in oklch, var(--brand-primary) 70%, transparent);
+    outline: none;
+  }
+
+  /* Dark mode adjustments */
+  .dark .menu-anchor {
+    color: var(--foreground);
+  }
+  .dark .menu-anchor:hover {
+    color: var(--brand-primary);
+    background-color: color-mix(in oklch, var(--brand-primary) 20%, transparent);
+  }
+  .dark .menu-anchor:active,
+  .dark .menu-anchor[aria-current='page'],
+  .dark .menu-anchor.active {
+    background-color: var(--brand-primary);
+    color: var(--brand-primary-foreground);
+  }
+
 }
 
 /* --- your brand utilities and hero overlay rules remain below --- */

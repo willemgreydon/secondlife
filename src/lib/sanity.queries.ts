@@ -293,22 +293,16 @@ export const blogListQuery = groq`
 
 export const missionBySlugQuery = groq`
   *[_type == "mission" && slug.current == $slug][0]{
-    _id,
-    title,
-    "slug": slug.current,
-    status,
-    excerpt,
-    cover{asset->{url}},
-    // … content / sections …
+    _id, title, "slug": slug.current, status, excerpt,
+    cover{ asset->{ url } }, fallback{ asset->{ url } },
 
-    // NEU:
-    metrics[]{
-      metric_key,
-      title,
-      current_value,
-      unit,
-      as_of_date,
-      description
+    ${CONTENT}, // normalisierte Sections
+
+    metrics[]{ metric_key, title, current_value, unit, as_of_date, description },
+    "gallery": gallery[]{
+      "url": asset->url,
+      asset->{ _id, url, metadata{ lqip, dimensions } },
+      alt, caption
     }
   }
 `
