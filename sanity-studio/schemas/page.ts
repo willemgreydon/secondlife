@@ -1,36 +1,48 @@
 import { defineType, defineField } from 'sanity'
+import { LayoutTemplate } from 'lucide-react'
 
 export default defineType({
   name: 'page',
   title: 'Page',
   type: 'document',
+  icon: LayoutTemplate,
   fields: [
-    defineField({ name: 'title', title: 'Title', type: 'string', validation: R => R.required() }),
+    defineField({ name: 'title', type: 'string', validation: r => r.required() }),
     defineField({
       name: 'slug',
-      title: 'Slug',
       type: 'slug',
-      options: { source: 'title', maxLength: 96 },
-      validation: R => R.optional() // bei Singleton-Kollisionen kein Stress
+      options: { source: 'title' },
+      validation: r => r.required(),
     }),
+    defineField({ name: 'excerpt', type: 'text', rows: 3 }),
+
     defineField({
       name: 'content',
-      title: 'Content Sections',
+      title: 'Content (Sections)',
       type: 'array',
+      options: { sortable: true },
       of: [
         { type: 'heroSection' },
-        { type: 'textBlock' },
-        { type: 'imageBlock' },
-        { type: 'statsSection' },
         { type: 'splitSection' },
+        { type: 'statsSection' },
+        { type: 'textBlock' },
+        { type: 'videoSection' },
+        { type: 'team' },
+        { type: 'imageBlock' },
         { type: 'gallerySection' },
         { type: 'quoteSection' },
-        { type: 'videoSection' },
         { type: 'accordionSection' },
         { type: 'contactSection' },
-        { type: 'richTextSection' },
-        { type: 'missionsGrid' }
-      ]
-    })
-  ]
+        { type: 'campaignGrid' },
+        { type: 'initiativesGrid' },
+        { type: 'missionsGrid' },
+        { type: 'eventsGrid' },
+        { type: 'partners' },
+        { type: 'impactStats' },
+      ],
+    }),
+  ],
+  preview: {
+    select: { title: 'title' },
+  },
 })

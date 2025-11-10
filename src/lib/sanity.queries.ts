@@ -164,12 +164,7 @@ export const pageByIdQuery = groq`
 `
 
 // ——— Detail-Dokumente pro Typ
-export const missionBySlugQuery = groq`
-  *[_type == "mission" && slug.current == $slug][0]{
-    _id, title, "slug": slug.current,
-    ${CONTENT}
-  }
-`
+
 export const eventBySlugQuery = groq`
   *[_type == "event" && slug.current == $slug][0]{
     _id, title, "slug": slug.current,
@@ -293,5 +288,27 @@ export const blogListQuery = groq`
     excerpt,
     "slug": slug.current,
     "cover": coalesce(cover.asset->url, mainImage.asset->url, image.asset->url)
+  }
+`
+
+export const missionBySlugQuery = groq`
+  *[_type == "mission" && slug.current == $slug][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    status,
+    excerpt,
+    cover{asset->{url}},
+    // … content / sections …
+
+    // NEU:
+    metrics[]{
+      metric_key,
+      title,
+      current_value,
+      unit,
+      as_of_date,
+      description
+    }
   }
 `

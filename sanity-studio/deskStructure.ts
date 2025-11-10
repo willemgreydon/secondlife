@@ -2,19 +2,18 @@
 import type { StructureResolver } from 'sanity/desk'
 import { apiVersion } from './env'
 
-// Fixed-id singleton helper (no initialValueTemplates here)
+// Helper: singleton "page" with fixed _id (e.g. "home")
 const singletonPage = (S: any, title: string, id: string) =>
   S.listItem()
     .title(title)
     .child(
-      S.document()                 // <- use document() (stable in v3)
+      S.document()
         .title(title)
         .schemaType('page')
-        .documentId(id)            // fixed _id (e.g. "home")
+        .documentId(id)
     )
 
-// Optional: a filtered list helper (when you want to browse by slug)
-// Keep apiVersion to silence the warning.
+// Optional helper: list pages by slug (kept to quiet apiVersion warnings)
 const bySlugList = (S: any, title: string, slug: string) =>
   S.documentTypeList('page')
     .title(title)
@@ -26,7 +25,7 @@ const deskStructure: StructureResolver = (S) =>
   S.list()
     .title('Content')
     .items([
-      // True singletons
+      // Singletons
       singletonPage(S, 'Home', 'home'),
       singletonPage(S, 'TIDE', 'tide'),
       singletonPage(S, 'Operations', 'operations'),
@@ -40,9 +39,39 @@ const deskStructure: StructureResolver = (S) =>
           S.list()
             .title('Missions')
             .items([
+              // Overview page (singleton page with _id "missions")
               singletonPage(S, 'Missions (Overview Page)', 'missions'),
+
+              // Full list
               S.documentTypeListItem('mission').title('All Missions'),
+
+              // Smart lists for metrics hygiene
+              S.listItem()
+                .title('Missions — With Metrics')
+                .child(
+                  S.documentTypeList('mission')
+                    .title('Missions — With Metrics')
+                    .filter(
+                      // at least one metric
+                      '_type == "mission" && defined(metrics) && count(metrics) > 0'
+                    )
+                ),
+
+              S.listItem()
+                .title('Missions — Without Metrics')
+                .child(
+                  S.documentTypeList('mission')
+                    .title('Missions — Without Metrics')
+                    .filter(
+                      // no metrics array or empty
+                      '_type == "mission" && (!defined(metrics) || count(metrics) == 0)'
+                    )
+                ),
+
+              // Beach cleanups collection
               S.documentTypeListItem('beachCleanup').title('Beach Clean-Ups'),
+
+              // Other fixed pages under Missions
               singletonPage(S, 'DANA 24 VLC', 'dana-24-vlc'),
               singletonPage(
                 S,
@@ -52,7 +81,7 @@ const deskStructure: StructureResolver = (S) =>
             ])
         ),
 
-      // Team members collection
+      // Team members
       S.listItem()
         .title('Our Team')
         .child(S.documentTypeList('teamMember').title('Team Members')),
@@ -64,7 +93,7 @@ const deskStructure: StructureResolver = (S) =>
       S.documentTypeListItem('campaign').title('Campaigns'),
       S.documentTypeListItem('blogPost').title('Blog Posts'),
 
-      // Debug all pages if needed:
+      // Uncomment if you ever want to browse all pages
       // S.documentTypeListItem('page').title('All Pages'),
     ])
 

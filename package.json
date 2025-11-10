@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@fontsource/geist-mono": "^5.2.7",
+    "@fontsource/instrument-sans": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
     "@portabletext/react": "^4.0.3",
     "@radix-ui/react-dialog": "^1.1.15",

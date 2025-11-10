@@ -10,7 +10,6 @@ type HeroProps = {
   ctaText?: string
   ctaHref?: string
   bgImage?: string
-  overlay?: 'soft' | 'medium' | 'strong'
   gradientOverlay?: boolean
 }
 
@@ -20,18 +19,10 @@ export default function Hero({
   ctaText,
   ctaHref,
   bgImage,
-  overlay = 'medium',
   gradientOverlay = false,
 }: HeroProps) {
   return (
-    <section
-      className={[
-        'relative min-h-[56vh] md:min-h-[64vh] flex items-center justify-center text-center',
-        'hero-overlay',
-        gradientOverlay ? 'hero-overlay--gradient' : '',
-      ].join(' ')}
-      data-overlay={overlay}
-    >
+    <section className="relative min-h-[56vh] md:min-h-[64vh] flex items-center justify-center text-center overflow-hidden">
       {/* Background Image */}
       {bgImage && (
         <div className="absolute inset-0 z-0">
@@ -46,15 +37,24 @@ export default function Hero({
         </div>
       )}
 
+      {/* Overlay */}
+      <div
+        className={`absolute inset-0 z-10 pointer-events-none transition-opacity duration-500 ${
+          gradientOverlay
+            ? 'bg-gradient-to-b from-[rgba(43,187,226,0.88)] to-[rgba(43,187,226,0.6)] dark:from-[rgba(43,187,226,0.88)] dark:to-[rgba(43,187,226,0.8)]'
+            : 'bg-[rgba(43,187,226,0.88)] dark:bg-[rgba(43,187,226,0.88)]'
+        }`}
+      />
+
       {/* Content */}
-      <div className="container mx-auto px-4 py-20 text-foreground">
+      <div className="relative z-20 container mx-auto px-4 py-20">
         {title && (
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight drop-shadow-sm">
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight drop-shadow-sm text-white">
             {title}
           </h1>
         )}
         {subtitle && (
-          <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-foreground/90">
+          <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-white/90">
             {subtitle}
           </p>
         )}
@@ -63,8 +63,7 @@ export default function Hero({
             <Link
               href={ctaHref}
               className="inline-flex items-center rounded-full px-6 py-2.5 text-sm font-medium
-                         bg-[var(--brand-primary)] text-[var(--brand-primary-foreground)]
-                         hover:brightness-110 transition"
+                         bg-white text-[#2BBBE2] hover:bg-[#2BBBE2] hover:text-white transition"
             >
               {ctaText}
             </Link>

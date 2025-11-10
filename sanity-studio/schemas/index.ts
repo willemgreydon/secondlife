@@ -11,6 +11,7 @@ import mission from './mission'
 import page from './page'
 import partner from './partner'
 import teamMember from './teamMember'
+import metric from './objects/metrics'
 
 // Sections
 import heroSection from './sections/heroSection'
@@ -40,6 +41,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     home, 
     partner, 
     initiative,
+    metric,
 
     // Sections
     heroSection, 

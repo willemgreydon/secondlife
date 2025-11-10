@@ -1,3 +1,4 @@
+// src/components/site/PageBuilder.tsx
 'use client'
 
 import Hero from './sections/Hero'
@@ -18,8 +19,21 @@ import MissionsGrid from './sections/MissionsGrid'
 import EventsGrid from './sections/EventsGrid'
 import Partners from './sections/Partners'
 
+type Metric = {
+  metric_key: string
+  title: string
+  current_value: number
+  unit?: string
+  as_of_date?: string
+  description?: string
+}
+
+type PageBuilderContext = {
+  // Hier können wir künftig mehr „globale“ Sachen reinreichen (z. B. breadcrumbs)
+  metrics?: Metric[]
+}
+
 const COMPONENT_MAP: Record<string, any> = {
-  // kanonische Keys
   hero: Hero,
   split: Split,
   stats: Stats,
@@ -31,7 +45,7 @@ const COMPONENT_MAP: Record<string, any> = {
   quote: Quote,
   accordion: Accordion,
   contact: Contact,
-  impactStats: ImpactStats,
+  impactStats: ImpactStats,       // ⬅️ KPI-Section
   campaignGrid: CampaignGrid,
   initiativesGrid: InitiativesGrid,
   missionsGrid: MissionsGrid,
@@ -50,10 +64,13 @@ const TYPE_ALIASES: Record<string, string> = {
   quoteSection: 'quote',
   accordionSection: 'accordion',
   contactSection: 'contact',
-  // Sanity-Typ "team" soll TeamGrid rendern
   team: 'teamGrid',
-  // imageBlock bleibt imageBlock (nur zur Vollständigkeit)
   imageBlock: 'imageBlock',
+
+  // Komfort-Aliase für Metrik-Section
+  metrics: 'impactStats',
+  metricsSection: 'impactStats',
+  impactStatsSection: 'impactStats',
 }
 
 function UnknownSection({ section }: { section: any }) {
@@ -69,7 +86,13 @@ function UnknownSection({ section }: { section: any }) {
   )
 }
 
-export default function PageBuilder({ content = [] as any[] }) {
+export default function PageBuilder({
+  content = [] as any[],
+  context,
+}: {
+  content?: any[]
+  context?: PageBuilderContext
+}) {
   const sections = Array.isArray(content) ? content : []
   if (!sections.length) return null
 
@@ -84,8 +107,17 @@ export default function PageBuilder({ content = [] as any[] }) {
         if (normalizedType === 'hero') {
           section = {
             ...section,
-            // Hero-Component kann ctaText erwarten: mappe ctaLabel → ctaText
             ctaText: section.ctaText ?? section.ctaLabel ?? undefined,
+          }
+        }
+
+        // ImpactStats: wenn im Section-Objekt keine metrics vorhanden,
+        // automatisch aus context.metrics befüllen.
+        if (normalizedType === 'impactStats') {
+          const hasOwnMetrics = Array.isArray(section.metrics) && section.metrics.length > 0
+          section = {
+            ...section,
+            metrics: hasOwnMetrics ? section.metrics : context?.metrics ?? [],
           }
         }
 

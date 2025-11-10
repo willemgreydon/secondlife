@@ -1,29 +1,57 @@
 'use client'
 
+type Metric = {
+  metric_key: string
+  title: string
+  current_value: number
+  unit?: string
+  as_of_date?: string
+  description?: string
+}
+
 export default function ImpactStats({
-  title,
-  stats,
+  metrics,
+  className,
 }: {
-  title?: string
-  stats?: { label: string; value: string; unit?: string }[]
+  metrics: Metric[]
+  className?: string
 }) {
-  if (!stats?.length) return null
+  if (!metrics?.length) return null
+
   return (
-    <section className="bg-white text-gray-900 dark:bg-black dark:text-gray-100 transition-colors">
-      <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-        {title && <h2 className="mb-10 text-3xl font-semibold">{title}</h2>}
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
-          {stats.map((s, i) => (
-            <div key={i} className="rounded-lg border border-gray-200 dark:border-zinc-800 p-6">
-              <div className="text-4xl font-bold">
-                {s.value}
-                {s.unit && <span className="text-lg font-medium opacity-80"> {s.unit}</span>}
+    <section className={className}>
+      <div className="container mx-auto px-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {metrics.map((m) => (
+            <div
+              key={m.metric_key}
+              className="rounded-2xl border p-5 bg-card text-card-foreground"
+            >
+              <div className="text-3xl font-semibold">
+                {formatNumber(m.current_value)}
+                {m.unit ? <span className="text-base ml-1">{m.unit}</span> : null}
               </div>
-              <div className="mt-2 text-sm opacity-80">{s.label}</div>
+              <div className="mt-1 text-sm font-medium">{m.title}</div>
+              {m.as_of_date && (
+                <div className="mt-1 text-xs text-muted-foreground">
+                  as of {new Date(m.as_of_date).toLocaleDateString()}
+                </div>
+              )}
+              {m.description && (
+                <p className="mt-2 text-sm text-muted-foreground">{m.description}</p>
+              )}
             </div>
           ))}
         </div>
       </div>
     </section>
   )
+}
+
+function formatNumber(n: number) {
+  try {
+    return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(n)
+  } catch {
+    return String(n)
+  }
 }

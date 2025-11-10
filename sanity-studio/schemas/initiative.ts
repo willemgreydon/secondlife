@@ -1,21 +1,51 @@
-import { defineType, defineField } from "sanity";
+import { defineType, defineField } from 'sanity'
+import { Rocket } from 'lucide-react'
 
 export default defineType({
-  name: "initiative",
-  type: "document",
-  title: "Initiative",
+  name: 'initiative',
+  title: 'Initiative',
+  type: 'document',
+  icon: Rocket,
   fields: [
-    defineField({ name: "title", type: "string", validation: (r) => r.required() }),
-    defineField({ name: "excerpt", type: "text" }),
-    defineField({ name: "slug", type: "slug", options: { source: "title", maxLength: 96 } }),
-    defineField({ name: "order", type: "number" }),
-    defineField({ name: "cover", type: "image", options: { hotspot: true } }),
-    defineField({ name: "tags", type: "array", of: [{ type: "string" }] }),
+    defineField({ name: 'title', type: 'string', validation: r => r.required() }),
     defineField({
-      name: "body",
-      title: "Body",
-      type: "array",
-      of: [{ type: "block" }, { type: "image", options: { hotspot: true } }],
+      name: 'slug',
+      type: 'slug',
+      options: { source: 'title' },
+      validation: r => r.required(),
+    }),
+    defineField({ name: 'excerpt', type: 'text', rows: 3 }),
+    defineField({
+      name: 'cover',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+    }),
+
+    defineField({
+      name: 'content',
+      title: 'Content (Sections)',
+      type: 'array',
+      options: { sortable: true },
+      of: [
+        { type: 'heroSection' },
+        { type: 'splitSection' },
+        { type: 'statsSection' },
+        { type: 'textBlock' },
+        { type: 'videoSection' },
+        { type: 'imageBlock' },
+        { type: 'gallerySection' },
+        { type: 'quoteSection' },
+        { type: 'accordionSection' },
+        { type: 'contactSection' },
+        { type: 'campaignGrid' },
+      ],
     }),
   ],
-});
+  preview: {
+    select: { title: 'title', media: 'cover' },
+    prepare({ title, media }) {
+      return { title, media }
+    },
+  },
+})
