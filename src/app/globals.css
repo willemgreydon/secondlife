@@ -1,8 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Enable Tailwind dark variant with .dark wrapper */
 @custom-variant dark (&:is(.dark *));
 
+/* -------------------------------------------
+   THEME TOKEN MAPPINGS (as in your original)
+-------------------------------------------- */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -43,8 +47,13 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* -------------------------------------------
+   LIGHT MODE ROOT VARIABLES
+-------------------------------------------- */
 :root {
   --radius: 0.625rem;
+
+  /* Base neutral palette */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -63,11 +72,15 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+
+  /* Chart tones */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+
+  /* Sidebar */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -76,8 +89,25 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* ---------------------------------------
+     BRAND COLORS (Second Life e.V.)
+  --------------------------------------- */
+  --brand-primary: #2BBBE2;
+  --brand-primary-foreground: #ffffff;
+  --brand-primary-light: #4fd3ec;
+  --brand-primary-dark: #1a9ac0;
+  --brand-primary-tint: rgba(43, 187, 226, 0.12);
+  --brand-accent: #f0f9fb;
+
+  /* map brand into shadcn tokens */
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--brand-primary-foreground);
 }
 
+/* -------------------------------------------
+   DARK MODE VARIABLES
+-------------------------------------------- */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -110,13 +140,89 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* brand adjustments for dark */
+  --brand-primary: #39c6eb;
+  --brand-primary-tint: rgba(57, 198, 235, 0.18);
+
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--brand-primary-foreground);
 }
 
+/* -------------------------------------------
+   BASE RESET / DEFAULTS
+-------------------------------------------- */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* -------------------------------------------
+   BRAND UTILITIES & "SHIZZLE"
+-------------------------------------------- */
+
+/* Text + BG combos */
+.brand-active {
+  color: var(--brand-primary);
+  background-color: var(--brand-primary-tint);
+}
+.brand-hover:hover {
+  color: var(--brand-primary);
+}
+
+/* Hover glow effect */
+.hover-glow:hover {
+  box-shadow: 0 0 12px var(--brand-primary-light);
+}
+
+/* Glassmorphism utility */
+.glass {
+  backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(255, 255, 255, 0.65);
+}
+.dark .glass {
+  background: rgba(12, 12, 12, 0.65);
+}
+
+/* Brand gradient for sections/hero */
+.bg-brand-gradient {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-light) 100%);
+  color: var(--brand-primary-foreground);
+}
+
+/* Subtle link underline animation */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: var(--brand-primary);
+  transition: width 0.3s ease;
+}
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* Smooth transitions for dropdowns or overlays */
+.fade-in {
+  animation: fadeIn 0.25s ease forwards;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
