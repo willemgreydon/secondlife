@@ -15,6 +15,7 @@ import ImpactStats from './sections/ImpactStats'
 import CampaignGrid from './sections/CampaignGrid'
 import InitiativesGrid from './sections/InitiativesGrid'
 import MissionsGrid from './sections/MissionsGrid'
+import EventsGrid from './sections/EventsGrid'
 import Partners from './sections/Partners'
 
 const COMPONENT_MAP: Record<string, any> = {
@@ -34,6 +35,7 @@ const COMPONENT_MAP: Record<string, any> = {
   campaignGrid: CampaignGrid,
   initiativesGrid: InitiativesGrid,
   missionsGrid: MissionsGrid,
+  eventsGrid: EventsGrid,
   partners: Partners,
 }
 
