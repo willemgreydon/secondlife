@@ -28,3 +28,22 @@ The interface and visual system are powered by **TailwindCSS** and **ShadCN UI**
 
 ## Project Structure
 
+src/
+├─ app/ # Next.js app router and route layouts
+│ ├─ page.tsx # Homepage
+│ ├─ missions/ # Mission list & detail pages
+│ └─ organisation/ # Organisation subpages (team, campaigns, etc.)
+│
+├─ components/
+│ ├─ site/ # Hero, Navigation, PageBuilder, etc.
+│ └─ ui/ # ShadCN base components
+│
+├─ lib/ # Sanity client, GROQ queries, helpers
+├─ styles/ # Global CSS and design tokens
+│ └─ globals.css
+└─ sanity/ # Sanity schema definitions
+
+---
+
+
+
