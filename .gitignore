@@ -1,0 +1,33 @@
+# Node / Next.js / React
+node_modules
+.next
+out
+dist
+build
+.cache
+.vercel
+.vite
+storybook-static
+
+# Sanity / tooling
+studio/.sanity/*
+.sanity
+.sanity/**
+
+# Logs & junk
+*.log
+npm-debug.log*
+yarn-*.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+
+# OS/IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
