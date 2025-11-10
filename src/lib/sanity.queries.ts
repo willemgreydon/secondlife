@@ -114,11 +114,13 @@ const CONTENT = groq`
 
     _type == "team" => {
       _type, _key, title, layout,
-      "members": coalesce(
-        members[]->{
-          _id, name, role, linkedin, bio,
-          "image": photo.asset->url
-        },
+      "members": select(
+        defined(members) && count(members) > 0 =>
+          members[]->{
+            _id, name, role, linkedin, bio,
+            "image": photo.asset->url
+          },
+        // Fallback: alle TeamMember-Dokumente, wenn keine Auswahl getroffen
         *[_type == "teamMember"] | order(name asc){
           _id, name, role, linkedin, bio,
           "image": photo.asset->url
@@ -156,6 +158,16 @@ export const pageBySlugQuery = groq`
 // Page per id (Fallback)
 export const pageByIdQuery = groq`
   *[_type == "page" && _id == $id][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    ${CONTENT}
+  }
+`
+
+// Page per slug ODER _id (für Singletons ohne slug)
+export const pageBySlugOrIdQuery = groq`
+  *[_type == "page" && (slug.current == $slug || _id == $slug)][0]{
     _id,
     title,
     "slug": slug.current,

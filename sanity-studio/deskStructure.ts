@@ -25,14 +25,21 @@ const deskStructure: StructureResolver = (S) =>
   S.list()
     .title('Content')
     .items([
-      // Singletons
+      // -----------------------------
+      // Singletons (fixed-ID pages)
+      // -----------------------------
       singletonPage(S, 'Home', 'home'),
       singletonPage(S, 'TIDE', 'tide'),
       singletonPage(S, 'Operations', 'operations'),
       singletonPage(S, 'Join Us', 'join-us'),
       singletonPage(S, 'Contact', 'contact'),
 
+      // NEW: Our Team page (where you add the Team section)
+      singletonPage(S, 'Our Team (Page)', 'our-team'),
+
+      // -----------------------------
       // Missions group
+      // -----------------------------
       S.listItem()
         .title('Missions')
         .child(
@@ -81,20 +88,27 @@ const deskStructure: StructureResolver = (S) =>
             ])
         ),
 
-      // Team members
+      // -----------------------------
+      // Team members collection
+      // -----------------------------
       S.listItem()
-        .title('Our Team')
+        .title('Our Team (Members)')
         .child(S.documentTypeList('teamMember').title('Team Members')),
 
       S.divider(),
 
+      // -----------------------------
       // Generic collections
+      // -----------------------------
       S.documentTypeListItem('event').title('Events'),
       S.documentTypeListItem('campaign').title('Campaigns'),
       S.documentTypeListItem('blogPost').title('Blog Posts'),
 
       // Uncomment if you ever want to browse all pages
       // S.documentTypeListItem('page').title('All Pages'),
+
+      // Example of using bySlugList helper if needed:
+      // bySlugList(S, 'Our Team (by slug)', 'our-team'),
     ])
 
 export default deskStructure

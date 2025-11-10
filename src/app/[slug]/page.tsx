@@ -12,7 +12,6 @@ type SlugParams = { slug: string }
 export default async function Page({
   params,
 }: {
-  // WICHTIG: params ist ein Promise in Next 16
   params: Promise<SlugParams>
 }) {
   const { slug } = await params
@@ -23,6 +22,7 @@ export default async function Page({
 
   if (!page) notFound()
 
+  // normalize content
   const content =
     page.content?.length
       ? page.content
@@ -32,9 +32,16 @@ export default async function Page({
       ? page.sections
       : []
 
+  // ✅ Auto-Inject "team" auf /our-team, falls Redaktion es vergessen hat
+  const hasTeam = content.some((s: any) => (s?._type ?? s?.type) === 'team')
+  const enriched =
+    slug === 'our-team' && !hasTeam
+      ? [{ _type: 'team', _key: 'auto-team' }, ...content]
+      : content
+
   return (
     <main className="min-h-screen">
-      <PageBuilder content={content} />
+      <PageBuilder content={enriched} />
     </main>
   )
 }
