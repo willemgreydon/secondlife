@@ -162,3 +162,61 @@ export const pageByIdQuery = groq`
     ${CONTENT}
   }
 `
+
+// ——— Detail-Dokumente pro Typ
+export const missionBySlugQuery = groq`
+  *[_type == "mission" && slug.current == $slug][0]{
+    _id, title, "slug": slug.current,
+    ${CONTENT}
+  }
+`
+export const eventBySlugQuery = groq`
+  *[_type == "event" && slug.current == $slug][0]{
+    _id, title, "slug": slug.current,
+    ${CONTENT}
+  }
+`
+export const blogPostBySlugQuery = groq`
+  *[_type == "blogPost" && slug.current == $slug][0]{
+    _id, title, "slug": slug.current,
+    ${CONTENT}
+  }
+`
+export const campaignBySlugQuery = groq`
+  *[_type == "campaign" && slug.current == $slug][0]{
+    _id, title, "slug": slug.current,
+    ${CONTENT}
+  }
+`
+export const initiativeBySlugQuery = groq`
+  *[_type == "initiative" && slug.current == $slug][0]{
+    _id, title, "slug": slug.current,
+    ${CONTENT}
+  }
+`
+export const partnerBySlugQuery = groq`
+  *[_type == "partner" && slug.current == $slug][0]{
+    _id, title, "slug": slug.current,
+    ${CONTENT}
+  }
+`
+
+// ——— Nur die Slugs (für generateStaticParams)
+export const missionSlugsQuery = groq`
+  *[_type == "mission" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+export const eventSlugsQuery = groq`
+  *[_type == "event" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+export const blogPostSlugsQuery = groq`
+  *[_type == "blogPost" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+export const campaignSlugsQuery = groq`
+  *[_type == "campaign" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+export const initiativeSlugsQuery = groq`
+  *[_type == "initiative" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+export const partnerSlugsQuery = groq`
+  *[_type == "partner" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
