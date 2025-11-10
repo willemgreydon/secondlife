@@ -8,6 +8,15 @@ export const revalidate = 0
 export default async function BlogIndexPage() {
   const posts = await sanityClient.fetch(blogListQuery).catch(() => [])
 
+  const linkBlocks = posts.map((p: any) => ({
+    _type: 'block',
+    children: [
+      { _type: 'span', text: p.title || 'Untitled post' },
+      { _type: 'span', text: '  ' },
+      { _type: 'link', href: `/blog/${p.slug}`, text: 'Read →' },
+    ],
+  }))
+
   const content = [
     {
       _type: 'richTextSection',
@@ -19,16 +28,9 @@ export default async function BlogIndexPage() {
     },
     {
       _type: 'textBlock',
-      _key: 'blog-index-list',
-      title: 'All Posts',
-      body: posts.map((p: any) => ({
-        _type: 'block',
-        children: [
-          { _type: 'span', text: p.title },
-          { _type: 'span', text: '  ' },
-          { _type: 'link', href: `/blog/${p.slug}`, text: 'Read →' },
-        ],
-      })),
+      _key: 'blog-index-links',
+      title: 'All posts (links)',
+      body: linkBlocks,
     },
   ]
 

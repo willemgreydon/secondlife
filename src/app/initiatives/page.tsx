@@ -8,13 +8,28 @@ export const revalidate = 0
 export default async function InitiativesIndexPage() {
   const initiatives = await sanityClient.fetch(initiativesListQuery).catch(() => [])
 
+  const linkBlocks = initiatives.map((i: any) => ({
+    _type: 'block',
+    children: [
+      { _type: 'span', text: i.title || 'Untitled initiative' },
+      { _type: 'span', text: '  ' },
+      { _type: 'link', href: `/initiatives/${i.slug}`, text: 'Learn more →' },
+    ],
+  }))
+
   const content = [
     {
-      _type: 'initiativesGrid',    // Matches InitiativesGrid.tsx
-      _key: 'initiatives-index',
+      _type: 'initiativesGrid',
+      _key: 'initiatives-index-grid',
       title: 'Initiatives',
-      initiatives,                 // likely prop
-      items: initiatives,          // safety alias
+      items: initiatives,
+      initiatives,
+    },
+    {
+      _type: 'textBlock',
+      _key: 'initiatives-index-links',
+      title: 'All initiatives (links)',
+      body: linkBlocks,
     },
   ]
 
