@@ -220,3 +220,78 @@ export const initiativeSlugsQuery = groq`
 export const partnerSlugsQuery = groq`
   *[_type == "partner" && defined(slug.current)]{ "slug": slug.current }[].slug
 `
+
+// Missionen
+export const missionsListQuery = groq`
+  *[_type == "mission" && defined(slug.current)]
+  | order(_updatedAt desc)[0...200]{
+    _id,
+    title,
+    excerpt,
+    status,
+    "slug": slug.current,
+    "cover": coalesce(cover.asset->url, image.asset->url)
+  }
+`
+
+// Kampagnen
+export const campaignsListQuery = groq`
+  *[_type == "campaign" && defined(slug.current)]
+  | order(_updatedAt desc)[0...200]{
+    _id,
+    title,
+    excerpt,
+    status,
+    "slug": slug.current,
+    "cover": coalesce(cover.asset->url, image.asset->url)
+  }
+`
+
+// Initiativen
+export const initiativesListQuery = groq`
+  *[_type == "initiative" && defined(slug.current)]
+  | order(_updatedAt desc)[0...200]{
+    _id,
+    title,
+    excerpt,
+    status,
+    "slug": slug.current,
+    "cover": coalesce(cover.asset->url, image.asset->url)
+  }
+`
+
+// Partner
+export const partnersListQuery = groq`
+  *[_type == "partner" && defined(slug.current)]
+  | order(title asc)[0...200]{
+    _id,
+    title,
+    url,
+    "slug": slug.current,
+    "logo": coalesce(logo.asset->url, image.asset->url)
+  }
+`
+
+// Events
+export const eventsListQuery = groq`
+  *[_type == "event" && defined(slug.current)]
+  | order(coalesce(date, _updatedAt) desc)[0...200]{
+    _id,
+    title,
+    date,
+    "slug": slug.current,
+    "cover": coalesce(cover.asset->url, image.asset->url)
+  }
+`
+
+// Blog
+export const blogListQuery = groq`
+  *[_type == "blogPost" && defined(slug.current)]
+  | order(coalesce(publishedAt, _updatedAt) desc)[0...200]{
+    _id,
+    title,
+    excerpt,
+    "slug": slug.current,
+    "cover": coalesce(cover.asset->url, mainImage.asset->url, image.asset->url)
+  }
+`
