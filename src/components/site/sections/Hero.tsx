@@ -41,7 +41,7 @@ export default function Hero({
       )}
 
       {/* Centered content; Light mode inverted = white text */}
-      <div className="flex min-h-[85vh] items-center justify-center px-6 text-center text-white">
+      <div className="flex min-h-[64vh] items-center justify-center px-6 text-center text-white">
         <div className="max-w-3xl">
           {title && (
             <h1 className="leading-tight text-5xl font-bold md:text-7xl">

@@ -1,5 +1,24 @@
 import { groq } from 'next-sanity'
 
+const missionFields = `
+  _id,
+  title,
+  "slug": slug.current,
+  status,
+  // Cover mit Blur
+  "cover": cover{
+    asset->{
+      url,
+      metadata{ lqip }
+    }
+  },
+  // exakt zwei Metriken aus deinem metrics-Array
+  "metrics": {
+    "tons": metrics[metric_key == "tons_collected"][0]{ current_value, unit },
+    "volunteers": metrics[metric_key == "volunteers"][0]{ current_value, unit }
+  }
+`
+
 const CONTENT = groq`
   "content": coalesce(content, contentSections, sections, [])[]{
     ...,
@@ -158,34 +177,15 @@ export const pageByIdQuery = groq`
 `
 
 export const pageBySlugOrIdQuery = groq`
-*[_type == "page" && (slug.current == $slug || _id == $slug)][0]{
-  _id,
-  title,
-  "slug": slug.current,
-
-  // Legacy-Felder vereinheitlichen
-  "contentSections": coalesce(contentSections, content, sections)[]{
-    ...,
-
-    // Hero: bgImage direkt als URL
-    _type == "heroSection" => {
-      _type, title, subtitle, ctaText, ctaHref,
-      "bgImage": coalesce(bgImage.asset->url, bgImage)
-    },
-
-    // Missions Grid: feste Range, Frontend schneidet per limit
-    _type == "missionsGrid" => {
-      _type, title, status, limit, showMetrics,
-      "missions": *[_type=="mission" && (
-        ^.status == "all" || !defined(^.status) || status == ^.status
-      )]|order(_createdAt desc)[0...100]{
-        _id, title, "slug": slug.current, status,
-        "coverUrl": coalesce(cover.asset->url, image.asset->url),
-        wasteCollectedKg, volunteers
-      }
-    }
+  *[_type == "page" && (slug.current == $slug || _id == $slug)][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    // wir holen alle drei, falls Altbestände existieren
+    content[],
+    contentSections[],
+    sections[]
   }
-}
 `
 
 export const eventBySlugQuery = groq`
@@ -261,6 +261,21 @@ export const eventSlugsQuery = groq`
 `
 export const missionSlugsQuery = groq`
   *[_type == "mission" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+export const plannedMissionsQuery = groq`
+  *[_type == "mission" && status == "planned"]|order(_createdAt desc){
+    ${missionFields}
+  }
+`
+export const activeMissionsQuery = groq`
+  *[_type == "mission" && status == "active"]|order(_createdAt desc){
+    ${missionFields}
+  }
+`
+export const successMissionsQuery = groq`
+  *[_type == "mission" && status == "successful"]|order(_createdAt desc){
+    ${missionFields}
+  }
 `
 export const blogPostSlugsQuery = groq`
   *[_type == "blogPost" && defined(slug.current)]{ "slug": slug.current }[].slug

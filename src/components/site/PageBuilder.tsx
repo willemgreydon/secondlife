@@ -51,6 +51,7 @@ const COMPONENT_MAP: Record<string, any> = {
   partners: Partners,
 }
 
+// WICHTIG: Aliase für Studio-Section-Typen → interne Komponenten-Namen
 const TYPE_ALIASES: Record<string, string> = {
   heroSection: 'hero',
   splitSection: 'split',
@@ -63,12 +64,20 @@ const TYPE_ALIASES: Record<string, string> = {
   contactSection: 'contact',
   imageBlock: 'imageBlock',
 
+  // Teams
   team: 'teamGrid',
   teamSection: 'teamGrid',
 
+  // Metrics / Impact
   metrics: 'impactStats',
   metricsSection: 'impactStats',
   impactStatsSection: 'impactStats',
+
+  // Grids aus der Home-Seite
+  campaignsSection: 'campaignGrid',
+  missionsSection: 'missionsGrid',
+  initiativesSection: 'initiativesGrid',
+  eventsSection: 'eventsGrid',
 }
 
 function UnknownSection({ section }: { section: any }) {
@@ -109,7 +118,7 @@ export default function PageBuilder({
             }
           }
 
-          // ImpactStats: fallback to context metrics
+          // ImpactStats: fallback auf Context-Metriken, wenn in Section nichts gepflegt
           if (normalizedType === 'impactStats') {
             const hasOwnMetrics =
               Array.isArray(section.metrics) && section.metrics.length > 0
@@ -119,24 +128,39 @@ export default function PageBuilder({
             }
           }
 
-          // MissionsGrid: apply frontend limit + sane defaults
+          // MissionsGrid: KEIN leeres Array injizieren – nur setzen, wenn vorhanden
           if (normalizedType === 'missionsGrid') {
             const limit = Number.isFinite(section?.limit) ? section.limit : 100
-            const missions = Array.isArray(section?.missions) ? section.missions.slice(0, limit) : []
-            section = {
+            const base = {
               ...section,
-              missions,
               limit,
               showMetrics: section?.showMetrics !== false, // default: true
             }
+            if (Array.isArray(section?.missions)) {
+              section = { ...base, missions: section.missions.slice(0, limit) }
+            } else {
+              section = base // kein missions: []
+            }
           }
 
-          // Optional: EventsGrid limit (falls du in Sanity ein limit Feld nutzt)
+          // InitiativesGrid: analog defensiv
+          if (normalizedType === 'initiativesGrid') {
+            const limit = Number.isFinite(section?.limit) ? section.limit : 100
+            const base = { ...section, limit }
+            if (Array.isArray(section?.initiatives)) {
+              section = { ...base, initiatives: section.initiatives.slice(0, limit) }
+            } else {
+              section = base // kein initiatives: []
+            }
+          }
+
+          // EventsGrid: analog defensiv (kein leeres events [])
           if (normalizedType === 'eventsGrid') {
             const limit = Number.isFinite(section?.limit) ? section.limit : undefined
             if (limit && Array.isArray(section?.events)) {
               section = { ...section, events: section.events.slice(0, limit) }
             }
+            // sonst nichts setzen
           }
 
           const key = `${normalizedType}-${section?._key ?? idx}`

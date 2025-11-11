@@ -1,13 +1,14 @@
-import { defineType, defineField } from 'sanity'
+import {defineType, defineField} from 'sanity'
 
 export default defineType({
   name: 'contactSection',
-  title: 'Contact Section',
+  title: 'Contact',
   type: 'object',
   fields: [
-    defineField({ name: 'headline', title: 'Headline', type: 'string' }),
-    defineField({ name: 'email', title: 'Email', type: 'string' }),
-    defineField({ name: 'phone', title: 'Phone', type: 'string' }),
-    defineField({ name: 'address', title: 'Address', type: 'text' }),
+    defineField({name: 'title', type: 'string'}),
+    defineField({name: 'email', type: 'string'}),
+    defineField({name: 'phone', type: 'string'}),
+    defineField({name: 'address', type: 'text', rows: 2}),
   ],
+  preview: {select: {title: 'title', subtitle: 'email'}},
 })

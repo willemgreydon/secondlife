@@ -1,23 +1,37 @@
-// sanity-studio/sanity.config.ts
 import { defineConfig } from 'sanity'
 import { deskTool } from 'sanity/desk'
 import { visionTool } from '@sanity/vision'
-
-import { schema } from './schemas'
-import deskStructure from './deskStructure'
-import { projectId, dataset, apiVersion } from './env'
-import { pageFixedSlugTemplate } from './templates/pageFixedSlug'
+import { deskStructure } from './deskStructure'
+import schemas from './schemas'
 
 export default defineConfig({
-  name: 'secondlife-studio',
-  title: 'Second Life Studio',
-  projectId,
-  dataset,
-  basePath: '/', // runs at http://localhost:3333/
+  name: 'default',
+  title: 'Second Life e.V.',
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  apiVersion: '2024-08-01',
+  useCdn: false,
+
+  schema: { types: schemas },
+
   plugins: [
     deskTool({ structure: deskStructure }),
-    visionTool({ defaultApiVersion: apiVersion }),
+    visionTool(),
   ],
-  schema,
-  templates: (prev) => [pageFixedSlugTemplate, ...prev],
+
+  document: {
+    newDocumentOptions: (prev, { schemaType }) => {
+      const singletons = new Set([
+        'homePage','tidePage','operationsPage','joinUsPage','contactPage','organisationPage',
+      ])
+      return singletons.has(schemaType) ? [] : prev
+    },
+    actions: (prev, { schemaType }) => {
+      const singletons = new Set([
+        'homePage','tidePage','operationsPage','joinUsPage','contactPage','organisationPage',
+      ])
+      if (!singletons.has(schemaType)) return prev
+      return prev.filter(({ action }) => action !== 'delete' && action !== 'duplicate')
+    },
+  },
 })

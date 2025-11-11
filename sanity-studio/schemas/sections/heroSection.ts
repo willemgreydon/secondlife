@@ -1,13 +1,26 @@
-import { defineType, defineField } from 'sanity'
+import {defineType, defineField} from 'sanity'
+
 export default defineType({
   name: 'heroSection',
-  title: 'Hero Section',
+  title: 'Hero',
   type: 'object',
   fields: [
-    defineField({ name: 'title', type: 'string', title: 'Title' }),
-    defineField({ name: 'subtitle', type: 'text', title: 'Subtitle' }),
-    defineField({ name: 'ctaLabel', type: 'string', title: 'CTA Label' }),
-    defineField({ name: 'ctaHref', type: 'string', title: 'CTA Link' }),
-    defineField({ name: 'bgImage', type: 'image', title: 'Background Image', options: { hotspot: true } })
-  ]
+    defineField({name: 'eyebrow', type: 'string', title: 'Eyebrow'}),
+    defineField({name: 'title', type: 'string', validation: r => r.required()}),
+    defineField({name: 'subtitle', type: 'text', rows: 3}),
+    defineField({name: 'ctaText', type: 'string', title: 'CTA Text'}),
+    defineField({
+      name: 'ctaHref',
+      type: 'url',
+      validation: r => r.uri({allowRelative: true, scheme: ['http', 'https']}),
+    }),
+    defineField({
+      name: 'image',
+      type: 'image',
+      options: {hotspot: true},
+      fields: [{name: 'alt', type: 'string', title: 'Alt text'}],
+    }),
+    defineField({name: 'align', type: 'string', options: {list: ['left','center','right']}, initialValue: 'left'}),
+  ],
+  preview: {select: {title: 'title', subtitle: 'eyebrow'}},
 })
