@@ -1,4 +1,3 @@
-// src/components/site/PageBuilder.tsx
 'use client'
 
 import Hero from './sections/Hero'
@@ -29,7 +28,6 @@ type Metric = {
 }
 
 type PageBuilderContext = {
-  // Hier können wir künftig mehr „globale“ Sachen reinreichen (z. B. breadcrumbs)
   metrics?: Metric[]
 }
 
@@ -45,7 +43,7 @@ const COMPONENT_MAP: Record<string, any> = {
   quote: Quote,
   accordion: Accordion,
   contact: Contact,
-  impactStats: ImpactStats,       // ⬅️ KPI-Section
+  impactStats: ImpactStats,
   campaignGrid: CampaignGrid,
   initiativesGrid: InitiativesGrid,
   missionsGrid: MissionsGrid,
@@ -53,7 +51,6 @@ const COMPONENT_MAP: Record<string, any> = {
   partners: Partners,
 }
 
-// Aliase aus dem CMS → kanonische Keys
 const TYPE_ALIASES: Record<string, string> = {
   heroSection: 'hero',
   splitSection: 'split',
@@ -64,10 +61,11 @@ const TYPE_ALIASES: Record<string, string> = {
   quoteSection: 'quote',
   accordionSection: 'accordion',
   contactSection: 'contact',
-  team: 'teamGrid',
   imageBlock: 'imageBlock',
 
-  // Komfort-Aliase für Metrik-Section
+  team: 'teamGrid',
+  teamSection: 'teamGrid',
+
   metrics: 'impactStats',
   metricsSection: 'impactStats',
   impactStatsSection: 'impactStats',
@@ -98,35 +96,56 @@ export default function PageBuilder({
 
   return (
     <div className="bg-white text-gray-900 transition-colors dark:bg-black dark:text-gray-100">
-      {sections.map((raw, idx) => {
-        // Typ normalisieren
-        const normalizedType = TYPE_ALIASES[raw._type] ?? raw._type
-        let section: any = { ...raw, _type: normalizedType }
+      <div className="space-y-8 md:space-y-12 lg:space-y-16">
+        {sections.map((raw, idx) => {
+          const normalizedType = TYPE_ALIASES[raw?._type] ?? raw?._type
+          let section: any = { ...raw, _type: normalizedType }
 
-        // Props normalisieren (z. B. CTA)
-        if (normalizedType === 'hero') {
-          section = {
-            ...section,
-            ctaText: section.ctaText ?? section.ctaLabel ?? undefined,
+          // Normalize hero CTA naming
+          if (normalizedType === 'hero') {
+            section = {
+              ...section,
+              ctaText: section.ctaText ?? section.ctaLabel ?? undefined,
+            }
           }
-        }
 
-        // ImpactStats: wenn im Section-Objekt keine metrics vorhanden,
-        // automatisch aus context.metrics befüllen.
-        if (normalizedType === 'impactStats') {
-          const hasOwnMetrics = Array.isArray(section.metrics) && section.metrics.length > 0
-          section = {
-            ...section,
-            metrics: hasOwnMetrics ? section.metrics : context?.metrics ?? [],
+          // ImpactStats: fallback to context metrics
+          if (normalizedType === 'impactStats') {
+            const hasOwnMetrics =
+              Array.isArray(section.metrics) && section.metrics.length > 0
+            section = {
+              ...section,
+              metrics: hasOwnMetrics ? section.metrics : (context?.metrics ?? []),
+            }
           }
-        }
 
-        const key = `${normalizedType}-${section._key ?? idx}`
-        const Cmp = COMPONENT_MAP[normalizedType]
+          // MissionsGrid: apply frontend limit + sane defaults
+          if (normalizedType === 'missionsGrid') {
+            const limit = Number.isFinite(section?.limit) ? section.limit : 100
+            const missions = Array.isArray(section?.missions) ? section.missions.slice(0, limit) : []
+            section = {
+              ...section,
+              missions,
+              limit,
+              showMetrics: section?.showMetrics !== false, // default: true
+            }
+          }
 
-        if (!Cmp) return <UnknownSection key={key} section={raw} />
-        return <Cmp key={key} {...section} />
-      })}
+          // Optional: EventsGrid limit (falls du in Sanity ein limit Feld nutzt)
+          if (normalizedType === 'eventsGrid') {
+            const limit = Number.isFinite(section?.limit) ? section.limit : undefined
+            if (limit && Array.isArray(section?.events)) {
+              section = { ...section, events: section.events.slice(0, limit) }
+            }
+          }
+
+          const key = `${normalizedType}-${section?._key ?? idx}`
+          const Cmp = COMPONENT_MAP[normalizedType]
+
+          if (!Cmp) return <UnknownSection key={key} section={raw} />
+          return <Cmp key={key} {...section} />
+        })}
+      </div>
     </div>
   )
 }

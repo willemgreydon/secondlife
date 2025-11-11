@@ -2,7 +2,7 @@
 import { notFound } from 'next/navigation'
 import PageBuilder from '@/components/site/PageBuilder'
 import { sanityClient } from '@/lib/sanity.client'
-import { pageBySlugQuery } from '@/lib/sanity.queries'
+import { pageBySlugOrIdQuery, allTeamMembersQuery } from '@/lib/sanity.queries'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -17,12 +17,13 @@ export default async function Page({
   const { slug } = await params
 
   const page = await sanityClient
-    .fetch(pageBySlugQuery, { slug })
-    .catch(() => null)
-
+    .fetch(pageBySlugOrIdQuery, { slug })
+    .catch((e) => {
+      console.error('[PAGE]', slug, e)
+      return null
+    })
   if (!page) notFound()
 
-  // normalize content
   const content =
     page.content?.length
       ? page.content
@@ -32,11 +33,19 @@ export default async function Page({
       ? page.sections
       : []
 
-  // ✅ Auto-Inject "team" auf /our-team, falls Redaktion es vergessen hat
   const hasTeam = content.some((s: any) => (s?._type ?? s?.type) === 'team')
   const enriched =
     slug === 'our-team' && !hasTeam
-      ? [{ _type: 'team', _key: 'auto-team' }, ...content]
+      ? [
+          {
+            _type: 'team',
+            _key: 'auto-team',
+            title: 'Our Team',
+            layout: 'grid',
+            members: await sanityClient.fetch(allTeamMembersQuery).catch(() => []),
+          },
+          ...content,
+        ]
       : content
 
   return (

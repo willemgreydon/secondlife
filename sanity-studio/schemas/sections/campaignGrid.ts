@@ -1,17 +1,16 @@
-// sanity-studio/schemas/sections/eventsGrid.ts
 import { defineType, defineField } from 'sanity'
 
 export default defineType({
-  name: 'eventsGrid',
-  title: 'Events Grid',
+  name: 'campaignGrid',
+  title: 'Campaigns Grid',
   type: 'object',
   fields: [
     defineField({ name: 'title', title: 'Title', type: 'string' }),
     defineField({
-      name: 'onlyUpcoming',
-      title: 'Only upcoming events',
-      type: 'boolean',
-      initialValue: true,
+      name: 'onlyStatus',
+      title: 'Filter by status (optional)',
+      type: 'string',
+      options: { list: ['active', 'planned', 'archived'] },
     }),
   ],
 })

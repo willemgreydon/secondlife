@@ -1,16 +1,13 @@
-// src/components/site/sections/Hero.tsx
 'use client'
-
 import Image from 'next/image'
-import Link from 'next/link'
+import { getImageUrl } from '@/lib/sanity.image'
 
 type HeroProps = {
   title?: string
   subtitle?: string
   ctaText?: string
   ctaHref?: string
-  bgImage?: string
-  gradientOverlay?: boolean
+  bgImage?: any
 }
 
 export default function Hero({
@@ -19,56 +16,58 @@ export default function Hero({
   ctaText,
   ctaHref,
   bgImage,
-  gradientOverlay = false,
 }: HeroProps) {
+  const bgUrl = getImageUrl(bgImage)
+
   return (
-    <section className="relative min-h-[56vh] md:min-h-[64vh] flex items-center justify-center text-center overflow-hidden">
-      {/* Background Image */}
-      {bgImage && (
-        <div className="absolute inset-0 z-0">
+    <section className="relative isolate overflow-hidden">
+      {/* Background + Overlay */}
+      {bgUrl && (
+        <div className="absolute inset-0 -z-10">
           <Image
-            src={bgImage}
+            src={bgUrl}
             alt={title || 'Hero background'}
             fill
-            priority
             sizes="100vw"
-            className="object-cover object-center"
+            priority
+            className="object-cover"
+          />
+          {/* Light overlay (#2bbbe2 @ 88%), Dark overlay (#0285a9 @ 88%) */}
+          <div
+            className="absolute inset-0 bg-[rgba(43,187,226,0.88)] dark:bg-[rgba(2,133,169,0.88)]"
+            aria-hidden="true"
           />
         </div>
       )}
 
-      {/* Overlay */}
-      <div
-        className={`absolute inset-0 z-10 pointer-events-none transition-opacity duration-500 ${
-          gradientOverlay
-            ? 'bg-gradient-to-b from-[rgba(43,187,226,0.88)] to-[rgba(43,187,226,0.6)] dark:from-[rgba(43,187,226,0.88)] dark:to-[rgba(43,187,226,0.8)]'
-            : 'bg-[rgba(43,187,226,0.88)] dark:bg-[rgba(43,187,226,0.88)]'
-        }`}
-      />
+      {/* Centered content; Light mode inverted = white text */}
+      <div className="flex min-h-[85vh] items-center justify-center px-6 text-center text-white">
+        <div className="max-w-3xl">
+          {title && (
+            <h1 className="leading-tight text-5xl font-bold md:text-7xl">
+              {title}
+            </h1>
+          )}
+          {subtitle && (
+            <p className="mt-4 text-lg opacity-95 md:text-xl">{subtitle}</p>
+          )}
 
-      {/* Content */}
-      <div className="relative z-20 container mx-auto px-4 py-20">
-        {title && (
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight drop-shadow-sm text-white">
-            {title}
-          </h1>
-        )}
-        {subtitle && (
-          <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-white/90">
-            {subtitle}
-          </p>
-        )}
-        {ctaText && ctaHref && (
-          <div className="mt-8">
-            <Link
+          {ctaText && ctaHref && (
+            <a
               href={ctaHref}
-              className="inline-flex items-center rounded-full px-6 py-2.5 text-sm font-medium
-                         bg-white text-[#2BBBE2] hover:bg-[#2BBBE2] hover:text-white transition"
+              className="
+                mt-8 inline-flex items-center justify-center
+                rounded-lg px-6 py-3
+                bg-[#2bbbe2] text-white
+                hover:bg-[#2d2d2d]
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
+                transition-colors
+              "
             >
               {ctaText}
-            </Link>
-          </div>
-        )}
+            </a>
+          )}
+        </div>
       </div>
     </section>
   )

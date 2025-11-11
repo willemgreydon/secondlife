@@ -1,11 +1,10 @@
+// sanity-studio/schemas/page.ts
 import { defineType, defineField } from 'sanity'
-import { LayoutTemplate } from 'lucide-react'
 
 export default defineType({
   name: 'page',
   title: 'Page',
   type: 'document',
-  icon: LayoutTemplate,
   fields: [
     defineField({ name: 'title', type: 'string', validation: r => r.required() }),
     defineField({
@@ -14,35 +13,38 @@ export default defineType({
       options: { source: 'title' },
       validation: r => r.required(),
     }),
-    defineField({ name: 'excerpt', type: 'text', rows: 3 }),
-
     defineField({
       name: 'content',
-      title: 'Content (Sections)',
+      title: 'Content Sections',
       type: 'array',
-      options: { sortable: true },
       of: [
         { type: 'heroSection' },
         { type: 'splitSection' },
-        { type: 'statsSection' },
-        { type: 'textBlock' },
-        { type: 'videoSection' },
-        { type: 'team' },
+        { type: 'richTextSection' },
         { type: 'imageBlock' },
         { type: 'gallerySection' },
         { type: 'quoteSection' },
         { type: 'accordionSection' },
         { type: 'contactSection' },
+        { type: 'eventsGrid' },
+        { type: 'team' },
         { type: 'campaignGrid' },
         { type: 'initiativesGrid' },
-        { type: 'missionsGrid' },
-        { type: 'eventsGrid' },
-        { type: 'partners' },
-        { type: 'impactStats' },
       ],
     }),
   ],
-  preview: {
-    select: { title: 'title' },
+  initialValue: (_params, ctx) => {
+    const id = (ctx as any)?.documentId
+    const preset = (title: string) => ({ title, slug: { current: title.toLowerCase().replace(/\s+/g, '-') } })
+    if (id === 'home') return preset('Home')
+    if (id === 'missions') return preset('Missions')
+    if (id === 'tide') return preset('TIDE')
+    if (id === 'operations') return preset('Operations')
+    if (id === 'join-us') return preset('Join Us')
+    if (id === 'contact') return preset('Contact')
+    if (id === 'donate') return preset('Donate')
+    if (id === 'dana-24-vlc') return preset('DANA 24 VLC')
+    if (id === 'revolutionizing-beach-clean-ups') return preset('Revolutionizing Beach Clean-Ups')
+    return {}
   },
 })

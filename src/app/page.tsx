@@ -1,28 +1,24 @@
-// src/app/page.tsx
-import { notFound } from 'next/navigation'
 import PageBuilder from '@/components/site/PageBuilder'
+import { notFound } from 'next/navigation'
 import { sanityClient } from '@/lib/sanity.client'
-import { homePageQuery } from '@/lib/sanity.queries'
+import { pageBySlugOrIdQuery } from '@/lib/sanity.queries'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function HomePage() {
-  const page = await sanityClient.fetch(homePageQuery).catch(() => null)
-  if (!page) notFound()
+  const page = await sanityClient
+    .fetch(pageBySlugOrIdQuery, { slug: 'home' })
+    .catch((e) => {
+      console.error('[HOME] GROQ error:', e)
+      return null
+    })
 
-  const content =
-    page.content?.length
-      ? page.content
-      : page.contentSections?.length
-      ? page.contentSections
-      : page.sections?.length
-      ? page.sections
-      : []
+  if (!page) notFound()
 
   return (
     <main className="min-h-screen">
-      <PageBuilder content={content} />
+      <PageBuilder content={page.contentSections ?? []} />
     </main>
   )
 }

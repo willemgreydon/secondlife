@@ -1,20 +1,30 @@
-// src/lib/sanity.image.ts
-import imageUrlBuilder from "@sanity/image-url";
-import { createClient } from "next-sanity";
-import type { ImageRef } from "@/types/cms";
+import imageUrlBuilder from '@sanity/image-url'
+import { sanityClient } from './sanity.client'
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!;
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+export type AnyImage =
+  | string
+  | { asset?: { _ref?: string; url?: string } | null }
+  | null
+  | undefined
 
-// A tiny local client just for the builder (no token needed)
-const client = createClient({
-  projectId,
-  dataset,
-  apiVersion: "2025-01-01",
-  useCdn: true,
-});
+const builder = imageUrlBuilder(sanityClient)
 
-const builder = imageUrlBuilder(client);
-
-/** Convenience: returns a builder you can chain (width/height/quality/auto) or null if no image */
-export const urlFor = (src?: ImageRef | null) => (src ? builder.image(src) : null);
+export function getImageUrl(
+  img: AnyImage,
+  opts?: { width?: number; height?: number; fit?: 'clip'|'crop'|'fill'|'fillmax'|'max'|'scale'; autoFormat?: boolean }
+): string | null {
+  if (!img) return null
+  if (typeof img === 'string') return img || null
+  const asset = img.asset
+  if (!asset) return null
+  if ('url' in asset && asset.url) return asset.url || null
+  if ('_ref' in asset && asset._ref) {
+    let q = builder.image(img)
+    if (opts?.width) q = q.width(opts.width)
+    if (opts?.height) q = q.height(opts.height)
+    if (opts?.fit) q = q.fit(opts.fit)
+    if (opts?.autoFormat !== false) q = q.auto('format')
+    return q.url()
+  }
+  return null
+}

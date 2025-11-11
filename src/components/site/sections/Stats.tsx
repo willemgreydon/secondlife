@@ -1,20 +1,17 @@
 'use client'
-
-export default function Stats({ title, stats }: { title?: string; stats?: { label: string; value: string }[] }) {
-  if (!stats?.length) return null
+export default function Stats({ title, stats = [] as {label:string; value:string}[] }) {
+  if (!stats.length) return null
   return (
-    <section className="bg-white text-gray-900 dark:bg-black dark:text-gray-100 transition-colors">
-      <div className="mx-auto max-w-5xl px-6 py-16 text-center">
-        {title && <h2 className="mb-8 text-3xl font-semibold">{title}</h2>}
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
-          {stats.map((s, i) => (
-            <div key={i}>
-              <div className="text-4xl font-bold">{s.value}</div>
-              <div className="mt-2 text-sm opacity-80">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+    <section className="mx-auto max-w-7xl px-4 py-10">
+      {title && <h2 className="mb-6 text-2xl font-semibold">{title}</h2>}
+      <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((s, i) => (
+          <div key={i} className="rounded-2xl border bg-white p-4">
+            <dt className="text-sm opacity-70">{s.label}</dt>
+            <dd className="text-3xl font-semibold">{s.value}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
   )
 }

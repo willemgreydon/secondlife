@@ -1,14 +1,11 @@
 'use client'
-
 import { PortableText } from '@portabletext/react'
-
-export default function RichText({ body }: { body?: any }) {
-  if (!body) return null
+export default function RichText({ title, body }: { title?:string; body?:any[] }) {
+  if (!title && !body?.length) return null
   return (
-    <section className="bg-white text-gray-900 dark:bg-black dark:text-gray-100 transition-colors">
-      <div className="prose prose-zinc dark:prose-invert mx-auto max-w-3xl px-6 py-16">
-        <PortableText value={body} />
-      </div>
+    <section className="mx-auto max-w-3xl px-4 py-10">
+      {title && <h2 className="mb-4 text-2xl font-semibold">{title}</h2>}
+      {body?.length ? <PortableText value={body} /> : null}
     </section>
   )
 }

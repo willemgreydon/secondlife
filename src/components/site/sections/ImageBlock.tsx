@@ -1,15 +1,14 @@
 'use client'
-
 import Image from 'next/image'
-
-export default function ImageBlock({ imageUrl, caption }: { imageUrl?: string; caption?: string }) {
-  if (!imageUrl) return null
+import { getImageUrl } from '@/lib/sanity.image'
+export default function ImageBlock({ image, alt }: { image?:any; alt?:string }) {
+  const url = getImageUrl(image)
+  if (!url) return null
   return (
-    <figure className="bg-white text-gray-900 dark:bg-black dark:text-gray-100 transition-colors">
-      <div className="relative mx-auto h-[400px] w-full max-w-5xl overflow-hidden rounded-xl">
-        <Image src={imageUrl} alt={caption || ''} fill className="object-cover" />
+    <section className="mx-auto max-w-5xl px-4 py-10">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-neutral-100">
+        <Image src={url} alt={alt || ''} fill sizes="100vw" className="object-cover" />
       </div>
-      {caption && <figcaption className="mt-3 text-center text-sm opacity-80">{caption}</figcaption>}
-    </figure>
+    </section>
   )
 }

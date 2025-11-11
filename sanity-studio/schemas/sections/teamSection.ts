@@ -1,7 +1,7 @@
 import { defineType, defineField } from 'sanity'
 
 export default defineType({
-  name: 'team', // wichtig: exakt 'team'
+  name: 'teamSection',
   title: 'Team',
   type: 'object',
   fields: [

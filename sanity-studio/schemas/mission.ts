@@ -44,6 +44,15 @@ export default defineType({
       options: { hotspot: true },
       fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
     }),
+    // LEGACY: nur damit alte Dokumente ohne Warnung geöffnet werden können
+    defineField({
+      name: 'image',
+      title: 'LEGACY: old cover field',
+      type: 'image',
+      options: { hotspot: true },
+      hidden: true,            // auf false setzen, wenn du händisch migrieren willst
+      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+    }),
 
     // ---- NEW: Gallery field ----
     defineField({

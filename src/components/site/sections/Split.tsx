@@ -1,70 +1,68 @@
 'use client'
-
-import { PortableText } from '@portabletext/react'
+import React from 'react'
 import Image from 'next/image'
-import { cn } from '@/lib/utils'
+import { PortableText } from '@portabletext/react'
+import { getImageUrl } from '@/lib/sanity.image'
 
-type Side = {
-  kind?: 'text' | 'image'
-  text?: any
-  imageUrl?: string
-  alt?: string
-}
+type Side =
+  | { kind: 'image'; image?: any; alt?: string }
+  | { kind: 'text'; text?: any[] }
 
-type SplitProps = {
-  _type: 'splitSection'
-  _key: string
+export default function Split({
+  title,
+  left,
+  right,
+  layout = '50-50',
+  reversed = false,
+}: {
   title?: string
-  layout?: '50-50' | '40-60' | '60-40'
-  left: Side
-  right: Side
-}
+  left?: Side
+  right?: Side
+  layout?: '50-50' | '60-40' | '40-60'
+  reversed?: boolean
+}) {
+  const [a, b] = reversed ? [right, left] : [left, right]
 
-const layoutToCols: Record<string, string> = {
-  '50-50': 'md:grid-cols-2',
-  '40-60': 'md:grid-cols-[2fr_3fr]',
-  '60-40': 'md:grid-cols-[3fr_2fr]',
-}
-
-function RenderSide({ side }: { side: Side }) {
-  if (side?.kind === 'image' && side.imageUrl) {
-    return (
-      <div className="relative w-full overflow-hidden rounded-xl shadow-sm">
-        {/* fixed aspect on small screens, grows naturally on md+ */}
-        <div className="relative aspect-[4/3] md:aspect-[16/10]">
+  const render = (s?: Side) => {
+    if (!s) return null
+    if (s.kind === 'image') {
+      const url = getImageUrl((s as any).image)
+      if (!url) return null
+      return (
+        <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-neutral-100">
           <Image
-            src={side.imageUrl}
-            alt={side.alt || ''}
+            src={url}
+            alt={(s as any).alt || ''}
             fill
-            sizes="(min-width: 768px) 50vw, 100vw"
+            sizes="(min-width:1024px) 50vw, 100vw"
             className="object-cover"
-            priority={false}
           />
         </div>
-      </div>
-    )
+      )
+    }
+    return (s as any).text?.length ? <PortableText value={(s as any).text} /> : null
   }
 
-  // default: text
+  const grid =
+    layout === '60-40'
+      ? 'lg:grid-cols-[3fr_2fr]'
+      : layout === '40-60'
+      ? 'lg:grid-cols-[2fr_3fr]'
+      : 'lg:grid-cols-2'
+
+  const sides: Array<{ key: string; node: React.ReactNode }> = [
+    { key: 'left', node: render(a) },
+    { key: 'right', node: render(b) },
+  ]
+
   return (
-    <div className="prose prose-neutral dark:prose-invert max-w-none">
-      <PortableText value={side?.text ?? []} />
-    </div>
-  )
-}
+    <section className="mx-auto max-w-7xl px-4 py-10">
+      {title && <h2 className="mb-6 text-2xl font-semibold">{title}</h2>}
 
-export default function Split(block: SplitProps) {
-  const cols = layoutToCols[block.layout || '50-50'] || layoutToCols['50-50']
-
-  return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      {block.title ? (
-        <h2 className="mb-6 text-xl font-semibold tracking-tight">{block.title}</h2>
-      ) : null}
-
-      <div className={cn('grid gap-8 md:gap-10', cols)}>
-        <RenderSide side={block.left} />
-        <RenderSide side={block.right} />
+      <div className={`grid gap-6 ${grid}`}>
+        {sides.map(({ key, node }) => (
+          <div key={key}>{node}</div>
+        ))}
       </div>
     </section>
   )

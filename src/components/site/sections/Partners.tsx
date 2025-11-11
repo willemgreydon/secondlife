@@ -1,49 +1,28 @@
 'use client'
-
 import Image from 'next/image'
-
-export default function Partners({
-  title,
-  partners = [],
-}: {
-  title?: string
-  partners?: {
-    _id: string
-    name: string
-    logo?: string
-    website?: string
-  }[]
-}) {
-  if (!partners?.length) return null
-
+import { getImageUrl } from '@/lib/sanity.image'
+type Partner = { _id:string; name?:string; logo?:any; logoUrl?:string|null; url?:string }
+export default function Partners({ title, partners=[] as Partner[] }) {
+  const list = partners
+    .map(p => ({ ...p, img: p.logoUrl ?? getImageUrl(p.logo) }))
+    .filter(p => !!p.img)
+  if (!list.length) return null
   return (
-    <section className="bg-gray-50 text-gray-900 dark:bg-zinc-900 dark:text-gray-100 transition-colors">
-      <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-        {title && <h2 className="mb-10 text-3xl font-semibold">{title}</h2>}
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {partners.map((p) => (
-            <a
-              key={p._id}
-              href={p.website || '#'}
-              target="_blank"
-              rel="noreferrer"
-              className="group relative mx-auto flex h-24 w-40 items-center justify-center rounded-lg
-                         border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow-lg transition"
-            >
-              {p.logo ? (
-                <Image
-                  src={p.logo}
-                  alt={p.name}
-                  fill
-                  className="object-contain p-4 grayscale opacity-80 group-hover:opacity-100 group-hover:grayscale-0 transition"
-                />
-              ) : (
-                <span className="text-sm font-medium opacity-70">{p.name}</span>
-              )}
-            </a>
-          ))}
-        </div>
-      </div>
+    <section className="mx-auto max-w-7xl px-4 py-10">
+      {title && <h2 className="mb-6 text-2xl font-semibold">{title}</h2>}
+      <ul className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
+        {list.map(p => (
+          <li key={p._id} className="flex items-center justify-center rounded-xl border bg-white p-4">
+            {p.url ? (
+              <a href={p.url} target="_blank" rel="noreferrer">
+                <Image src={p.img!} alt={p.name || ''} width={180} height={64} className="object-contain" />
+              </a>
+            ) : (
+              <Image src={p.img!} alt={p.name || ''} width={180} height={64} className="object-contain" />
+            )}
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }

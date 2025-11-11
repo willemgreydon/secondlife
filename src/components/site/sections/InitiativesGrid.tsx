@@ -1,53 +1,29 @@
 'use client'
-
+import Link from 'next/link'
 import Image from 'next/image'
-
-export default function InitiativesGrid({
-  title,
-  initiatives = [],
-}: {
-  title?: string
-  initiatives?: {
-    _id: string
-    title: string
-    description?: string
-    image?: string
-    link?: string
-  }[]
-}) {
-  if (!initiatives?.length) return null
-
+import { getImageUrl } from '@/lib/sanity.image'
+type Initiative = { _id:string; title:string; slug?:string; cover?:any; coverUrl?:string|null; summary?:string }
+export default function InitiativesGrid({ title, initiatives=[] as Initiative[] }) {
+  if (!initiatives.length) return null
   return (
-    <section className="bg-gray-50 text-gray-900 dark:bg-zinc-900 dark:text-gray-100 transition-colors">
-      <div className="mx-auto max-w-6xl px-6 py-16">
-        {title && <h2 className="mb-10 text-3xl font-semibold">{title}</h2>}
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {initiatives.map((i) => (
-            <a
-              key={i._id}
-              href={i.link || '#'}
-              className="group block rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm hover:shadow-lg transition"
-            >
-              {i.image && (
-                <div className="relative h-48 w-full">
-                  <Image
-                    src={i.image}
-                    alt={i.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
+    <section className="mx-auto max-w-7xl px-4 py-10">
+      {title && <h2 className="mb-6 text-2xl font-semibold">{title}</h2>}
+      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {initiatives.map(it => {
+          const url = it.coverUrl ?? getImageUrl(it.cover)
+          return (
+            <li key={it._id} className="overflow-hidden rounded-2xl border bg-white">
+              <Link href={`/initiatives/${it.slug ?? it._id}`} className="block">
+                <div className="relative aspect-[16/10] bg-neutral-100">{url && <Image src={url} alt={it.title} fill sizes="33vw" className="object-cover" />}</div>
+                <div className="p-4">
+                  <h3 className="line-clamp-2 text-lg font-medium">{it.title}</h3>
+                  {it.summary && <p className="mt-1 line-clamp-2 text-sm opacity-80">{it.summary}</p>}
                 </div>
-              )}
-              <div className="p-5">
-                <h3 className="text-lg font-semibold">{i.title}</h3>
-                {i.description && (
-                  <p className="mt-2 text-sm opacity-80">{i.description}</p>
-                )}
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
     </section>
   )
 }

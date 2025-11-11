@@ -1,17 +1,16 @@
-// sanity-studio/schemas/sections/eventsGrid.ts
 import { defineType, defineField } from 'sanity'
 
 export default defineType({
-  name: 'eventsGrid',
-  title: 'Events Grid',
+  name: 'impactStats',
+  title: 'Impact Stats',
   type: 'object',
   fields: [
     defineField({ name: 'title', title: 'Title', type: 'string' }),
     defineField({
-      name: 'onlyUpcoming',
-      title: 'Only upcoming events',
-      type: 'boolean',
-      initialValue: true,
+      name: 'metrics',
+      title: 'Metrics',
+      type: 'array',
+      of: [{ type: 'metric' }], // <- dein bestehendes Metric-Object
     }),
   ],
 })

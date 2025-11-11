@@ -1,3 +1,4 @@
+// src/app/events/page.tsx
 import PageBuilder from '@/components/site/PageBuilder'
 import { sanityClient } from '@/lib/sanity.client'
 import { eventsListQuery } from '@/lib/sanity.queries'

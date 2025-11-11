@@ -1,37 +1,13 @@
 'use client'
-
-export default function Contact({
-  title,
-  email,
-  phone,
-  address,
-}: {
-  title?: string
-  email?: string
-  phone?: string
-  address?: string
-}) {
+export default function Contact({ headline, address, email, phone }: { headline?:string; address?:string; email?:string; phone?:string }) {
+  if (!headline && !address && !email && !phone) return null
   return (
-    <section className="bg-gray-50 text-gray-900 dark:bg-zinc-900 dark:text-gray-100 transition-colors">
-      <div className="mx-auto max-w-3xl px-6 py-16 text-center">
-        {title && <h2 className="mb-6 text-3xl font-semibold">{title}</h2>}
-        <div className="space-y-3 text-sm">
-          {address && <p>{address}</p>}
-          {email && (
-            <p>
-              <a href={`mailto:${email}`} className="underline hover:opacity-80">
-                {email}
-              </a>
-            </p>
-          )}
-          {phone && (
-            <p>
-              <a href={`tel:${phone}`} className="underline hover:opacity-80">
-                {phone}
-              </a>
-            </p>
-          )}
-        </div>
+    <section className="mx-auto max-w-3xl px-4 py-10">
+      {headline && <h2 className="mb-4 text-2xl font-semibold">{headline}</h2>}
+      <div className="space-y-1 text-sm opacity-90">
+        {address && <div>📍 {address}</div>}
+        {email && <div>✉️ <a className="underline" href={`mailto:${email}`}>{email}</a></div>}
+        {phone && <div>☎️ <a className="underline" href={`tel:${phone}`}>{phone}</a></div>}
       </div>
     </section>
   )

@@ -1,20 +1,13 @@
 'use client'
-
-export default function VideoSection({ title, url }: { title?: string; url?: string }) {
+export default function Video({ title, url, caption }: { title?:string; url?:string; caption?:string }) {
   if (!url) return null
   return (
-    <section className="bg-black text-gray-100 dark:bg-zinc-950 transition-colors">
-      <div className="mx-auto max-w-5xl px-6 py-16 text-center">
-        {title && <h2 className="mb-6 text-3xl font-semibold">{title}</h2>}
-        <div className="relative aspect-video overflow-hidden rounded-xl">
-          <iframe
-            src={url}
-            allow="autoplay; fullscreen"
-            allowFullScreen
-            className="absolute inset-0 h-full w-full"
-          />
-        </div>
+    <section className="mx-auto max-w-5xl px-4 py-10">
+      {title && <h2 className="mb-4 text-2xl font-semibold">{title}</h2>}
+      <div className="aspect-video w-full overflow-hidden rounded-2xl">
+        <iframe src={url} title={title || 'Video'} className="h-full w-full" allow="autoplay; fullscreen; picture-in-picture" />
       </div>
+      {caption && <p className="mt-2 text-sm opacity-80">{caption}</p>}
     </section>
   )
 }
