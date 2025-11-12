@@ -1,36 +1,20 @@
+// src/lib/sanity.queries.ts
 import { groq } from 'next-sanity'
 
-const missionFields = `
-  _id,
-  title,
-  "slug": slug.current,
-  status,
-  // Cover mit Blur
-  "cover": cover{
-    asset->{
-      url,
-      metadata{ lqip }
-    }
-  },
-  // exakt zwei Metriken aus deinem metrics-Array
-  "metrics": {
-    "tons": metrics[metric_key == "tons_collected"][0]{ current_value, unit },
-    "volunteers": metrics[metric_key == "volunteers"][0]{ current_value, unit }
-  }
-`
-
+/**
+ * Gemeinsame CONTENT-Projektion für den PageBuilder.
+ * Beachtet Altbestände (contentSections/sections) und normalisiert
+ * Teilstrukturen, damit die React-Sections stabile Props bekommen.
+ */
 const CONTENT = groq`
   "content": coalesce(content, contentSections, sections, [])[]{
     ...,
 
-    // HERO
     _type == "heroSection" => {
       _type, _key, title, subtitle, ctaHref,
       "ctaText": coalesce(ctaText, ctaLabel),
       "bgImage": bgImage.asset->url
     },
-
-    // IMAGE BLOCK
     _type == "imageBlock" => {
       _type, _key, caption,
       "imageUrl": image.asset->url,
@@ -45,15 +29,32 @@ const CONTENT = groq`
       }
     },
 
-    // pageBySlugOrIdQuery – Missions-Teil
+    // MISSIONS GRID
     _type == "missionsGrid" => {
-      _type, title, status, limit, showMetrics,
-      "missions": *[_type=="mission" && (
-        ^.status == "all" || !defined(^.status) || status == ^.status
-      )]|order(_createdAt desc)[0...100]{   // <-- feste Zahl, kein coalesce/^.limit
-        _id, title, "slug": slug.current, status,
-        "coverUrl": coalesce(cover.asset->url, image.asset->url),
-        wasteCollectedKg, volunteers
+      _type, _key, title, status, limit, showMetrics,
+      "missions": *[
+        _type == "mission" &&
+        (
+          // wenn kein Status gesetzt → alles
+          !defined(^.status) ||
+          // sonst filtern
+          status == ^.status ||
+          // Sonderwert "all"
+          ^.status == "all"
+        )
+      ] | order(_createdAt desc)[0...coalesce(^.limit, 100)]{
+        _id,
+        title,
+        "slug": slug.current,
+        status,
+        "coverUrl": coalesce(cover.asset->url, fallback.asset->url, image.asset->url, gallery[0].asset->url),
+        // abgeleitete Kennzahlen für Karten:
+        "wasteCollectedKg": coalesce(
+          metrics[metric_key == "plastic_collected_kg"][0].current_value,
+          metrics[metric_key == "tons_collected"][0].current_value * 1000,
+          0
+        ),
+        "volunteers": coalesce(metrics[metric_key == "volunteers"][0].current_value, 0)
       }
     },
 
@@ -98,7 +99,8 @@ const CONTENT = groq`
         "text": right.text,
         "imageUrl": right.image.asset->url,
         "alt": right.alt
-      }
+      },
+      "reversed": coalesce(reversed, reverse, false)
     },
 
     // QUOTE
@@ -111,20 +113,14 @@ const CONTENT = groq`
       _type, _key, title, items[]{ title, content }
     },
 
-    // EVENTS GRID  ✅ select statt JS-Ternary
+    // EVENTS GRID
     _type == "eventsGrid" => {
       _type, _key, title, onlyUpcoming,
       "events": *[
         _type == "event" &&
-        select(
-          coalesce(^.onlyUpcoming, true) => defined(datetime) && datetime >= now(),
-          true
-        )
+        select(coalesce(^.onlyUpcoming, true) => defined(datetime) && datetime >= now(), true)
       ] | order(coalesce(datetime, _updatedAt) asc)[0...100]{
-        _id,
-        title,
-        excerpt,
-        location,
+        _id, title, excerpt, location,
         "slug": slug.current,
         "date": datetime,
         "cover": coalesce(cover.asset->url, image.asset->url)
@@ -150,17 +146,62 @@ const CONTENT = groq`
           "image": photo.asset->url
         }
       )
+    },
+
+    // PARTNERS GRID (Links/Logos)
+    _type == "partnersSection" => {
+      _type, _key, title, limit,
+      "partners": *[_type == "partner"] | order(title asc)[0...coalesce(^.limit, 200)]{
+        _id, title, url,
+        "slug": slug.current,
+        "logo": coalesce(logo.asset->url, image.asset->url)
+      }
+    },
+
+    // IMPACT STATS (falls als Section genutzt)
+    _type == "impactStatsSection" => {
+      _type, _key, title,
+      metrics[]{ metric_key, title, current_value, unit, as_of_date, description }
     }
   }
 `
+
+/* ------------------------------ HOME ------------------------------ */
+
+export const homeDocQuery = groq`
+  *[_type in ["page","home"] && slug.current == "home"][0]{
+    _id, title, "slug": slug.current, ${CONTENT}
+  }
+`
+
+export const homeQuery = groq`
+  *[_type in ["page", "home"] && slug.current == "home"][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    content,
+    contentSections,
+    sections
+  }
+`
+
+/* ------------------------------ PAGES ------------------------------ */
 
 export const pageSlugsQuery = groq`
   *[_type == "page" && defined(slug.current)][].slug.current
 `
 
-export const homePageQuery = groq`
-  *[_type == "page" && slug.current == "home"][0]{
-    _id, title, "slug": slug.current, ${CONTENT}
+export const pageBySlugOrFixedIdQuery = groq`
+  *[
+    _type == "page" &&
+    (
+      slug.current == $slug ||
+      // Fallback auf feste IDs unserer Hauptseiten
+      (_id in ["home","tide","operations","join-us","contact","organisation","missions"] && $slug in ["home","tide","operations","join-us","contact","organisation","missions"])
+    )
+  ][0]{
+    _id, title, "slug": slug.current,
+    ${CONTENT}
   }
 `
 
@@ -176,17 +217,7 @@ export const pageByIdQuery = groq`
   }
 `
 
-export const pageBySlugOrIdQuery = groq`
-  *[_type == "page" && (slug.current == $slug || _id == $slug)][0]{
-    _id,
-    title,
-    "slug": slug.current,
-    // wir holen alle drei, falls Altbestände existieren
-    content[],
-    contentSections[],
-    sections[]
-  }
-`
+/* ------------------------------ EVENTS ------------------------------ */
 
 export const eventBySlugQuery = groq`
   *[_type == "event" && slug.current == $slug][0]{
@@ -195,20 +226,6 @@ export const eventBySlugQuery = groq`
     "date": datetime,
     cover{ asset->{ url } },
     ${CONTENT}
-  }
-`
-
-export const missionBySlugQuery = groq`
-  *[_type == "mission" && slug.current == $slug][0]{
-    _id, title, "slug": slug.current, status, excerpt,
-    cover{ asset->{ url } }, fallback{ asset->{ url } },
-    ${CONTENT},
-    metrics[]{ metric_key, title, current_value, unit, as_of_date, description },
-    "gallery": gallery[]{
-      "url": asset->url,
-      asset->{ _id, url, metadata{ lqip, dimensions } },
-      alt, caption
-    }
   }
 `
 
@@ -222,22 +239,75 @@ export const eventsListQuery = groq`
   }
 `
 
+export const eventSlugsQuery = groq`
+  *[_type == "event" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+
+/* ------------------------------ MISSIONS ------------------------------ */
+
+export const missionBySlugQuery = groq`
+  *[_type == "mission" && slug.current == $slug][0]{
+    _id, title, "slug": slug.current, status, excerpt,
+    cover{ asset->{ url } }, fallback{ asset->{ url } },
+    ${CONTENT},
+    metrics[]{ metric_key, title, current_value, unit, as_of_date, description },
+    "gallery": gallery[] {
+      "url": asset->url,
+      asset->{ _id, url, metadata{ lqip, dimensions } },
+      alt, caption
+    }
+  }
+`
+
 export const missionsListQuery = groq`
   *[_type == "mission" && defined(slug.current)]
   | order(_updatedAt desc)[0...200]{
     _id, title, excerpt, status,
     "slug": slug.current,
-
-    // Cover mit Fallback-Kette
     "cover": coalesce(cover.asset->url, fallback.asset->url, image.asset->url, gallery[0].asset->url),
-
-    // Abgeleitete Kennzahlen für die Karten
     "wasteCollectedKg": coalesce(
       metrics[metric_key == "plastic_collected_kg"][0].current_value,
       metrics[metric_key == "tons_collected"][0].current_value * 1000,
       0
     ),
     "volunteers": coalesce(metrics[metric_key == "volunteers"][0].current_value, 0)
+  }
+`
+
+export const missionSlugsQuery = groq`
+  *[_type == "mission" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+
+export const plannedMissionsQuery = groq`
+  *[_type == "mission" && status == "planned"]|order(_createdAt desc){
+    _id, title, "slug": slug.current, status,
+    "cover": coalesce(cover.asset->url, fallback.asset->url, image.asset->url),
+    "metrics": {
+      "tons": metrics[metric_key == "tons_collected"][0]{ current_value, unit },
+      "volunteers": metrics[metric_key == "volunteers"][0]{ current_value, unit }
+    }
+  }
+`
+
+export const activeMissionsQuery = groq`
+  *[_type == "mission" && status == "active"]|order(_createdAt desc){
+    _id, title, "slug": slug.current, status,
+    "cover": coalesce(cover.asset->url, fallback.asset->url, image.asset->url),
+    "metrics": {
+      "tons": metrics[metric_key == "tons_collected"][0]{ current_value, unit },
+      "volunteers": metrics[metric_key == "volunteers"][0]{ current_value, unit }
+    }
+  }
+`
+
+export const successMissionsQuery = groq`
+  *[_type == "mission" && status == "successful"]|order(_createdAt desc){
+    _id, title, "slug": slug.current, status,
+    "cover": coalesce(cover.asset->url, fallback.asset->url, image.asset->url),
+    "metrics": {
+      "tons": metrics[metric_key == "tons_collected"][0]{ current_value, unit },
+      "volunteers": metrics[metric_key == "volunteers"][0]{ current_value, unit }
+    }
   }
 `
 
@@ -256,38 +326,10 @@ export const missionsBeachCleanupsQuery = groq`
   }
 `
 
-export const eventSlugsQuery = groq`
-  *[_type == "event" && defined(slug.current)]{ "slug": slug.current }[].slug
-`
-export const missionSlugsQuery = groq`
-  *[_type == "mission" && defined(slug.current)]{ "slug": slug.current }[].slug
-`
-export const plannedMissionsQuery = groq`
-  *[_type == "mission" && status == "planned"]|order(_createdAt desc){
-    ${missionFields}
-  }
-`
-export const activeMissionsQuery = groq`
-  *[_type == "mission" && status == "active"]|order(_createdAt desc){
-    ${missionFields}
-  }
-`
-export const successMissionsQuery = groq`
-  *[_type == "mission" && status == "successful"]|order(_createdAt desc){
-    ${missionFields}
-  }
-`
+/* ------------------------------ BLOG / CAMPAIGNS / INITIATIVES / PARTNERS ------------------------------ */
+
 export const blogPostSlugsQuery = groq`
   *[_type == "blogPost" && defined(slug.current)]{ "slug": slug.current }[].slug
-`
-export const campaignSlugsQuery = groq`
-  *[_type == "campaign" && defined(slug.current)]{ "slug": slug.current }[].slug
-`
-export const initiativeSlugsQuery = groq`
-  *[_type == "initiative" && defined(slug.current)]{ "slug": slug.current }[].slug
-`
-export const partnerSlugsQuery = groq`
-  *[_type == "partner" && defined(slug.current)]{ "slug": slug.current }[].slug
 `
 
 export const blogListQuery = groq`
@@ -299,6 +341,10 @@ export const blogListQuery = groq`
   }
 `
 
+export const campaignSlugsQuery = groq`
+  *[_type == "campaign" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+
 export const campaignsListQuery = groq`
   *[_type == "campaign" && defined(slug.current)]
   | order(_updatedAt desc)[0...200]{
@@ -306,6 +352,10 @@ export const campaignsListQuery = groq`
     "slug": slug.current,
     "cover": coalesce(cover.asset->url, image.asset->url)
   }
+`
+
+export const initiativeSlugsQuery = groq`
+  *[_type == "initiative" && defined(slug.current)]{ "slug": slug.current }[].slug
 `
 
 export const initiativesListQuery = groq`
@@ -317,6 +367,10 @@ export const initiativesListQuery = groq`
   }
 `
 
+export const partnerSlugsQuery = groq`
+  *[_type == "partner" && defined(slug.current)]{ "slug": slug.current }[].slug
+`
+
 export const partnersListQuery = groq`
   *[_type == "partner" && defined(slug.current)]
   | order(title asc)[0...200]{
@@ -326,9 +380,20 @@ export const partnersListQuery = groq`
   }
 `
 
+/* ------------------------------ TEAM ------------------------------ */
+
 export const allTeamMembersQuery = groq`
   *[_type == "teamMember"] | order(name asc){
     _id, name, role, linkedin, bio,
     "image": photo.asset->url
+  }
+`
+
+/* ------------------------------ CONTENT ------------------------------ */
+
+export const pageWithContentBySlugQuery = groq`
+  *[_type == "page" && slug.current == $slug][0]{
+    _id, title, "slug": slug.current,
+    ${CONTENT}
   }
 `

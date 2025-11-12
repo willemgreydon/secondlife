@@ -1,117 +1,59 @@
 // sanity-studio/schemas/index.ts
-
-/**
- * Collections (document types)
- * Make sure these filenames exist exactly as imported.
- */
+import home from './home'
+import page from './page'
+import post from './post'
+import blogPost from './blogPost'
 import mission from './mission'
-import event from './event'          // you have "events.ts" in your tree
 import campaign from './campaign'
+import event from './event'          // <— singular!
 import partner from './partner'
 import teamMember from './teamMember'
-import post from './post'
+import initiative from './initiative'
 
-/**
- * Sections (object types used by the PageBuilder)
- * IMPORTANT: textBlock lives under ./blocks/textBlock.ts in your project.
- */
-import heroSection from './sections/heroSection'
-import textBlock from './blocks/textBlock'              // <-- FIXED PATH
-import imageBlock from './sections/imageBlock'
-import splitSection from './sections/splitSection'
-import videoSection from './sections/videoSection'
-import gallerySection from './sections/gallerySection'
-import quoteSection from './sections/quoteSection'
-import statsSection from './sections/statsSection'
+// sections / blocks
 import accordionSection from './sections/accordionSection'
-import contactSection from './sections/contactSection'
-import team from './sections/team'
-
-// “grid” and “section” variants that I can see in your tree:
 import campaignGrid from './sections/campaignGrid'
-import initiativesGrid from './sections/initiativesGrid'
-import missionsGrid from './sections/missionsGrid'
-import eventsGrid from './sections/eventsGrid'
-
 import campaignsSection from './sections/campaignsSection'
-import initiativesSection from './sections/initiativesSection'
-import missionsSection from './sections/missionsSection'
+import contactSection from './sections/contactSection'
+import eventsGrid from './sections/eventsGrid'
 import eventsSection from './sections/eventsSection'
-
+import gallerySection from './sections/gallerySection'
+import heroSection from './sections/heroSection'
+import imageBlock from './sections/imageBlock'
+import impactStats from './sections/impactStats'
 import impactStatsSection from './sections/impactStatsSection'
+import initiativesGrid from './sections/initiativesGrid'
+import initiativesSection from './sections/initiativesSection'
+import missionsGrid from './sections/missionsGrid'
+import missionsSection from './sections/missionsSection'
 import partnersSection from './sections/partnersSection'
+import quoteSection from './sections/quoteSection'
+import richTextSection from './sections/richTextSection'
+import splitSection from './sections/splitSection'
+import statsSection from './sections/statsSection'
+import team from './sections/team'
+import teamSection from './sections/teamSection'
+import textBlock from './sections/textBlock'
+import videoSection from './sections/videoSection'
 
-// Optional extras I see in your tree (safe to keep)
-// If you don’t need them yet, you can comment them out.
-// import richTextSection from './sections/richTextSection'
-// import teamSection from './sections/teamSection'
-
-/**
- * Reusable objects
- */
+// objects
 import metric from './objects/metric'
 
-/**
- * Singleton pages (your site’s fixed pages)
- * These files should exist under ./singletons/ as we created earlier.
- */
-import homePage from './singletons/homePage'
-import tidePage from './singletons/tidePage'
-import operationsPage from './singletons/operationsPage'
-import joinUsPage from './singletons/joinUsPage'
-import contactPage from './singletons/contactPage'
-import organisationPage from './singletons/organisationPage'
-
-/**
- * Export the aggregated schema array as default.
- * Sanity expects an array here.
- */
 const schemas = [
-  // Collections
-  mission,
-  event,
-  campaign,
-  partner,
-  teamMember,
-  post,
+  // documents
+  page, home, mission, campaign, event, partner, teamMember, blogPost, post, initiative,
 
-  // Sections
-  heroSection,
-  textBlock,            // <-- now resolves, coming from ./blocks/textBlock
-  imageBlock,
-  splitSection,
-  videoSection,
-  gallerySection,
-  quoteSection,
-  statsSection,
-  accordionSection,
-  contactSection,
-  team,
+  // sections / blocks
+  heroSection, splitSection, statsSection, richTextSection, textBlock, imageBlock,
+  gallerySection, videoSection, quoteSection, accordionSection, contactSection,
+  team, teamSection, impactStats, initiativesGrid, missionsGrid, eventsGrid,
+  partnersSection, campaignsSection, campaignGrid,
 
-  // Grid + Section variants
-  campaignGrid,
-  initiativesGrid,
-  missionsGrid,
-  eventsGrid,
+  // legacy alias types (damit alte Inhalte geladen werden)
+  initiativesSection, missionsSection, eventsSection, impactStatsSection,
 
-  campaignsSection,
-  initiativesSection,
-  missionsSection,
-  eventsSection,
-
-  impactStatsSection,
-  partnersSection,
-
-  // Objects
+  // objects
   metric,
-
-  // Singletons
-  homePage,
-  tidePage,
-  operationsPage,
-  joinUsPage,
-  contactPage,
-  organisationPage,
 ]
 
 export default schemas

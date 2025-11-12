@@ -1,17 +1,21 @@
 'use client'
 import Image from 'next/image'
-import { getImageUrl } from '@/lib/sanity.image'
-export default function Gallery({ images = [] as any[] }) {
-  const list = images.map((img) => getImageUrl(img)).filter(Boolean) as string[]
-  if (!list.length) return null
+
+export default function Gallery({ images = [], title }: { images?: any[]; title?: string }) {
+  if (!Array.isArray(images) || images.length === 0) return null
   return (
-    <section className="mx-auto max-w-7xl px-4 py-10">
+    <section className="mx-auto max-w-6xl px-4">
+      {title && <h2 className="mb-4 text-3xl font-semibold">{title}</h2>}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {list.map((url, i) => (
-          <div key={i} className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-100">
-            <Image src={url} alt="" fill sizes="33vw" className="object-cover" />
-          </div>
-        ))}
+        {images.map((img: any, i: number) => {
+          const url = img?.url || img?.asset?.url
+          if (!url) return null
+          return (
+            <div key={img._id || i} className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-neutral-100">
+              <Image src={url} alt="" fill sizes="33vw" className="object-cover" />
+            </div>
+          )
+        })}
       </div>
     </section>
   )

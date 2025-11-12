@@ -1,4 +1,3 @@
-// sanity-studio/schemas/singletons/contactPage.ts
 import {defineType, defineField} from 'sanity'
 import {EnvelopeIcon} from '@sanity/icons'
 

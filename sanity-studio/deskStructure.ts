@@ -1,40 +1,35 @@
+// sanity-studio/deskStructure.ts
 import type { StructureBuilder } from 'sanity/desk'
 
-export const deskStructure = (S: StructureBuilder) =>
+const singleton = (S: StructureBuilder, title: string, id: string) =>
+  S.listItem()
+    .title(title)
+    .id(id)
+    .child(
+      S.editor()
+        .id(`editor-${id}`)
+        .schemaType('page')
+        .documentId(id)
+    )
+
+const deskStructure = (S: StructureBuilder) =>
   S.list()
     .title('Content')
     .items([
-      S.listItem()
-        .title('Home')
-        .id('homePage')
-        .child(S.editor().id('homePage').schemaType('homePage').documentId('home')),
-
-      S.listItem()
-        .title('TIDE')
-        .id('tidePage')
-        .child(S.editor().id('tidePage').schemaType('tidePage').documentId('tide')),
-
-      S.listItem()
-        .title('Operations')
-        .id('operationsPage')
-        .child(S.editor().id('operationsPage').schemaType('operationsPage').documentId('operations')),
-
-      S.listItem()
-        .title('Join Us')
-        .id('joinUsPage')
-        .child(S.editor().id('joinUsPage').schemaType('joinUsPage').documentId('join-us')),
-
-      S.listItem()
-        .title('Contact')
-        .id('contactPage')
-        .child(S.editor().id('contactPage').schemaType('contactPage').documentId('contact')),
-
-      S.listItem()
-        .title('Organisation')
-        .id('organisationPage')
-        .child(S.editor().id('organisationPage').schemaType('organisationPage').documentId('organisation')),
+      singleton(S, 'Home', 'home'),
+      singleton(S, 'TIDE', 'tide'),
+      singleton(S, 'Operations', 'operations'),
+      singleton(S, 'Join Us', 'join-us'),
+      singleton(S, 'Contact', 'contact'),
+      singleton(S, 'Organisation', 'organisation'),
 
       S.divider(),
+
+      // Hilfsmittel: alle Pages sichtbar, um Duplikate zu finden/löschen
+      S.listItem()
+        .title('Pages (all)')
+        .schemaType('page')
+        .child(S.documentTypeList('page').title('Pages (all)')),
 
       S.listItem().title('Missions').schemaType('mission').child(S.documentTypeList('mission').title('Missions')),
       S.listItem().title('Events').schemaType('event').child(S.documentTypeList('event').title('Events')),

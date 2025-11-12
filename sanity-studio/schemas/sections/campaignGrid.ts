@@ -1,4 +1,4 @@
-import { defineType, defineField } from 'sanity'
+import {defineType, defineField} from 'sanity'
 
 export default defineType({
   name: 'campaignGrid',
@@ -6,11 +6,11 @@ export default defineType({
   type: 'object',
   fields: [
     defineField({ name: 'title', title: 'Title', type: 'string' }),
+    defineField({ name: 'limit', title: 'Limit', type: 'number' }),
     defineField({
-      name: 'onlyStatus',
-      title: 'Filter by status (optional)',
-      type: 'string',
-      options: { list: ['active', 'planned', 'archived'] },
+      name: 'campaigns', title: 'Campaigns (optional manual pick)',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'campaign' }] }],
     }),
   ],
 })

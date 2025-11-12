@@ -2,27 +2,18 @@ import {defineType, defineField} from 'sanity'
 
 export default defineType({
   name: 'missionsSection',
-  title: 'Missions Grid',
+  title: 'Missions Grid (legacy name)',
   type: 'object',
   fields: [
-    defineField({name: 'title', type: 'string'}),
-    defineField({name: 'limit', type: 'number'}),
+    defineField({ name: 'title', title: 'Title', type: 'string' }),
+    defineField({ name: 'status', title: 'Filter by Status', type: 'string',
+      options: { list: ['planned','active','successful','all'] }}),
+    defineField({ name: 'limit', title: 'Limit', type: 'number' }),
+    defineField({ name: 'showMetrics', title: 'Show metrics on cards', type: 'boolean', initialValue: true }),
     defineField({
-      name: 'status',
-      type: 'string',
-      options: {list: [
-        {title: 'Planned', value: 'planned'},
-        {title: 'Active', value: 'active'},
-        {title: 'Successful', value: 'successful'},
-      ]},
-    }),
-    defineField({
-      name: 'missions',
+      name: 'missions', title: 'Missions (optional manual pick)',
       type: 'array',
-      of: [{type: 'reference', to: [{type: 'mission'}]}],
-      description: 'Optional: wähle konkrete Missions. Leer = per Query laden.',
+      of: [{ type: 'reference', to: [{ type: 'mission' }] }],
     }),
-    defineField({name: 'showMetrics', type: 'boolean', initialValue: true}),
   ],
-  preview: {select: {title: 'title', subtitle: 'status'}},
 })

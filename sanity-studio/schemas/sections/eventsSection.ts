@@ -2,16 +2,15 @@ import {defineType, defineField} from 'sanity'
 
 export default defineType({
   name: 'eventsSection',
-  title: 'Events Grid',
+  title: 'Events Grid (legacy name)',
   type: 'object',
   fields: [
-    defineField({name: 'title', type: 'string'}),
-    defineField({name: 'limit', type: 'number'}),
+    defineField({ name: 'title', title: 'Title', type: 'string' }),
+    defineField({ name: 'onlyUpcoming', title: 'Only upcoming', type: 'boolean', initialValue: true }),
     defineField({
-      name: 'events',
+      name: 'events', title: 'Events (optional manual pick)',
       type: 'array',
-      of: [{type: 'reference', to: [{type: 'event'}]}],
+      of: [{ type: 'reference', to: [{ type: 'event' }] }],
     }),
   ],
-  preview: {select: {title: 'title'}},
 })

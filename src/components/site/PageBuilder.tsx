@@ -26,10 +26,7 @@ type Metric = {
   as_of_date?: string
   description?: string
 }
-
-type PageBuilderContext = {
-  metrics?: Metric[]
-}
+type PageBuilderContext = { metrics?: Metric[] }
 
 const COMPONENT_MAP: Record<string, any> = {
   hero: Hero,
@@ -51,33 +48,29 @@ const COMPONENT_MAP: Record<string, any> = {
   partners: Partners,
 }
 
-// WICHTIG: Aliase für Studio-Section-Typen → interne Komponenten-Namen
+// Aliase von Studio-Typen → interne Komponentennamen
 const TYPE_ALIASES: Record<string, string> = {
   heroSection: 'hero',
   splitSection: 'split',
   statsSection: 'stats',
   richTextSection: 'textBlock',
+  textBlock: 'textBlock',
   videoSection: 'video',
   gallerySection: 'gallery',
   quoteSection: 'quote',
   accordionSection: 'accordion',
   contactSection: 'contact',
   imageBlock: 'imageBlock',
-
-  // Teams
   team: 'teamGrid',
   teamSection: 'teamGrid',
-
-  // Metrics / Impact
   metrics: 'impactStats',
   metricsSection: 'impactStats',
   impactStatsSection: 'impactStats',
-
-  // Grids aus der Home-Seite
   campaignsSection: 'campaignGrid',
   missionsSection: 'missionsGrid',
   initiativesSection: 'initiativesGrid',
   eventsSection: 'eventsGrid',
+  partnersSection: 'partners',
 }
 
 function UnknownSection({ section }: { section: any }) {
@@ -105,67 +98,67 @@ export default function PageBuilder({
 
   return (
     <div className="bg-white text-gray-900 transition-colors dark:bg-black dark:text-gray-100">
-      <div className="space-y-8 md:space-y-12 lg:space-y-16">
+      <div className="space-y-10 md:space-y-14 lg:space-y-16">
         {sections.map((raw, idx) => {
           const normalizedType = TYPE_ALIASES[raw?._type] ?? raw?._type
           let section: any = { ...raw, _type: normalizedType }
 
-          // Normalize hero CTA naming
           if (normalizedType === 'hero') {
             section = {
               ...section,
               ctaText: section.ctaText ?? section.ctaLabel ?? undefined,
+              image: section.image ?? section.bgImage ?? undefined,
             }
           }
 
-          // ImpactStats: fallback auf Context-Metriken, wenn in Section nichts gepflegt
           if (normalizedType === 'impactStats') {
-            const hasOwnMetrics =
-              Array.isArray(section.metrics) && section.metrics.length > 0
-            section = {
-              ...section,
-              metrics: hasOwnMetrics ? section.metrics : (context?.metrics ?? []),
-            }
+            const hasOwn = Array.isArray(section.metrics) && section.metrics.length > 0
+            section = { ...section, metrics: hasOwn ? section.metrics : context?.metrics ?? [] }
           }
 
-          // MissionsGrid: KEIN leeres Array injizieren – nur setzen, wenn vorhanden
           if (normalizedType === 'missionsGrid') {
             const limit = Number.isFinite(section?.limit) ? section.limit : 100
-            const base = {
-              ...section,
-              limit,
-              showMetrics: section?.showMetrics !== false, // default: true
-            }
-            if (Array.isArray(section?.missions)) {
-              section = { ...base, missions: section.missions.slice(0, limit) }
-            } else {
-              section = base // kein missions: []
-            }
+            const base = { ...section, limit, showMetrics: section?.showMetrics !== false }
+            section = Array.isArray(section?.missions)
+              ? { ...base, missions: section.missions.slice(0, limit) }
+              : base
           }
 
-          // InitiativesGrid: analog defensiv
           if (normalizedType === 'initiativesGrid') {
             const limit = Number.isFinite(section?.limit) ? section.limit : 100
             const base = { ...section, limit }
-            if (Array.isArray(section?.initiatives)) {
-              section = { ...base, initiatives: section.initiatives.slice(0, limit) }
-            } else {
-              section = base // kein initiatives: []
-            }
+            section = Array.isArray(section?.initiatives)
+              ? { ...base, initiatives: section.initiatives.slice(0, limit) }
+              : base
           }
 
-          // EventsGrid: analog defensiv (kein leeres events [])
           if (normalizedType === 'eventsGrid') {
             const limit = Number.isFinite(section?.limit) ? section.limit : undefined
-            if (limit && Array.isArray(section?.events)) {
-              section = { ...section, events: section.events.slice(0, limit) }
+            section =
+              limit && Array.isArray(section?.events)
+                ? { ...section, events: section.events.slice(0, limit) }
+                : section
+          }
+
+          if (normalizedType === 'split') {
+            const isNew = section?.left || section?.right
+            const isLegacy = section?.main || section?.side || section?.images
+            if (isNew) {
+              section = { ...section, reversed: typeof section.reversed === 'boolean' ? section.reversed : !!section.reverse }
+            } else if (isLegacy) {
+              const firstImage = Array.isArray(section.images) ? section.images[0] : undefined
+              section = {
+                ...section,
+                layout: section.layout ?? '50-50',
+                reversed: !!section.reverse,
+                left: { kind: 'text', text: Array.isArray(section.main) ? section.main : [], image: undefined },
+                right: { kind: firstImage ? 'image' : 'text', text: Array.isArray(section.side) ? section.side : [], image: firstImage },
+              }
             }
-            // sonst nichts setzen
           }
 
           const key = `${normalizedType}-${section?._key ?? idx}`
           const Cmp = COMPONENT_MAP[normalizedType]
-
           if (!Cmp) return <UnknownSection key={key} section={raw} />
           return <Cmp key={key} {...section} />
         })}

@@ -1,44 +1,19 @@
-// src/app/events/page.tsx
 import PageBuilder from '@/components/site/PageBuilder'
 import { sanityClient } from '@/lib/sanity.client'
-import { eventsListQuery } from '@/lib/sanity.queries'
+import { notFound } from 'next/navigation'
+import { groq } from 'next-sanity'
+
+const pageQuery = groq`
+  *[_type == "page" && slug.current == "events"][0]{
+    _id, title, "content": coalesce(content, contentSections, sections, [])
+  }
+`
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default async function EventsIndexPage() {
-  const events = await sanityClient.fetch(eventsListQuery).catch(() => [])
-
-  const linkBlocks = events.map((e: any) => ({
-    _type: 'block',
-    children: [
-      {
-        _type: 'span',
-        text: `${e.date ? new Date(e.date).toLocaleDateString('en-GB') + ' — ' : ''}${e.title || 'Untitled event'}`,
-      },
-      { _type: 'span', text: '  ' },
-      { _type: 'link', href: `/events/${e.slug}`, text: 'Details →' },
-    ],
-  }))
-
-  const content = [
-    {
-      _type: 'eventsGrid',
-      _key: 'events-index-grid',
-      title: 'Events',
-      events,
-    },
-    {
-      _type: 'textBlock',
-      _key: 'events-index-links',
-      title: 'All events (links)',
-      body: linkBlocks,
-    },
-  ]
-
-  return (
-    <main className="min-h-screen">
-      <PageBuilder content={content} />
-    </main>
-  )
+export default async function EventsIndex() {
+  const page = await sanityClient.fetch(pageQuery).catch(() => null)
+  if (!page) notFound()
+  return <PageBuilder content={page.content || []} />
 }

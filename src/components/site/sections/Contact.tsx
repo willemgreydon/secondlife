@@ -1,13 +1,35 @@
 'use client'
-export default function Contact({ headline, address, email, phone }: { headline?:string; address?:string; email?:string; phone?:string }) {
-  if (!headline && !address && !email && !phone) return null
+
+export default function Contact({
+  title,
+  email,
+  phone,
+  address,
+}: {
+  title?: string
+  email?: string
+  phone?: string
+  address?: string
+}) {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-10">
-      {headline && <h2 className="mb-4 text-2xl font-semibold">{headline}</h2>}
-      <div className="space-y-1 text-sm opacity-90">
-        {address && <div>📍 {address}</div>}
-        {email && <div>✉️ <a className="underline" href={`mailto:${email}`}>{email}</a></div>}
-        {phone && <div>☎️ <a className="underline" href={`tel:${phone}`}>{phone}</a></div>}
+    <section className="mx-auto max-w-3xl px-4">
+      {title && <h2 className="mb-4 text-3xl font-semibold">{title}</h2>}
+      <div className="rounded-2xl border p-6">
+        {email && (
+          <p>
+            <span className="font-semibold">Email:</span> <a className="hover:underline" href={`mailto:${email}`}>{email}</a>
+          </p>
+        )}
+        {phone && (
+          <p className="mt-2">
+            <span className="font-semibold">Phone:</span> <a className="hover:underline" href={`tel:${phone}`}>{phone}</a>
+          </p>
+        )}
+        {address && (
+          <p className="mt-2">
+            <span className="font-semibold">Address:</span> {address}
+          </p>
+        )}
       </div>
     </section>
   )

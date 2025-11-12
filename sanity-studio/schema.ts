@@ -13,10 +13,11 @@ import event from './schemas/event'
 import blogPost from './schemas/blogPost'
 import post from './schemas/post'
 
-// -------- objects / sections
+// -------- sections / objects
 import heroSection from './schemas/sections/heroSection'
 import splitSection from './schemas/sections/splitSection'
 import richTextSection from './schemas/sections/richTextSection'
+import textBlock from './schemas/sections/textBlock'            // <-- NEU: behebt "Unknown type: textBlock"
 import gallerySection from './schemas/sections/gallerySection'
 import videoSection from './schemas/sections/videoSection'
 import quoteSection from './schemas/sections/quoteSection'
@@ -24,53 +25,45 @@ import statsSection from './schemas/sections/statsSection'
 import accordionSection from './schemas/sections/accordionSection'
 import contactSection from './schemas/sections/contactSection'
 
-// Sections we just added/aliased
 import team from './schemas/sections/team'
 import teamSection from './schemas/sections/teamSection'
 import eventsGrid from './schemas/sections/eventsGrid'
 import partnersSection from './schemas/sections/partners'
 import impactStats from './schemas/sections/impactStats'
 import campaignGrid from './schemas/sections/campaignGrid'
+import campaignsSection from './schemas/sections/campaignsSection' // <-- NEU: behebt "Unknown type: campaignsSection"
 import initiativesGrid from './schemas/sections/initiativesGrid'
 
-// Objects used by sections
-import metric from './schemas/objects/metric' // <- Pfad an deinen tatsächlichen Ort anpassen
+// -------- objects
+import metric from './schemas/objects/metric'
 
-export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [
-    // documents
-    home,
-    initiative,
-    partner,
-    page,
-    teamMember,
-    mission,
-    campaign,
-    event,
-    blogPost,
-    post,
+const types: SchemaTypeDefinition[] = [
+  // documents
+  home, initiative, partner, page, teamMember, mission, campaign, event, blogPost, post,
 
-    // sections / objects
-    heroSection,
-    splitSection,
-    richTextSection,
-    gallerySection,
-    videoSection,
-    quoteSection,
-    statsSection,
-    accordionSection,
-    contactSection,
+  // sections / objects
+  heroSection,
+  splitSection,
+  richTextSection,
+  textBlock,          // <- jetzt registriert
+  gallerySection,
+  videoSection,
+  quoteSection,
+  statsSection,
+  accordionSection,
+  contactSection,
 
-    // newly registered sections
-    team,
-    teamSection,
-    eventsGrid,
-    partnersSection,
-    impactStats,
-    campaignGrid,
-    initiativesGrid,
+  team,
+  teamSection,
+  eventsGrid,
+  partnersSection,
+  impactStats,
+  campaignGrid,
+  campaignsSection,   // <- jetzt registriert
+  initiativesGrid,
 
-    // objects
-    metric,
-  ],
-}
+  // objects
+  metric,
+]
+
+export default types

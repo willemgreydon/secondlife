@@ -1,17 +1,27 @@
 'use client'
-export default function Accordion({ items = [], title }: { items?: {title:string;content:string}[]; title?: string }) {
-  if (!items.length) return null
+import { useState } from 'react'
+
+export default function Accordion({ title, items = [] }: { title?: string; items?: { title: string; content: string }[] }) {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-10">
-      {title && <h2 className="mb-6 text-2xl font-semibold">{title}</h2>}
-      <div className="divide-y">
+    <section className="mx-auto max-w-3xl px-4">
+      {title && <h2 className="mb-4 text-3xl font-semibold">{title}</h2>}
+      <div className="divide-y rounded-2xl border">
         {items.map((it, i) => (
-          <details key={i} className="group py-4">
-            <summary className="cursor-pointer list-none font-medium">{it.title}</summary>
-            <div className="pt-2 text-sm opacity-90 whitespace-pre-wrap">{it.content}</div>
-          </details>
+          <Row key={i} {...it} />
         ))}
       </div>
     </section>
+  )
+}
+
+function Row({ title, content }: { title: string; content: string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div>
+      <button className="w-full px-4 py-3 text-left font-medium" onClick={() => setOpen((v) => !v)}>
+        {title}
+      </button>
+      {open && <div className="px-4 pb-4 text-sm opacity-80">{content}</div>}
+    </div>
   )
 }

@@ -1,69 +1,49 @@
 'use client'
-import React from 'react'
 import Image from 'next/image'
-import { PortableText } from '@portabletext/react'
+import Portable from '@/components/cms/Portable'
 import { getImageUrl } from '@/lib/sanity.image'
 
 type Side =
-  | { kind: 'image'; image?: any; alt?: string }
-  | { kind: 'text'; text?: any[] }
+  | { kind: 'text'; text?: any[]; image?: any; alt?: string }
+  | { kind: 'image'; image?: any; alt?: string; text?: any[] }
 
 export default function Split({
   title,
-  left,
-  right,
   layout = '50-50',
   reversed = false,
+  left,
+  right,
 }: {
   title?: string
+  layout?: '50-50' | '40-60' | '60-40'
+  reversed?: boolean
   left?: Side
   right?: Side
-  layout?: '50-50' | '60-40' | '40-60'
-  reversed?: boolean
 }) {
-  const [a, b] = reversed ? [right, left] : [left, right]
+  const cols =
+    layout === '40-60' ? 'md:grid-cols-[2fr_3fr]' : layout === '60-40' ? 'md:grid-cols-[3fr_2fr]' : 'md:grid-cols-2'
 
-  const render = (s?: Side) => {
+  const L = reversed ? right : left
+  const R = reversed ? left : right
+
+  const renderSide = (s?: Side) => {
     if (!s) return null
     if (s.kind === 'image') {
       const url = getImageUrl((s as any).image)
       if (!url) return null
       return (
         <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-neutral-100">
-          <Image
-            src={url}
-            alt={(s as any).alt || ''}
-            fill
-            sizes="(min-width:1024px) 50vw, 100vw"
-            className="object-cover"
-          />
+          <Image src={url} alt={(s as any).alt || ''} fill sizes="50vw" className="object-cover" />
         </div>
       )
     }
-    return (s as any).text?.length ? <PortableText value={(s as any).text} /> : null
+    return <Portable value={(s as any).text ?? []} />
   }
 
-  const grid =
-    layout === '60-40'
-      ? 'lg:grid-cols-[3fr_2fr]'
-      : layout === '40-60'
-      ? 'lg:grid-cols-[2fr_3fr]'
-      : 'lg:grid-cols-2'
-
-  const sides: Array<{ key: string; node: React.ReactNode }> = [
-    { key: 'left', node: render(a) },
-    { key: 'right', node: render(b) },
-  ]
-
   return (
-    <section className="mx-auto max-w-7xl px-4 py-10">
-      {title && <h2 className="mb-6 text-2xl font-semibold">{title}</h2>}
-
-      <div className={`grid gap-6 ${grid}`}>
-        {sides.map(({ key, node }) => (
-          <div key={key}>{node}</div>
-        ))}
-      </div>
+    <section className="mx-auto max-w-6xl px-4">
+      {title && <h2 className="mb-6 text-3xl font-semibold">{title}</h2>}
+      <div className={`grid gap-6 ${cols}`}>{[renderSide(L), renderSide(R)].map((c, i) => c && <div key={i}>{c}</div>)}</div>
     </section>
   )
 }

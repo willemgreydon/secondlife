@@ -1,60 +1,74 @@
-import { defineType, defineField } from 'sanity'
-import { Megaphone } from 'lucide-react'
+// sanity-studio/schemas/campaign.ts
+import {defineType, defineField} from 'sanity'
+import {DocumentIcon} from '@sanity/icons'
 
 export default defineType({
   name: 'campaign',
   title: 'Campaign',
   type: 'document',
-  icon: Megaphone,
+  icon: DocumentIcon,
   fields: [
-    defineField({ name: 'title', type: 'string', validation: r => r.required() }),
+    defineField({
+      name: 'title',
+      type: 'string',
+      validation: (r) => r.required(),
+    }),
     defineField({
       name: 'slug',
       type: 'slug',
-      options: { source: 'title' },
-      validation: r => r.required(),
+      options: {source: 'title', maxLength: 96},
+      validation: (r) => r.required(),
     }),
-    defineField({ name: 'excerpt', type: 'text', rows: 3 }),
+    defineField({
+      name: 'excerpt',
+      title: 'Short description',
+      type: 'text',
+      rows: 3,
+    }),
     defineField({
       name: 'cover',
+      title: 'Cover Image',
       type: 'image',
-      options: { hotspot: true },
-      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
-    }),
-    defineField({
-      name: 'startDate',
-      type: 'date',
-    }),
-    defineField({
-      name: 'endDate',
-      type: 'date',
+      options: {hotspot: true},
+      fields: [{name: 'alt', type: 'string', title: 'Alt text'}],
     }),
 
+    // Optional: explicit partner links for this campaign (singular type 'partner')
     defineField({
-      name: 'content',
-      title: 'Content (Sections)',
+      name: 'partners',
+      title: 'Partners (references)',
       type: 'array',
-      options: { sortable: true },
+      of: [{type: 'reference', to: [{type: 'partner'}]}],
+    }),
+
+    // Page-builder style content
+    defineField({
+      name: 'contentSections',
+      title: 'Content Sections',
+      type: 'array',
       of: [
-        { type: 'heroSection' },
-        { type: 'splitSection' },
-        { type: 'statsSection' },
-        { type: 'textBlock' },
-        { type: 'videoSection' },
-        { type: 'imageBlock' },
-        { type: 'gallerySection' },
-        { type: 'quoteSection' },
-        { type: 'accordionSection' },
-        { type: 'contactSection' },
-        { type: 'partners' },
-        { type: 'eventsGrid' },
+        {type: 'heroSection'},
+        {type: 'textBlock'},
+        {type: 'imageBlock'},
+        {type: 'splitSection'},
+        {type: 'videoSection'},
+        {type: 'gallerySection'},
+        {type: 'quoteSection'},
+        {type: 'statsSection'},
+        {type: 'accordionSection'},
+        {type: 'contactSection'},
+
+        // Grids/Lists you’re using elsewhere
+        {type: 'missionsSection'},
+        {type: 'eventsSection'},
+        {type: 'impactStatsSection'},
+
+        // ✅ use the object section 'partnersSection' – NOT a non-existent 'partners'
+        {type: 'partnersSection'},
       ],
     }),
   ],
   preview: {
-    select: { title: 'title', media: 'cover', subtitle: 'startDate' },
-    prepare({ title, media, subtitle }) {
-      return { title, media, subtitle }
-    },
+    select: {title: 'title', media: 'cover'},
   },
 })

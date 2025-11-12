@@ -1,41 +1,19 @@
 import PageBuilder from '@/components/site/PageBuilder'
+import { notFound } from 'next/navigation'
 import { sanityClient } from '@/lib/sanity.client'
-import { campaignsListQuery } from '@/lib/sanity.queries'
+import { groq } from 'next-sanity'
+
+const pageQuery = groq`
+  *[_type == "page" && slug.current == "campaigns"][0]{
+    _id, title, "content": coalesce(content, contentSections, sections, [])
+  }
+`
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default async function CampaignsIndexPage() {
-  const campaigns = await sanityClient.fetch(campaignsListQuery).catch(() => [])
-
-  const linkBlocks = campaigns.map((c: any) => ({
-    _type: 'block',
-    children: [
-      { _type: 'span', text: c.title || 'Untitled campaign' },
-      { _type: 'span', text: '  ' },
-      { _type: 'link', href: `/campaigns/${c.slug}`, text: 'Explore →' },
-    ],
-  }))
-
-  const content = [
-    {
-      _type: 'campaignGrid',
-      _key: 'campaigns-index-grid',
-      title: 'Campaigns',
-      items: campaigns,
-      campaigns,
-    },
-    {
-      _type: 'textBlock',
-      _key: 'campaigns-index-links',
-      title: 'All campaigns (links)',
-      body: linkBlocks,
-    },
-  ]
-
-  return (
-    <main className="min-h-screen">
-      <PageBuilder content={content} />
-    </main>
-  )
+export default async function CampaignsIndex() {
+  const page = await sanityClient.fetch(pageQuery).catch(() => null)
+  if (!page) notFound()
+  return <PageBuilder content={page.content || []} />
 }

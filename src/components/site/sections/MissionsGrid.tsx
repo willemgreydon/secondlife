@@ -1,39 +1,84 @@
-'use client'
-import Image from 'next/image'
+// src/components/site/sections/MissionsGrid.tsx
 import Link from 'next/link'
-import { getImageUrl } from '@/lib/sanity.image'
-type Mission = { _id:string; title:string; slug?:string; status?:string; coverUrl?:string|null; image?:any; wasteCollectedKg?:number; volunteers?:number }
-export default function MissionsGrid({ title, missions=[], showMetrics=true, limit }: { title?:string; missions:Mission[]; showMetrics?:boolean; limit?:number }) {
-  const max = Number.isFinite(limit) ? (limit as number) : 100
-  const list = missions.slice(0, max)
-  if (!list.length) return null
+import Image from 'next/image'
+
+type MissionCard = {
+  _id: string
+  title: string
+  slug: string
+  status: 'planned' | 'active' | 'successful' | 'archived'
+  coverUrl?: string
+  wasteCollectedKg?: number
+  volunteers?: number
+}
+
+export default function MissionsGrid({
+  title,
+  missions = [],
+  status = 'all',
+  showMetrics = true,
+}: {
+  title?: string
+  missions?: MissionCard[]
+  status?: 'all' | 'planned' | 'active' | 'successful' | 'archived'
+  showMetrics?: boolean
+}) {
+  const filtered =
+    status === 'all' ? missions : missions.filter((m) => m.status === status)
+
+  if (!filtered.length) return null
+
   return (
-    <section className="mx-auto max-w-7xl px-4 py-10">
-      {title && <h2 className="mb-6 text-2xl font-semibold">{title}</h2>}
-      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {list.map(m => {
-          const url = m.coverUrl ?? getImageUrl(m.image)
-          return (
-            <li key={m._id} className="group overflow-hidden rounded-2xl border bg-white shadow-sm">
-              <Link href={`/missions/${m.slug ?? m._id}`} className="block">
-                <div className="relative aspect-[16/10] bg-neutral-100">{url && <Image src={url} alt={m.title} fill sizes="33vw" className="object-cover" />}</div>
-                <div className="p-4">
-                  <div className="mb-2 flex items-center justify-between">
-                    <h3 className="line-clamp-2 text-lg font-medium">{m.title}</h3>
-                    {m.status && <span className="ml-3 rounded-full border px-2.5 py-0.5 text-xs capitalize">{m.status}</span>}
-                  </div>
-                  {showMetrics && (
-                    <div className="mt-3 flex gap-3 text-sm">
-                      <span className="rounded-md bg-neutral-100 px-2 py-1">♻️ {Math.max(0, m.wasteCollectedKg ?? 0).toLocaleString()} kg</span>
-                      <span className="rounded-md bg-neutral-100 px-2 py-1">👥 {Math.max(0, m.volunteers ?? 0).toLocaleString()}</span>
+    <section className="mx-auto max-w-6xl px-4">
+      {title ? (
+        <h2 className="mb-6 text-2xl font-semibold tracking-tight">{title}</h2>
+      ) : null}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {filtered.map((m) => (
+          <Link
+            key={m._id}
+            href={`/missions/${m.slug}`}
+            className="group rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+          >
+            <div className="relative aspect-[16/10] overflow-hidden rounded-t-2xl">
+              {m.coverUrl ? (
+                <Image
+                  src={m.coverUrl}
+                  alt={m.title}
+                  fill
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                />
+              ) : (
+                <div className="h-full w-full bg-neutral-100 dark:bg-neutral-800" />
+              )}
+            </div>
+            <div className="flex flex-col gap-2 p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="line-clamp-1 text-lg font-medium">{m.title}</h3>
+                <span className="rounded-full border border-neutral-300 px-2 py-0.5 text-xs uppercase tracking-wide text-neutral-600 dark:border-neutral-700 dark:text-neutral-300">
+                  {m.status}
+                </span>
+              </div>
+
+              {showMetrics ? (
+                <div className="mt-1 grid grid-cols-2 gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+                  <div className="rounded-lg bg-neutral-50 p-2 dark:bg-neutral-800/60">
+                    <div className="text-xs text-neutral-500 dark:text-neutral-400">Waste collected</div>
+                    <div className="font-semibold">
+                      {Math.round(m.wasteCollectedKg ?? 0)} kg
                     </div>
-                  )}
+                  </div>
+                  <div className="rounded-lg bg-neutral-50 p-2 dark:bg-neutral-800/60">
+                    <div className="text-xs text-neutral-500 dark:text-neutral-400">Volunteers</div>
+                    <div className="font-semibold">{m.volunteers ?? 0}</div>
+                  </div>
                 </div>
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
+              ) : null}
+            </div>
+          </Link>
+        ))}
+      </div>
     </section>
   )
 }
