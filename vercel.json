@@ -1,14 +1,14 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "host",
           "value": "studio.secondlife.clausops.com"
         }
       ],
-      "destination": "/studio/$1"
+      "destination": "/studio/:path*"
     }
   ]
 }
