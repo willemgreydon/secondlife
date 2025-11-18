@@ -13,9 +13,8 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_STUDIO_DATASET || 'production'
 
 if (!projectId) {
   throw new Error(
-    'Missing SANITY_STUDIO_PROJECT_ID. Create sanity-studio/.env.local with:\n' +
-    'SANITY_STUDIO_PROJECT_ID=igkzac8h\nSANITY_STUDIO_DATASET=production'
-  )
+    'Missing NEXT_PUBLIC_SANITY_PROJECT_ID in sanity-studio/.env.local'
+  );
 }
 
 export default defineConfig({
