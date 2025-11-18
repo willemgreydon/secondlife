@@ -8,8 +8,8 @@ import schemas from './schemas'  // default export (Array von Types)
 import { pageFixedSlugTemplate } from "./templates/pageFixedSlug"
 
 // Studio-ENV (separat vom Next-Frontend)
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID
-const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
+const projectId = process.env.NEXT_PUBLIC_SANITY_STUDIO_PROJECT_ID
+const dataset = process.env.NEXT_PUBLIC_SANITY_STUDIO_DATASET || 'production'
 
 if (!projectId) {
   throw new Error(
@@ -21,8 +21,8 @@ if (!projectId) {
 export default defineConfig({
   name: 'default',
   title: 'Second Life e.V.',
-  projectId: process.env.SANITY_STUDIO_PROJECT_ID!,
-  dataset: process.env.SANITY_STUDIO_DATASET!,
+  projectId: process.env.NEXT_PUBLIC_SANITY_STUDIO_PROJECT_ID!,
+  dataset: process.env.NEXT_PUBLIC_SANITY_STUDIO_DATASET!,
   apiVersion: '2024-08-01',
   useCdn: false,
 
