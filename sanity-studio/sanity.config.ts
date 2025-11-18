@@ -20,6 +20,7 @@ if (!projectId || !dataset) {
 }
 
 export default defineConfig({
+  basePath: '/studio',
   name: 'default',
   title: 'Second Life e.V.',
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
