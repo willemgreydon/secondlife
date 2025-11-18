@@ -8,21 +8,23 @@ import schemas from './schemas'  // default export (Array von Types)
 import { pageFixedSlugTemplate } from "./templates/pageFixedSlug"
 
 // Studio-ENV (separat vom Next-Frontend)
-const projectId = process.env.NEXT_PUBLIC_SANITY_STUDIO_PROJECT_ID
-const dataset = process.env.NEXT_PUBLIC_SANITY_STUDIO_DATASET || 'production'
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 
-if (!projectId) {
+if (!projectId || !dataset) {
   throw new Error(
-    'Missing NEXT_PUBLIC_SANITY_PROJECT_ID in sanity-studio/.env.local'
+    "Missing Sanity environment variables. Please define:\n" +
+    "NEXT_PUBLIC_SANITY_PROJECT_ID\n" +
+    "NEXT_PUBLIC_SANITY_DATASET\n"
   );
 }
 
 export default defineConfig({
   name: 'default',
   title: 'Second Life e.V.',
-  projectId: process.env.NEXT_PUBLIC_SANITY_STUDIO_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_STUDIO_DATASET!,
-  apiVersion: '2024-08-01',
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
   useCdn: false,
 
   schema: { types: schemas },
