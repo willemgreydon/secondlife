@@ -1,9 +1,11 @@
 // sanity-studio/sanity.config.ts
-import {defineConfig} from 'sanity'
-import {deskTool} from 'sanity/desk'
-import {visionTool} from '@sanity/vision'
+import { defineConfig } from 'sanity'
+import type { Template } from 'sanity'
+import { deskTool } from 'sanity/desk'
+import { visionTool } from '@sanity/vision'
 import deskStructure from './deskStructure'
-import schemas from './schemas'  // <— default export (Array von Types)
+import schemas from './schemas'  // default export (Array von Types)
+import { pageFixedSlugTemplate } from "./templates/pageFixedSlug"
 
 // Studio-ENV (separat vom Next-Frontend)
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID
@@ -26,12 +28,15 @@ export default defineConfig({
 
   schema: { types: schemas },
 
-  plugins: [
-    deskTool({ structure: deskStructure }),
-    visionTool(),
+  templates: (prev: Template[]) => [
+    pageFixedSlugTemplate,
+    ...prev,
   ],
 
-  // Nichts an den Aktionen blocken – Singletons steuerst du über deskStructure
+  plugins: [
+    deskTool({ structure: (S) => deskStructure(S) }),
+  ],
+
   document: {
     newDocumentOptions: (prev) => prev,
     actions: (prev) => prev,

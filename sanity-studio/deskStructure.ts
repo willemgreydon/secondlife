@@ -1,6 +1,7 @@
 // sanity-studio/deskStructure.ts
-import type { StructureBuilder } from 'sanity/desk'
+import type { StructureBuilder, DeskToolContextValue } from "sanity/desk";
 
+// Mini-Helfer: Singleton-Editor
 const singleton = (S: StructureBuilder, title: string, id: string) =>
   S.listItem()
     .title(title)
@@ -8,35 +9,61 @@ const singleton = (S: StructureBuilder, title: string, id: string) =>
     .child(
       S.editor()
         .id(`editor-${id}`)
-        .schemaType('page')
+        .schemaType("page")
         .documentId(id)
-    )
+    );
 
-const deskStructure = (S: StructureBuilder) =>
-  S.list()
-    .title('Content')
+// EINZIGER (!) deskStructure Export
+export default function deskStructure(
+  S: StructureBuilder
+) {
+  return S.list()
+    .title("Content")
     .items([
-      singleton(S, 'Home', 'home'),
-      singleton(S, 'TIDE', 'tide'),
-      singleton(S, 'Operations', 'operations'),
-      singleton(S, 'Join Us', 'join-us'),
-      singleton(S, 'Contact', 'contact'),
-      singleton(S, 'Organisation', 'organisation'),
+      singleton(S, "Home", "home"),
+      singleton(S, "TIDE", "tide"),
+      singleton(S, "Operations", "operations"),
+      singleton(S, "Join Us", "join-us"),
+      singleton(S, "Contact", "contact"),
+      singleton(S, "Organisation", "organisation"),
 
       S.divider(),
 
-      // Hilfsmittel: alle Pages sichtbar, um Duplikate zu finden/löschen
+      // Page Overview
       S.listItem()
-        .title('Pages (all)')
-        .schemaType('page')
-        .child(S.documentTypeList('page').title('Pages (all)')),
+        .title("Pages (all)")
+        .schemaType("page")
+        .child(S.documentTypeList("page").title("Pages (all)")),
 
-      S.listItem().title('Missions').schemaType('mission').child(S.documentTypeList('mission').title('Missions')),
-      S.listItem().title('Events').schemaType('event').child(S.documentTypeList('event').title('Events')),
-      S.listItem().title('Campaigns').schemaType('campaign').child(S.documentTypeList('campaign').title('Campaigns')),
-      S.listItem().title('Partners').schemaType('partner').child(S.documentTypeList('partner').title('Partners')),
-      S.listItem().title('Team').schemaType('teamMember').child(S.documentTypeList('teamMember').title('Team')),
-      S.listItem().title('Blog Posts').schemaType('post').child(S.documentTypeList('post').title('Blog Posts')),
-    ])
+      // Collections
+      S.listItem()
+        .title("Missions")
+        .schemaType("mission")
+        .child(S.documentTypeList("mission").title("Missions")),
 
-export default deskStructure
+      S.listItem()
+        .title("Events")
+        .schemaType("event")
+        .child(S.documentTypeList("event").title("Events")),
+
+      S.listItem()
+        .title("Campaigns")
+        .schemaType("campaign")
+        .child(S.documentTypeList("campaign").title("Campaigns")),
+
+      S.listItem()
+        .title("Partners")
+        .schemaType("partner")
+        .child(S.documentTypeList("partner").title("Partners")),
+
+      S.listItem()
+        .title("Team")
+        .schemaType("teamMember")
+        .child(S.documentTypeList("teamMember").title("Team")),
+
+      S.listItem()
+        .title("Blog Posts")
+        .schemaType("post")
+        .child(S.documentTypeList("post").title("Blog Posts")),
+    ]);
+}

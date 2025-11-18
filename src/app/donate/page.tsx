@@ -1,12 +1,17 @@
-import PageBuilder from '@/components/site/PageBuilder'
 import { notFound } from 'next/navigation'
 import { sanityClient } from '@/lib/sanity.client'
-import { pageBySlugOrIdQuery } from '@/lib/sanity.queries'
+import { pageBySlugOrFixedIdQuery } from '@/lib/sanity.queries'
+import PageBuilder from '@/components/site/PageBuilder'
+
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
+
 export default async function DonatePage() {
-  const page = await sanityClient.fetch(pageBySlugOrIdQuery, { slug: 'donate' }).catch(() => null)
+  // If “donate” is a normal Page doc with slug "donate"
+  const page = await sanityClient
+    .fetch(pageBySlugOrFixedIdQuery, { slug: 'donate' })
+    .catch(() => null)
+
   if (!page) notFound()
-  const content = page.content?.length ? page.content : page.contentSections?.length ? page.contentSections : page.sections ?? []
-  return <PageBuilder content={content} />
+  return <PageBuilder content={page.content || []} />
 }

@@ -31,6 +31,8 @@ export type Initiative = {
   slug?: { current: string };
   cover?: ImageRef | null;
   tags?: string[];
+  order?: number;
+  body?: any[]; // Portable Text
 };
 
 export type Partner = {
@@ -56,16 +58,4 @@ export type Campaign = {
   cover?: ImageRef | null;
   tags?: string[];
   order?: number;
-};
-
-export type Initiative = {
-  _type: "initiative";
-  _id: string;
-  title: string;
-  excerpt?: string;
-  slug?: { current: string };
-  cover?: ImageRef | null;
-  tags?: string[];
-  order?: number;
-  body?: any[]; // Portable Text
 };

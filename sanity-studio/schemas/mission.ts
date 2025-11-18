@@ -92,7 +92,7 @@ export default defineType({
           description: 'Number of operational drone flights relevant to missions' },
       ],
       validation: (Rule) =>
-        Rule.custom((arr: any[]) => {
+        Rule.custom((arr: any[] | undefined) => {
           if (!Array.isArray(arr)) return true
           const keys = arr.map((m) => m?.metric_key).filter(Boolean)
           const dup = keys.some((k, i) => keys.indexOf(k) !== i)

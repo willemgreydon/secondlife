@@ -14,35 +14,11 @@ type NavItem =
   | { href: string; label: string }
   | { label: string; children: { href: string; label: string }[] }
 
-const NAV: NavItem[] = [
-  { href: '/tide', label: 'TIDE' },
-  {
-    label: 'Missions',
-    children: [
-      { href: '/missions', label: 'Current Missions' },
-      { href: '/missions/beach-cleanups', label: 'Beach Clean-Ups' },
-      { href: '/missions/dana-24-vlc', label: 'DANA 24 VLC' },
-      { href: '/missions/revolutionizing-beach-clean-ups', label: 'Revolutionizing Beach Clean-Ups' },
-    ],
-  },
-  { href: '/operations', label: 'Operations' },
-  {
-    label: 'Organisation',
-    children: [
-      { href: '/events', label: 'Events' },
-      { href: '/blog', label: 'Blog' },
-      { href: '/our-team', label: 'Our Team' },
-      { href: '/campaigns', label: 'Campaigns' },
-      { href: '/initiatives', label: 'Initiatives' },
-      { href: '/partners', label: 'Partners' },
-    ],
-  },
-]
+interface NavigationProps {
+  links: NavItem[]
+}
 
-// --------------------------------------------
-// COMPONENT
-// --------------------------------------------
-export default function Navigation() {
+export default function Navigation({ links }: NavigationProps) {
   const pathname = usePathname()
   const [openKey, setOpenKey] = useState<string | null>(null)
   const closeTimer = useRef<number | null>(null)
@@ -70,9 +46,8 @@ export default function Navigation() {
 
   return (
     <nav className="hidden items-center gap-6 md:flex">
-      {NAV.map((item) => {
-        // Dropdown
-        if ('children' in item) {
+      {links.map((item) => {
+        if ("children" in item) {
           const key = item.label
           const openNow = openKey === key
           const activeParent = isSectionActive(item.children)
@@ -124,7 +99,6 @@ export default function Navigation() {
           )
         }
 
-        // Simple link
         const active = isExactActive(item.href)
         return (
           <Link
@@ -138,7 +112,7 @@ export default function Navigation() {
         )
       })}
 
-      {/* Secondary Button: JOIN US */}
+      {/* Buttons */}
       <Link
         href="/join-us"
         className="ml-2 rounded-full border border-[var(--brand-primary)] bg-transparent px-4 py-1.5 text-sm font-semibold text-[var(--brand-primary)] transition-all hover:bg-[var(--brand-primary)] hover:text-white active:scale-[0.97]"
@@ -146,14 +120,13 @@ export default function Navigation() {
         Join&nbsp;Us
       </Link>
 
-      {/* Primary Button: DONATE */}
       <Link
         href="/donate"
         className="ml-2 rounded-full bg-[var(--brand-primary)] px-4 py-1.5 text-sm font-semibold text-white transition-all hover:bg-[var(--brand-primary-dark)] active:scale-[0.97]"
       >
         Donate
       </Link>
-      {/* Dark/Light toggle with sun/moon */}
+
       <ThemeToggle />
     </nav>
   )

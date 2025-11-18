@@ -1,16 +1,16 @@
-import type {InitialValueTemplateItem} from 'sanity'
+import type { Template } from "sanity";
 
-export const pageFixedSlugTemplate: InitialValueTemplateItem = {
-  id: 'page-fixed-slug',
-  title: 'Page with fixed slug',
-  schemaType: 'page',
+export const pageFixedSlugTemplate: Template = {
+  id: "page-fixed-slug",
+  title: "Page with fixed slug",
+  schemaType: "page",
   parameters: [
-    {name: 'title', type: 'string'},
-    {name: 'slug', type: 'string'},
+    { name: "title", type: "string" },
+    { name: "slug", type: "string" },
   ],
-  value: (params) => ({
-    title: params?.title ?? '',
-    slug: { _type: 'slug', current: params?.slug ?? '' },
+  value: (params: any) => ({
+    title: params?.title ?? "",
+    slug: { _type: "slug", current: params?.slug ?? "" },
     contentSections: [],
   }),
-}
+};
