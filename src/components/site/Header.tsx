@@ -20,7 +20,6 @@ const NAV = [
   },
   { href: '/operations', label: 'Operations' },
   { href: '/our-team', label: 'Our Team' },
-  { href: '/join-us', label: 'Join Us' },
   { href: '/contact', label: 'Contact' },
 ]
 
