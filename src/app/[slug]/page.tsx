@@ -4,13 +4,16 @@ import { getPageBySlug } from "@/lib/queries/page";
 import { notFound } from "next/navigation";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-export default async function Page({ params }: PageProps) {
-  const doc = await getPageBySlug(params.slug);
+export default async function Page(props: PageProps) {
+  const { slug } = await props.params;
+
+  const doc = await getPageBySlug(slug);
   if (!doc) return notFound();
+
   return <PageBuilder content={doc.content} />;
 }

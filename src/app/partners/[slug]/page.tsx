@@ -1,18 +1,17 @@
-// src/app/partners/[slug]/page.tsx
-
 import PartnerDetail from "@/components/templates/PartnerDetail";
 import { getPartnerBySlug } from "@/lib/queries/partner";
 import { notFound } from "next/navigation";
 
-type PartnerPageProps = {
-  params: {
+type PageProps = {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-export default async function Page({ params }: PartnerPageProps) {
-  const partner = await getPartnerBySlug(params.slug);
+export default async function Page(props: PageProps) {
+  const { slug } = await props.params;
 
+  const partner = await getPartnerBySlug(slug);
   if (!partner) return notFound();
 
   return <PartnerDetail partner={partner} />;
