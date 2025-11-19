@@ -1,19 +1,7 @@
-import PageBuilder from '@/components/site/PageBuilder'
-import { notFound } from 'next/navigation'
-import { sanityClient } from '@/lib/sanity.client'
-import { groq } from 'next-sanity'
+import GenericPage from "@/components/templates/GenericPage"
+import { getPageBySlug } from "@/lib/queries/page"
 
-const pageQuery = groq`
-  *[_type in ["page"] && slug.current == "blog"][0]{
-    _id, title, "content": coalesce(content, contentSections, sections, [])
-  }
-`
-
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
-export default async function BlogIndex() {
-  const page = await sanityClient.fetch(pageQuery).catch(() => null)
-  if (!page) notFound()
-  return <PageBuilder content={page.content || []} />
+export default async function Page() {
+  const doc = await getPageBySlug("blog")
+  return <GenericPage doc={doc} />
 }

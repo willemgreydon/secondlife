@@ -1,19 +1,7 @@
-import PageBuilder from '@/components/site/PageBuilder'
-import { notFound } from 'next/navigation'
-import { sanityClient } from '@/lib/sanity.client'
-import { groq } from 'next-sanity'
+import CampaignsIndexPage from "@/components/templates/CampaignsIndexPage"
+import { getCampaignsIndex } from "@/lib/queries/campaigns-index"
 
-const pageQuery = groq`
-  *[_type == "page" && slug.current == "campaigns"][0]{
-    _id, title, "content": coalesce(content, contentSections, sections, [])
-  }
-`
-
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
-export default async function CampaignsIndex() {
-  const page = await sanityClient.fetch(pageQuery).catch(() => null)
-  if (!page) notFound()
-  return <PageBuilder content={page.content || []} />
+export default async function Page() {
+  const doc = await getCampaignsIndex()
+  return <CampaignsIndexPage doc={doc} />
 }

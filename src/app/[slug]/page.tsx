@@ -1,23 +1,16 @@
-import { notFound } from 'next/navigation'
-import { sanityClient } from '@/lib/sanity.client'
-import { pageBySlugOrFixedIdQuery } from '@/lib/sanity.queries'
-import PageBuilder from '@/components/site/PageBuilder'
+// src/app/[slug]/page.tsx
+import PageBuilder from "@/components/site/PageBuilder";
+import { getPageBySlug } from "@/lib/queries/page";
+import { notFound } from "next/navigation";
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+type PageProps = {
+  params: {
+    slug: string;
+  };
+};
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
-  const { slug } = await params
-
-  const page = await sanityClient
-    .fetch(pageBySlugOrFixedIdQuery, { slug })
-    .catch(() => null)
-
-  if (!page) notFound()
-
-  return <PageBuilder content={page.content || []} />
+export default async function Page({ params }: PageProps) {
+  const doc = await getPageBySlug(params.slug);
+  if (!doc) return notFound();
+  return <PageBuilder content={doc.content} />;
 }

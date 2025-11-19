@@ -1,19 +1,49 @@
-import {defineType, defineField} from 'sanity'
+// sanity-studio/schemas/sections/missionsSection.ts
+import { defineType, defineField } from 'sanity'
 
 export default defineType({
   name: 'missionsSection',
-  title: 'Missions Grid (legacy name)',
+  title: 'Missions Grid',
   type: 'object',
   fields: [
-    defineField({ name: 'title', title: 'Title', type: 'string' }),
-    defineField({ name: 'status', title: 'Filter by Status', type: 'string',
-      options: { list: ['planned','active','successful','all'] }}),
-    defineField({ name: 'limit', title: 'Limit', type: 'number' }),
-    defineField({ name: 'showMetrics', title: 'Show metrics on cards', type: 'boolean', initialValue: true }),
     defineField({
-      name: 'missions', title: 'Missions (optional manual pick)',
-      type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'mission' }] }],
+      name: 'title',
+      type: 'string',
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: 'status',
+      type: 'string',
+      initialValue: 'all',
+      options: {
+        list: [
+          { title: 'All', value: 'all' },
+          { title: 'Planned', value: 'planned' },
+          { title: 'Active', value: 'active' },
+          { title: 'Successful', value: 'successful' },
+          { title: 'Archived', value: 'archived' },
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
+      name: 'limit',
+      type: 'number',
+      initialValue: 12,
+    }),
+    defineField({
+      name: 'showMetrics',
+      type: 'boolean',
+      initialValue: true,
     }),
   ],
+  preview: {
+    select: { title: 'title', status: 'status' },
+    prepare({ title, status }) {
+      return {
+        title: title || 'Missions Grid',
+        subtitle: status ? `Filter: ${status}` : 'Filter: all',
+      }
+    },
+  },
 })

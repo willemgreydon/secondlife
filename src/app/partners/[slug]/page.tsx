@@ -1,19 +1,19 @@
-import PageBuilder from '@/components/site/PageBuilder'
-import { notFound } from 'next/navigation'
-import { sanityClient } from '@/lib/sanity.client'
-import { groq } from 'next-sanity'
+// src/app/partners/[slug]/page.tsx
 
-const partnerQuery = groq`
-  *[_type == "partner" && slug.current == $slug][0]{
-    _id, title, "content": coalesce(content, contentSections, sections, [])
-  }
-`
+import PartnerDetail from "@/components/templates/PartnerDetail";
+import { getPartnerBySlug } from "@/lib/queries/partner";
+import { notFound } from "next/navigation";
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+type PartnerPageProps = {
+  params: {
+    slug: string;
+  };
+};
 
-export default async function PartnerDetail({ params }: { params: { slug: string } }) {
-  const doc = await sanityClient.fetch(partnerQuery, { slug: params.slug }).catch(() => null)
-  if (!doc) notFound()
-  return <PageBuilder content={doc.content || []} />
+export default async function Page({ params }: PartnerPageProps) {
+  const partner = await getPartnerBySlug(params.slug);
+
+  if (!partner) return notFound();
+
+  return <PartnerDetail partner={partner} />;
 }

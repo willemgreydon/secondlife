@@ -1,24 +1,24 @@
-import PageBuilder from '@/components/site/PageBuilder'
-import { notFound } from 'next/navigation'
-import { sanityClient } from '@/lib/sanity.client'
-import { homeQuery } from '@/lib/sanity.queries'
+import PageBuilder from "@/components/site/PageBuilder";
+import { getHomePage } from "@/lib/queries/home";
+import { getAllMissions } from "@/lib/queries/missions-index";
+import { initiativesListQuery, eventsListQuery } from "@/lib/sanity.queries";
+import { getServerClient } from "@/lib/sanity.preview";
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export default async function Page() {
+  const page = await getHomePage();
 
-export default async function HomePage() {
-  const page = await sanityClient.fetch(homeQuery).catch(() => null)
+  const client = await getServerClient();
 
-  if (!page) notFound()
+  const [missions, initiatives, events] = await Promise.all([
+    getAllMissions(),
+    client.fetch(initiativesListQuery),
+    client.fetch(eventsListQuery),
+  ]);
 
-  const content =
-    page.content?.length
-      ? page.content
-      : page.contentSections?.length
-      ? page.contentSections
-      : page.sections?.length
-      ? page.sections
-      : []
-
-  return <PageBuilder content={content} />
+  return (
+    <PageBuilder
+      content={page.content}
+      context={{ missions, initiatives, events }}
+    />
+  );
 }

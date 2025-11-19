@@ -1,77 +1,22 @@
-'use client'
+"use client";
 
-import Hero from './sections/Hero'
-import Split from './sections/Split'
-import Stats from './sections/Stats'
-import TextBlock from './sections/TextBlock'
-import Video from './sections/Video'
-import TeamGrid from './sections/TeamGrid'
-import ImageBlock from './sections/ImageBlock'
-import Gallery from './sections/Gallery'
-import Quote from './sections/Quote'
-import Accordion from './sections/Accordion'
-import Contact from './sections/Contact'
-import ImpactStats from './sections/ImpactStats'
-import CampaignGrid from './sections/CampaignGrid'
-import InitiativesGrid from './sections/InitiativesGrid'
-import MissionsGrid from './sections/MissionsGrid'
-import EventsGrid from './sections/EventsGrid'
-import Partners from './sections/Partners'
+import { SECTION_COMPONENTS } from "@/lib/cms/mapping";
 
 type Metric = {
-  metric_key: string
-  title: string
-  current_value: number
-  unit?: string
-  as_of_date?: string
-  description?: string
-}
-type PageBuilderContext = { metrics?: Metric[] }
+  metric_key: string;
+  title: string;
+  current_value: number;
+  unit?: string;
+  as_of_date?: string;
+  description?: string;
+};
 
-const COMPONENT_MAP: Record<string, any> = {
-  hero: Hero,
-  split: Split,
-  stats: Stats,
-  textBlock: TextBlock,
-  video: Video,
-  teamGrid: TeamGrid,
-  imageBlock: ImageBlock,
-  gallery: Gallery,
-  quote: Quote,
-  accordion: Accordion,
-  contact: Contact,
-  impactStats: ImpactStats,
-  campaignGrid: CampaignGrid,
-  initiativesGrid: InitiativesGrid,
-  missionsGrid: MissionsGrid,
-  eventsGrid: EventsGrid,
-  partners: Partners,
-}
-
-// Aliase von Studio-Typen → interne Komponentennamen
-const TYPE_ALIASES: Record<string, string> = {
-  heroSection: 'hero',
-  splitSection: 'split',
-  statsSection: 'stats',
-  richTextSection: 'textBlock',
-  textBlock: 'textBlock',
-  videoSection: 'video',
-  gallerySection: 'gallery',
-  quoteSection: 'quote',
-  accordionSection: 'accordion',
-  contactSection: 'contact',
-  imageBlock: 'imageBlock',
-  team: 'teamGrid',
-  teamSection: 'teamGrid',
-  metrics: 'impactStats',
-  metricsSection: 'impactStats',
-  impactStatsSection: 'impactStats',
-  campaignsSection: 'campaignGrid',
-  missionsSection: 'missionsGrid',
-  initiativesSection: 'initiativesGrid',
-  eventsSection: 'eventsGrid',
-  partnersSection: 'partners',
-}
+type PageBuilderContext = {
+  metrics?: Metric[];
+  missions?: any[];
+  initiatives?: any[];
+  events?: any[];
+};
 
 function UnknownSection({ section }: { section: any }) {
   return (
@@ -83,86 +28,147 @@ function UnknownSection({ section }: { section: any }) {
         {JSON.stringify(section, null, 2)}
       </pre>
     </div>
-  )
+  );
+}
+
+function normalizeSectionType(rawType: string): string {
+  const alias: Record<string, string> = {
+    heroSection: "heroSection",
+    splitSection: "splitSection",
+    statsSection: "statsSection",
+    richTextSection: "richTextSection",
+    textBlock: "richTextSection",
+    videoSection: "videoSection",
+    gallerySection: "gallerySection",
+    quoteSection: "quoteSection",
+    accordionSection: "accordionSection",
+    contactSection: "contactSection",
+    imageBlock: "imageBlock",
+    team: "teamSection",
+    teamSection: "teamSection",
+    metrics: "impactStatsSection",
+    metricsSection: "impactStatsSection",
+    impactStatsSection: "impactStatsSection",
+    campaignsSection: "campaignGrid",
+    missionsSection: "missionsGrid",
+    initiativesSection: "initiativesGrid",
+    eventsSection: "eventsGrid",
+    partnersSection: "partnersSection",
+  };
+
+  return alias[rawType] ?? rawType;
 }
 
 export default function PageBuilder({
-  content = [] as any[],
-  context,
+  content = [],
+  context = {},
 }: {
-  content?: any[]
-  context?: PageBuilderContext
+  content?: any[];
+  context?: PageBuilderContext;
 }) {
-  const sections = Array.isArray(content) ? content : []
-  if (!sections.length) return null
+  const sections = Array.isArray(content) ? content : [];
+  if (!sections.length) return null;
 
   return (
     <div className="bg-white text-gray-900 transition-colors dark:bg-black dark:text-gray-100">
       <div className="space-y-10 md:space-y-14 lg:space-y-16">
         {sections.map((raw, idx) => {
-          const normalizedType = TYPE_ALIASES[raw?._type] ?? raw?._type
-          let section: any = { ...raw, _type: normalizedType }
+          const normalizedType = normalizeSectionType(raw?._type);
+          let section = { ...raw, _type: normalizedType };
 
-          if (normalizedType === 'hero') {
+          // Impact Stats context fallback
+          if (normalizedType === "impactStatsSection") {
+            const hasOwn = Array.isArray(section.metrics) && section.metrics.length > 0;
             section = {
               ...section,
-              ctaText: section.ctaText ?? section.ctaLabel ?? undefined,
-              image: section.image ?? section.bgImage ?? undefined,
+              metrics: hasOwn ? section.metrics : context.metrics ?? [],
+            };
+          }
+
+          // Missions weighting & filtering
+          if (normalizedType === "missionsGrid") {
+            const all = Array.isArray(context.missions) ? context.missions : [];
+            const status = section.status ?? "all";
+            const limit =
+              typeof section.limit === "number" ? section.limit : 100;
+
+            let missions = all;
+            if (status !== "all") {
+              missions = missions.filter((m: any) => m.status === status);
             }
+            missions = missions.slice(0, limit);
+
+            section = { ...section, missions, limit, status };
           }
 
-          if (normalizedType === 'impactStats') {
-            const hasOwn = Array.isArray(section.metrics) && section.metrics.length > 0
-            section = { ...section, metrics: hasOwn ? section.metrics : context?.metrics ?? [] }
+          // Initiatives
+          if (normalizedType === "initiativesGrid") {
+            const all = context.initiatives ?? [];
+            const limit =
+              typeof section.limit === "number" ? section.limit : 100;
+
+            section = {
+              ...section,
+              initiatives: all.slice(0, limit),
+              limit,
+            };
           }
 
-          if (normalizedType === 'missionsGrid') {
-            const limit = Number.isFinite(section?.limit) ? section.limit : 100
-            const base = { ...section, limit, showMetrics: section?.showMetrics !== false }
-            section = Array.isArray(section?.missions)
-              ? { ...base, missions: section.missions.slice(0, limit) }
-              : base
+          // Events
+          if (normalizedType === "eventsGrid") {
+            const all = context.events ?? [];
+            const limit =
+              typeof section.limit === "number" ? section.limit : 100;
+
+            section = {
+              ...section,
+              events: all.slice(0, limit),
+              limit,
+            };
           }
 
-          if (normalizedType === 'initiativesGrid') {
-            const limit = Number.isFinite(section?.limit) ? section.limit : 100
-            const base = { ...section, limit }
-            section = Array.isArray(section?.initiatives)
-              ? { ...base, initiatives: section.initiatives.slice(0, limit) }
-              : base
-          }
+          // Split-section migration (legacy support)
+          if (normalizedType === "splitSection") {
+            const isNew = section?.left || section?.right;
+            const isLegacy = section?.main || section?.side || section?.images;
 
-          if (normalizedType === 'eventsGrid') {
-            const limit = Number.isFinite(section?.limit) ? section.limit : undefined
-            section =
-              limit && Array.isArray(section?.events)
-                ? { ...section, events: section.events.slice(0, limit) }
-                : section
-          }
-
-          if (normalizedType === 'split') {
-            const isNew = section?.left || section?.right
-            const isLegacy = section?.main || section?.side || section?.images
             if (isNew) {
-              section = { ...section, reversed: typeof section.reversed === 'boolean' ? section.reversed : !!section.reverse }
-            } else if (isLegacy) {
-              const firstImage = Array.isArray(section.images) ? section.images[0] : undefined
               section = {
                 ...section,
-                layout: section.layout ?? '50-50',
+                reversed:
+                  typeof section.reversed === "boolean"
+                    ? section.reversed
+                    : !!section.reverse,
+              };
+            } else if (isLegacy) {
+              const firstImage = Array.isArray(section.images)
+                ? section.images[0]
+                : undefined;
+
+              section = {
+                ...section,
+                layout: section.layout ?? "50-50",
                 reversed: !!section.reverse,
-                left: { kind: 'text', text: Array.isArray(section.main) ? section.main : [], image: undefined },
-                right: { kind: firstImage ? 'image' : 'text', text: Array.isArray(section.side) ? section.side : [], image: firstImage },
-              }
+                left: {
+                  kind: "text",
+                  text: Array.isArray(section.main) ? section.main : [],
+                },
+                right: {
+                  kind: firstImage ? "image" : "text",
+                  text: Array.isArray(section.side) ? section.side : [],
+                  image: firstImage,
+                },
+              };
             }
           }
 
-          const key = `${normalizedType}-${section?._key ?? idx}`
-          const Cmp = COMPONENT_MAP[normalizedType]
-          if (!Cmp) return <UnknownSection key={key} section={raw} />
-          return <Cmp key={key} {...section} />
+          const Component = SECTION_COMPONENTS[normalizedType];
+          if (!Component) return <UnknownSection key={idx} section={raw} />;
+
+          const key = section._key ?? `${normalizedType}-${idx}`;
+          return <Component key={key} {...section} />;
         })}
       </div>
     </div>
-  )
+  );
 }

@@ -1,19 +1,12 @@
-import PageBuilder from '@/components/site/PageBuilder'
-import { notFound } from 'next/navigation'
-import { sanityClient } from '@/lib/sanity.client'
-import { groq } from 'next-sanity'
+import InitiativeDetail from "@/components/templates/InitiativeDetail";
+import { getInitiativeBySlug } from "@/lib/queries/initiative";
+import { notFound } from "next/navigation";
 
-const initiativeQuery = groq`
-  *[_type == "initiative" && slug.current == $slug][0]{
-    _id, title, "content": coalesce(content, contentSections, sections, [])
-  }
-`
+type PageProps = { params: { slug: string } };
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export default async function Page({ params }: PageProps) {
+  const initiative = await getInitiativeBySlug(params.slug);
+  if (!initiative) return notFound();
 
-export default async function Initiative({ params }: { params: { slug: string } }) {
-  const doc = await sanityClient.fetch(initiativeQuery, { slug: params.slug }).catch(() => null)
-  if (!doc) notFound()
-  return <PageBuilder content={doc.content || []} />
+  return <InitiativeDetail initiative={initiative} />;
 }
