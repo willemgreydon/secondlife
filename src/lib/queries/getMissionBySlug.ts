@@ -1,5 +1,5 @@
 import groq from "groq";
-import { client } from "../sanity-client";
+import { client } from "../sanity.client";
 
 export async function getMissionBySlug(slug: string) {
   return await client.fetch(

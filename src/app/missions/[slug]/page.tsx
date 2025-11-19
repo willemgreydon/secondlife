@@ -3,9 +3,9 @@ import MissionDetail from "@/components/templates/MissionDetail";
 import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: { slug: string } }) {
-  const mission = await getMissionBySlug(params.slug);
-
+  const { slug } = await params;
+  const mission = await getMissionBySlug(slug);
+  
   if (!mission) return notFound();
-
   return <MissionDetail mission={mission} />;
 }

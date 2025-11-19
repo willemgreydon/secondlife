@@ -3,7 +3,35 @@
 import Image from "next/image";
 import classNames from "clsx";
 
-export default function MissionDetail({ mission }) {
+// Typen aus GROQ Query
+export interface MissionDetailType {
+  _id: string;
+  title: string;
+  slug: string;
+  status?: string;
+  excerpt?: string;
+  coverUrl?: string | null;
+  fallbackUrl?: string | null;
+  gallery?: {
+    url: string;
+    alt?: string;
+    caption?: string;
+  }[];
+  metrics?: {
+    metric_key: string;
+    title: string;
+    current_value: number;
+    unit?: string;
+    description?: string;
+  }[];
+  content?: any[]; // wir können später hier die Section-Union tippen
+}
+
+interface MissionDetailProps {
+  mission: MissionDetailType;
+}
+
+export default function MissionDetail({ mission }: MissionDetailProps) {
   const {
     title,
     status,
@@ -35,12 +63,14 @@ export default function MissionDetail({ mission }) {
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
 
         <div className="absolute bottom-6 left-6">
-          <span className="mb-2 inline-block rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white backdrop-blur">
-            {status}
-          </span>
+          {status && (
+            <span className="mb-2 inline-block rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white backdrop-blur">
+              {status}
+            </span>
+          )}
           <h1 className="mt-2 text-4xl font-bold text-white drop-shadow">
             {title}
           </h1>
@@ -105,7 +135,7 @@ export default function MissionDetail({ mission }) {
    CONTENT RENDERER
 ------------------------------ */
 
-function ContentRenderer({ section }) {
+function ContentRenderer({ section }: { section: any }) {
   switch (section._type) {
     case "textBlock":
       return (
@@ -162,15 +192,6 @@ function ContentRenderer({ section }) {
         <blockquote className="border-l-4 pl-4 italic text-lg text-muted-foreground">
           “{section.quote}”
         </blockquote>
-      );
-
-    case "videoSection":
-      return (
-        <video
-          controls
-          src={section.videoUrl}
-          className="w-full rounded-lg"
-        />
       );
 
     default:
