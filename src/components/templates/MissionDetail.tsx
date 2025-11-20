@@ -3,7 +3,6 @@
 import Image from "next/image";
 import classNames from "clsx";
 
-// Typen aus GROQ Query
 export interface MissionDetailType {
   _id: string;
   title: string;
@@ -16,15 +15,15 @@ export interface MissionDetailType {
     url: string;
     alt?: string;
     caption?: string;
-  }[];
+  }[] | null;
   metrics?: {
     metric_key: string;
     title: string;
     current_value: number;
     unit?: string;
     description?: string;
-  }[];
-  content?: any[]; // wir können später hier die Section-Union tippen
+  }[] | null;
+  content?: any[] | null;
 }
 
 interface MissionDetailProps {
@@ -32,16 +31,17 @@ interface MissionDetailProps {
 }
 
 export default function MissionDetail({ mission }: MissionDetailProps) {
-  const {
-    title,
-    status,
-    excerpt,
-    coverUrl,
-    fallbackUrl,
-    gallery = [],
-    metrics = [],
-    content = [],
-  } = mission;
+  // FULL defensive normalization
+  const title = mission?.title ?? "";
+  const status = mission?.status ?? "";
+  const excerpt = mission?.excerpt ?? "";
+
+  const coverUrl = mission?.coverUrl ?? null;
+  const fallbackUrl = mission?.fallbackUrl ?? null;
+
+  const safeGallery = Array.isArray(mission?.gallery) ? mission.gallery! : [];
+  const safeMetrics = Array.isArray(mission?.metrics) ? mission.metrics! : [];
+  const safeContent = Array.isArray(mission?.content) ? mission.content! : [];
 
   const heroImage = coverUrl || fallbackUrl;
 
@@ -83,10 +83,10 @@ export default function MissionDetail({ mission }: MissionDetailProps) {
           <p className="mt-8 text-lg text-muted-foreground">{excerpt}</p>
         )}
 
-        {/* METRICS GRID */}
-        {metrics.length > 0 && (
+        {/* METRICS */}
+        {safeMetrics.length > 0 && (
           <section className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3">
-            {metrics.map((m) => (
+            {safeMetrics.map((m) => (
               <div
                 key={m.metric_key}
                 className="rounded-lg border bg-gray-50 p-4 text-center dark:bg-gray-900 dark:border-gray-700"
@@ -102,11 +102,11 @@ export default function MissionDetail({ mission }: MissionDetailProps) {
         )}
 
         {/* GALLERY */}
-        {gallery.length > 0 && (
+        {safeGallery.length > 0 && (
           <section className="mt-14">
             <h2 className="mb-4 text-xl font-semibold">Gallery</h2>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-              {gallery.map((g, i) => (
+              {safeGallery.map((g, i) => (
                 <div key={i} className="relative aspect-square">
                   <Image
                     src={g.url}
@@ -121,11 +121,13 @@ export default function MissionDetail({ mission }: MissionDetailProps) {
         )}
 
         {/* CONTENT SECTIONS */}
-        <section className="mt-16 space-y-14">
-          {content.map((section, index) => (
-            <ContentRenderer key={index} section={section} />
-          ))}
-        </section>
+        {safeContent.length > 0 && (
+          <section className="mt-16 space-y-14">
+            {safeContent.map((section, index) => (
+              <ContentRenderer key={index} section={section} />
+            ))}
+          </section>
+        )}
       </div>
     </article>
   );

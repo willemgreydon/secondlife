@@ -1,19 +1,25 @@
-// src/app/[slug]/page.tsx
-import PageBuilder from "@/components/site/PageBuilder";
-import { getPageBySlug } from "@/lib/queries/page";
 import { notFound } from "next/navigation";
+import { getPageBySlug } from "@/lib/queries/getPageBySlug";
+import PageBuilder from "@/components/site/PageBuilder";
 
 type PageProps = {
-  params: Promise<{
-    slug: string;
-  }>;
+  params: Promise<{ slug: string }>;
 };
 
 export default async function Page(props: PageProps) {
   const { slug } = await props.params;
 
-  const doc = await getPageBySlug(slug);
-  if (!doc) return notFound();
+  const page = await getPageBySlug(slug);
 
-  return <PageBuilder content={doc.content} />;
+  if (!page) {
+    return notFound();
+  }
+
+  return (
+    <PageBuilder
+      title={page.title}
+      content={page.content ?? []}
+      slug={page.slug}
+    />
+  );
 }
