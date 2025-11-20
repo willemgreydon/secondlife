@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPageBySlug } from "@/lib/queries/getPageBySlug";
+import { getPageBySlug } from "@/lib/queries/page";
 import PageBuilder from "@/components/site/PageBuilder";
 
 type PageProps = {
@@ -17,9 +17,7 @@ export default async function Page(props: PageProps) {
 
   return (
     <PageBuilder
-      title={page.title}
       content={page.content ?? []}
-      slug={page.slug}
     />
   );
 }

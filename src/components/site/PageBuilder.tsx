@@ -70,7 +70,7 @@ export default function PageBuilder({
   if (!sections.length) return null;
 
   return (
-    <div className="bg-white text-gray-900 transition-colors dark:bg-black dark:text-gray-100">
+    <div className="bg-white text-gray-900 transition-colors dark:bg-black dark:text-gray-100 pb-28">
       <div className="space-y-10 md:space-y-14 lg:space-y-16">
         {sections.map((raw, idx) => {
           const normalizedType = normalizeSectionType(raw?._type);
