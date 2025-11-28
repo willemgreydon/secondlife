@@ -19,13 +19,13 @@ type TeamGridProps = {
 export default function TeamGrid(props: TeamGridProps) {
   const { title, layout, members = [] } = props;
 
-  if (!Array.isArray(members) || members.length === 0) return null;
+  if (!Array.isArray(members) || members.length === 0 || !members[0]._id) return null;
   return (
     <section className="mx-auto max-w-6xl px-4">
       {title && <h2 className="mb-4 text-3xl font-semibold">{title}</h2>}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {members.map((m) => (
-          <div key={m._id} className="rounded-2xl border p-4">
+          <div key={`member-${m._id}`} className="rounded-2xl border p-4">
             {m.image && (
               <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-xl bg-neutral-100">
                 <Image src={m.image} alt={m.name} fill sizes="33vw" className="object-cover" />
