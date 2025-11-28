@@ -1,16 +1,25 @@
-'use client'
-import Image from 'next/image'
+"use client";
+import Image from "next/image";
 
-export default function TeamGrid({
-  title,
-  layout,
-  members = [],
-}: {
-  title?: string
-  layout?: 'grid' | 'list'
-  members?: { _id: string; name: string; role?: string; image?: string; linkedin?: string; bio?: string }[]
-}) {
-  if (!Array.isArray(members) || members.length === 0) return null
+type member = {
+  _id: string;
+  name: string;
+  role?: string;
+  image?: string;
+  linkedin?: string;
+  bio?: string;
+};
+
+type TeamGridProps = {
+  title?: string;
+  layout?: "grid" | "list";
+  members?: member[];
+};
+
+export default function TeamGrid(props: TeamGridProps) {
+  const { title, layout, members = [] } = props;
+
+  if (!Array.isArray(members) || members.length === 0) return null;
   return (
     <section className="mx-auto max-w-6xl px-4">
       {title && <h2 className="mb-4 text-3xl font-semibold">{title}</h2>}
@@ -33,5 +42,5 @@ export default function TeamGrid({
         ))}
       </div>
     </section>
-  )
+  );
 }

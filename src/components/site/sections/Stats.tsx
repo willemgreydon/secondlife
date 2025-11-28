@@ -1,7 +1,15 @@
-'use client'
+"use client";
 
-export default function Stats({ title, stats = [] }: { title?: string; stats?: { label: string; value: string }[] }) {
-  if (!Array.isArray(stats) || stats.length === 0) return null
+type stat = { label: string; value: string };
+
+type StatsProps = {
+  title?: string;
+  stats?: stat[];
+};
+export default function Stats(props: StatsProps) {
+  const { title, stats = [] } = props;
+
+  if (!Array.isArray(stats) || stats.length === 0) return null;
   return (
     <section className="mx-auto max-w-6xl px-4">
       {title && <h2 className="mb-6 text-3xl font-semibold">{title}</h2>}
@@ -14,5 +22,5 @@ export default function Stats({ title, stats = [] }: { title?: string; stats?: {
         ))}
       </div>
     </section>
-  )
+  );
 }

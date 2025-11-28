@@ -1,8 +1,15 @@
-'use client'
-import Link from 'next/link'
+"use client";
+import Link from "next/link";
 
-export default function EventsGrid({ title, events = [] }: { title?: string; events?: any[] }) {
-  if (!Array.isArray(events) || events.length === 0) return null
+type EventsGridProps = {
+  title?: string;
+  events?: any[];
+};
+
+export default function EventsGrid(props: EventsGridProps) {
+  const { title, events = [] } = props;
+  
+  if (!Array.isArray(events) || events.length === 0) return null;
   return (
     <section className="mx-auto max-w-6xl px-4">
       {title && <h2 className="mb-4 text-3xl font-semibold">{title}</h2>}
@@ -17,5 +24,5 @@ export default function EventsGrid({ title, events = [] }: { title?: string; eve
         ))}
       </ul>
     </section>
-  )
+  );
 }

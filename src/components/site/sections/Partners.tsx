@@ -1,8 +1,15 @@
-'use client'
-import Link from 'next/link'
+"use client";
+import Link from "next/link";
 
-export default function Partners({ title, partners = [] }: { title?: string; partners?: any[] }) {
-  if (!Array.isArray(partners) || partners.length === 0) return null
+type PartnersProps = {
+  title?: string;
+  partners?: any[];
+};
+
+export default function Partners(props: PartnersProps) {
+  const { title, partners = [] } = props;
+
+  if (!Array.isArray(partners) || partners.length === 0) return null;
   return (
     <section className="mx-auto max-w-6xl px-4">
       {title && <h2 className="mb-4 text-3xl font-semibold">{title}</h2>}
@@ -16,5 +23,5 @@ export default function Partners({ title, partners = [] }: { title?: string; par
         ))}
       </ul>
     </section>
-  )
+  );
 }

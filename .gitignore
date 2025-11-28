@@ -18,6 +18,7 @@ studio/.sanity/*
 *.log
 npm-debug.log*
 yarn-*.log*
+sanity-studio/yarn.lock
 pnpm-debug.log*
 .DS_Store
 Thumbs.db
