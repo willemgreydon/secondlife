@@ -16,8 +16,6 @@ export default async function Page(props: PageProps) {
   }
 
   return (
-    <PageBuilder
-      content={page.content ?? []}
-    />
+    <PageBuilder content={page.content} />
   );
 }

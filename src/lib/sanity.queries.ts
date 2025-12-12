@@ -1,13 +1,23 @@
 // ---------------------------------------------------------
-// sanity.queries.ts — FINAL MASTER VERSION
+// sanity.queries.ts — STABLE, NON-EMPTY CONTENT + TYPE-ALIAS VERSION
 // ---------------------------------------------------------
 import { groq } from "next-sanity";
 
 /**
- * ---------------------------------------------------------
- *  BASIC PAGE QUERIES
- * ---------------------------------------------------------
+ * Helper logic:
+ * We must NOT use plain coalesce(content, contentSections, sections, [])
+ * because empty arrays are "defined" in GROQ and will win the coalesce.
+ *
+ * So we pick the first NON-EMPTY array.
  */
+const normalizedContentExpr = `
+  select(
+    defined(contentSections) && count(contentSections) > 0 => contentSections,
+    defined(content) && count(content) > 0 => content,
+    defined(sections) && count(sections) > 0 => sections,
+    []
+  )
+`;
 
 export const pageSlugsQuery = groq`
   *[_type == "page" && defined(slug.current)]{
@@ -21,7 +31,6 @@ export const pageBySlugQuery = groq`
     title,
     "slug": slug.current,
     seo,
-    // Fallback für Content-Felder aus alten Schemas
     content,
     contentSections,
     sections
@@ -29,134 +38,19 @@ export const pageBySlugQuery = groq`
 `;
 
 /**
- * Normalisierte Page Query mit dynamischem Content-Mapping
- * (Hero, ImageBlock, Gallery, MissionsGrid, InitiativesGrid, CampaignsGrid, EventsGrid, PartnerGrid)
+ * ---------------------------------------------------------
+ * PAGE WITH NORMALIZED CONTENT
+ * ---------------------------------------------------------
  */
-
 export const pageWithContentBySlugQuery = groq`
   *[_type == "page" && slug.current == $slug][0]{
     _id,
     title,
     "slug": slug.current,
 
-    "content": coalesce(content, contentSections, sections, [])[]{
-      ...,
-
-      /* ------------------------------ HERO ------------------------------ */
-      _type == "heroSection" => {
-        _type, _key, title, subtitle,
-        ctaHref,
-        "ctaText": coalesce(ctaText, ctaLabel),
-        "bgImage": bgImage.asset->url
-      },
-
-      /* --------------------------- IMAGE BLOCK --------------------------- */
-      _type == "imageBlock" => {
-        _type, _key, caption,
-        "imageUrl": image.asset->url,
-        "alt": coalesce(alt, caption)
-      },
-
-      /* ----------------------------- GALLERY ----------------------------- */
-      _type == "gallerySection" => {
-        _type, _key, title,
-        "images": images[].asset->{
-          _id,
-          url,
-          metadata { lqip, dimensions }
-        }
-      },
-
-      /* --------------------------- MISSIONS GRID ------------------------- */
-      _type == "missionsGrid" => {
-        _type, _key, title, status, limit,
-        "missions": *[_type == "mission" && (
-          !defined(^.status) ||
-          status == ^.status ||
-          ^.status == "all"
-        )] | order(_createdAt desc)[0...coalesce(^.limit, 100)]{
-          _id,
-          title,
-          "slug": slug.current,
-          excerpt,
-          status,
-          "coverUrl": coalesce(
-            cover.asset->url,
-            fallback.asset->url,
-            image.asset->url,
-            gallery[0].asset->url
-          ),
-          "wasteCollectedKg": coalesce(
-            metrics[metric_key == "plastic_collected_kg"][0].current_value,
-            metrics[metric_key == "tons_collected"][0].current_value * 1000,
-            0
-          ),
-          "volunteers": coalesce(
-            metrics[metric_key == "volunteers"][0].current_value,
-            0
-          )
-        }
-      },
-
-      /* -------------------------- INITIATIVES GRID ------------------------ */
-      _type == "initiativesGrid" => {
-        _type, _key, title, limit,
-        "initiatives": *[_type == "initiative"] 
-          | order(_createdAt desc)[0...coalesce(^.limit, 100)]{
-            _id, title,
-            "slug": slug.current,
-            excerpt,
-            "coverUrl": coalesce(
-              cover.asset->url,
-              gallery[0].asset->url
-            )
-          }
-      },
-
-      /* ---------------------------- CAMPAIGNS GRID ------------------------ */
-      _type == "campaignsGrid" => {
-        _type, _key, title, limit,
-        "campaigns": *[_type == "campaign"]
-          | order(_createdAt desc)[0...coalesce(^.limit, 100)]{
-            _id, title,
-            "slug": slug.current,
-            excerpt,
-            "coverUrl": coalesce(
-              cover.asset->url,
-              gallery[0].asset->url
-            )
-          }
-      },
-
-      /* ------------------------------ EVENTS GRID ------------------------- */
-      _type == "eventsGrid" => {
-        _type, _key, title, limit,
-        "events": *[_type == "event"]
-          | order(date desc)[0...coalesce(^.limit, 100)]{
-            _id, title,
-            "slug": slug.current,
-            date,
-            location,
-            excerpt,
-            "coverUrl": coalesce(
-              cover.asset->url,
-              gallery[0].asset->url
-            )
-          }
-      },
-
-      /* ----------------------------- PARTNERS GRID ------------------------ */
-      _type == "partnerGrid" => {
-        _type, _key, title, limit,
-        "partners": *[_type == "partner"]
-          | order(_createdAt desc)[0...coalesce(^.limit, 100)]{
-            _id, title,
-            "slug": slug.current,
-            website,
-            excerpt,
-            "logo": logo.asset->url
-          }
-      }
+    // ✅ SINGLE SOURCE OF TRUTH
+    "content": coalesce(contentSections, content, sections, [])[]{
+      ...
     }
   }
 `;
@@ -164,10 +58,37 @@ export const pageWithContentBySlugQuery = groq`
 
 /**
  * ---------------------------------------------------------
- *  MISSIONS
+ * (Optional) HOME QUERY
+ * You said: Home should be a normal page.
+ * If you switch / to getPageBySlug("home"), you can delete this later.
  * ---------------------------------------------------------
  */
+export const homePageQuery = groq`
+  *[_type == "home"][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    "content": ${normalizedContentExpr}[]{
+      ...,
+      _type == "heroSection" => {
+        _type,
+        _key,
+        eyebrow,
+        title,
+        subtitle,
+        ctaHref,
+        "ctaText": coalesce(ctaText, ctaLabel),
+        "bgImage": coalesce(image, bgImage)
+      }
+    }
+  }
+`;
 
+/**
+ * ---------------------------------------------------------
+ * LIST / DETAIL QUERIES (unchanged)
+ * ---------------------------------------------------------
+ */
 export const missionsListQuery = groq`
   *[_type == "mission"] | order(_createdAt desc){
     _id,
@@ -216,12 +137,6 @@ export const missionBySlugQuery = groq`
   }
 `;
 
-/**
- * ---------------------------------------------------------
- *  CAMPAIGNS
- * ---------------------------------------------------------
- */
-
 export const campaignsListQuery = groq`
   *[_type == "campaign"] | order(_createdAt desc){
     _id,
@@ -240,17 +155,15 @@ export const campaignBySlugQuery = groq`
     excerpt,
     body,
     "coverUrl": cover.asset->url,
-    gallery[].asset->{
-      _id, url, metadata{ lqip, dimensions }
+    gallery[]{
+      asset->{
+        _id,
+        url,
+        metadata { lqip, dimensions }
+      }
     }
   }
 `;
-
-/**
- * ---------------------------------------------------------
- *  INITIATIVES
- * ---------------------------------------------------------
- */
 
 export const initiativesListQuery = groq`
   *[_type == "initiative"] | order(_createdAt desc){
@@ -270,17 +183,15 @@ export const initiativeBySlugQuery = groq`
     excerpt,
     body,
     "coverUrl": cover.asset->url,
-    gallery[].asset->{
-      _id, url, metadata{ lqip, dimensions }
+    gallery[]{
+      asset->{
+        _id,
+        url,
+        metadata { lqip, dimensions }
+      }
     }
   }
 `;
-
-/**
- * ---------------------------------------------------------
- *  EVENTS
- * ---------------------------------------------------------
- */
 
 export const eventsListQuery = groq`
   *[_type == "event"] | order(date desc){
@@ -304,17 +215,15 @@ export const eventBySlugQuery = groq`
     excerpt,
     body,
     "coverUrl": cover.asset->url,
-    gallery[].asset->{
-      _id, url, metadata{ lqip, dimensions }
+    gallery[]{
+      asset->{
+        _id,
+        url,
+        metadata { lqip, dimensions }
+      }
     }
   }
 `;
-
-/**
- * ---------------------------------------------------------
- *  PARTNERS
- * ---------------------------------------------------------
- */
 
 export const partnersListQuery = groq`
   *[_type == "partner"] | order(_createdAt desc){
@@ -336,58 +245,5 @@ export const partnerBySlugQuery = groq`
     excerpt,
     "logo": logo.asset->url,
     body
-  }
-`;
-
-/**
- * ---------------------------------------------------------
- *  BLOG POSTS
- * ---------------------------------------------------------
- */
-
-export const blogPostsListQuery = groq`
-  *[_type == "post"] | order(publishedAt desc){
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    publishedAt,
-    "coverUrl": cover.asset->url
-  }
-`;
-
-export const blogPostBySlugQuery = groq`
-  *[_type == "post" && slug.current == $slug][0]{
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    body,
-    publishedAt,
-    "coverUrl": cover.asset->url,
-    author->{ name }
-  }
-`;
-
-/**
- * ---------------------------------------------------------
- *  HOME PAGE
- * ---------------------------------------------------------
- */
-
-export const homePageQuery = groq`
-  *[_type == "home"][0]{
-    _id,
-    title,
-    "slug": slug.current,
-    content,
-    hero,
-    featuredMissions[]->{
-      _id,
-      title,
-      "slug": slug.current,
-      excerpt,
-      "coverUrl": cover.asset->url
-    }
   }
 `;

@@ -35,9 +35,9 @@ export const SECTION_COMPONENTS: Record<string, any> = {
   partnersSection: Partners,
   eventsGrid: EventsGrid,
   contactSection: Contact,
-
+  
   // GRID SECTIONS
   missionsGrid: MissionsGrid,
   initiativesGrid: InitiativesGrid,
-  campaignGrid: CampaignGrid,   // <-- WICHTIG!!
+  campaignGrid: CampaignGrid,
 };

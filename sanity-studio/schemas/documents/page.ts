@@ -17,18 +17,11 @@ const sectionOf = [
   {type: 'initiativesGrid'},
   {type: 'eventsGrid'},
 
-  // Team – beide erlaubt, weil du beides registrierst
   {type: 'team'},          // legacy
-  {type: 'teamSection'},   // neu
+  {type: 'teamSection'},   // new
 
-  // Partners – wähle den passenden Namen je nach Schema:
-  // {type: 'partnersSection'},
-  {type: 'partners'},       // <- falls dein ./sections/partners name: 'partners' hat
-
-  // Optional: wenn du den einfachen Block auch direkt in Pages erlauben willst
-  {type: 'textBlock'},
-  // Impact KPIs Section
-  {type: 'impactStats'},
+  {type: 'partners'},       // If your schema section is named "partners"
+  {type: 'impactStats'}, // Optional
 ]
 
 export default defineType({
@@ -46,7 +39,7 @@ export default defineType({
       of: sectionOf,
     }),
 
-    // Legacy-Felder sichtbar halten (versteckt), damit kein Warnbanner kommt
+    // Legacy fields for backward compatibility
     defineField({
       name: 'content',
       title: 'LEGACY content (hidden)',

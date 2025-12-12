@@ -1,13 +1,17 @@
 // src/lib/sanity.image.ts
 import imageUrlBuilder from "@sanity/image-url";
-import type { Image } from "sanity";
-import { client } from "@/lib/sanity.client";
 
-const builder = imageUrlBuilder(client as any);
+/**
+ * IMPORTANT:
+ * Do NOT use a runtime client here.
+ * Image builder must be initialized with static config.
+ */
+const builder = imageUrlBuilder({
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
+});
 
-export function urlForImage(source: Image | any) {
-  return builder.image(source);
-}
+/* -------------------------------- TYPES -------------------------------- */
 
 type AnyImage =
   | string
@@ -27,33 +31,30 @@ type GetImageUrlOptions = {
   autoFormat?: boolean;
 };
 
-/**
- * getImageUrl
- * - akzeptiert String-URLs ODER Sanity-Image-Objekte
- * - gibt eine finale URL zurück oder null
- */
+/* ------------------------------ MAIN API ------------------------------- */
+
 export function getImageUrl(
   img: AnyImage,
   opts: GetImageUrlOptions = {}
 ): string | null {
   if (!img) return null;
 
-  // Bereits fertige URL
+  // Already a URL (fallback-safe)
   if (typeof img === "string") {
     return img || null;
   }
 
-  const asset = (img as any).asset;
+  const asset = img.asset;
   if (!asset) return null;
 
-  // Direkt-URL aus asset
-  if ("url" in asset && asset.url) {
-    return asset.url || null;
+  // Asset already has resolved URL
+  if (asset.url) {
+    return asset.url;
   }
 
-  // Referenz → über Builder auflösen
-  if ("_ref" in asset && asset._ref) {
-    let q = builder.image(img as any);
+  // Asset ref → build URL
+  if (asset._ref) {
+    let q = builder.image(img);
 
     if (opts.width) q = q.width(opts.width);
     if (opts.height) q = q.height(opts.height);

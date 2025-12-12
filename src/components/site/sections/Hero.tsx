@@ -1,48 +1,74 @@
 "use client";
+
 import Image from "next/image";
 import { getImageUrl } from "@/lib/sanity.image";
 
 type HeroProps = {
+  eyebrow?: string;
   title?: string;
   subtitle?: string;
   ctaText?: string;
   ctaHref?: string;
-  bgImage?: any;
+  image?: any;        // ✅ NEW canonical field
+  bgImage?: any;      // ✅ legacy fallback
 };
 
-export default function Hero(props: HeroProps) {
-  const { title, subtitle, ctaText, ctaHref, bgImage } = props;
-
-  const bgUrl = getImageUrl(bgImage);
+export default function Hero({
+  eyebrow,
+  title,
+  subtitle,
+  ctaText,
+  ctaHref,
+  image,
+  bgImage,
+}: HeroProps) {
+  // ✅ Prefer new field, fallback to legacy
+  const heroImage = image ?? bgImage;
+  const bgUrl = getImageUrl(heroImage, { width: 1920 });
 
   return (
-    <section className="relative isolate overflow-hidden">
-      {/* Background + Overlay */}
+    <section className="relative overflow-hidden">
+      {/* Background */}
       {bgUrl && (
-        <div className="absolute inset-0 -z-10">
-          <Image src={bgUrl} alt={title || "Hero background"} fill sizes="100vw" priority className="object-cover" />
-          {/* Light overlay (#2bbbe2 @ 88%), Dark overlay (#0285a9 @ 88%) */}
-          <div className="absolute inset-0 bg-[rgba(43,187,226,0.88)] dark:bg-[rgba(2,133,169,0.88)]" aria-hidden="true" />
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={bgUrl}
+            alt={title || "Hero background"}
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
+          />
+          <div
+            className="absolute inset-0 bg-[#2bbbe2]/50 dark:bg-[#0285a9]/50"
+            aria-hidden="true"
+          />
         </div>
       )}
 
-      {/* Centered content; Light mode inverted = white text */}
-      <div className="flex min-h-[64vh] items-center justify-center px-6 text-center text-white">
+      {/* Content */}
+      <div className="relative z-10 flex min-h-[64vh] items-center justify-center px-6 text-center text-white">
         <div className="max-w-3xl">
-          {title && <h1 className="leading-tight text-5xl font-bold md:text-7xl">{title}</h1>}
-          {subtitle && <p className="mt-4 text-lg opacity-95 md:text-xl">{subtitle}</p>}
-
+          {eyebrow && (
+            <p className="mb-3 text-sm uppercase tracking-widest opacity-90">
+              {eyebrow}
+            </p>
+          )}
+          {title && (
+            <h1 className="text-5xl font-bold leading-tight md:text-7xl">
+              {title}
+            </h1>
+          )}
+          {subtitle && (
+            <p className="mt-4 text-lg opacity-95 md:text-xl">
+              {subtitle}
+            </p>
+          )}
           {ctaText && ctaHref && (
             <a
               href={ctaHref}
-              className="
-                mt-8 inline-flex items-center justify-center
-                rounded-lg px-6 py-3
-                bg-[#2bbbe2] text-white
-                hover:bg-[#2d2d2d]
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60
-                transition-colors
-              ">
+              className="mt-8 inline-flex rounded-lg bg-[#2bbbe2] px-6 py-3 text-white transition hover:bg-[#2d2d2d]"
+            >
               {ctaText}
             </a>
           )}
