@@ -6,7 +6,7 @@ import Link from "next/link";
 type Partner = {
   _id: string;
   name: string;
-  slug?: string;
+  slug?: string | { current: string };
   website?: string;
   logo?: {
     asset?: {
@@ -52,7 +52,7 @@ export default function PartnersSection({
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16">
+    <section className="mx-auto max-w-7xl px-4 py-4">
       {(title || description) && (
         <div className="mb-10 text-center">
           {title && <h2 className="text-3xl font-semibold">{title}</h2>}
@@ -65,31 +65,35 @@ export default function PartnersSection({
       )}
 
       <div className="overflow-hidden">
-        <div className="flex gap-14">
-          {[...partners, ...partners].map((p, i) => {
-            const logoUrl = p.logo?.asset?.url;
-            if (!logoUrl) return null;
+      <div className="flex gap-14 animate-partners-scroll hover:[animation-play-state:paused]">
+      {[...partners, ...partners].map((p, i) => {
+        const logoUrl = p.logo?.asset?.url;
+        if (!logoUrl) return null;
 
-            const href =
-              p.website || (p.slug ? `/partners/${p.slug.current}` : "#");
+        const slug =
+        typeof p.slug === "string"
+          ? p.slug
+          : p.slug?.current;
 
-            return (
-              <Link
-                key={`${p._id}-${i}`}
-                href={href}
-                target={p.website ? "_blank" : undefined}
-                className="flex min-w-[160px] items-center justify-center opacity-80 hover:opacity-100"
-              >
-                <Image
-                  src={logoUrl}
-                  alt={p.logo?.alt || p.name}
-                  width={160}
-                  height={80}
-                  className="max-h-16 w-auto object-contain grayscale hover:grayscale-0"
-                />
-              </Link>
-            );
-          })}
+        const href = p.website || (slug ? `/partners/${slug}` : "#");
+
+        return (
+          <Link
+            key={`${p._id}-${i}`}
+            href={href}
+            target={p.website ? "_blank" : undefined}
+            className="flex min-w-[160px] items-center justify-center opacity-80 hover:opacity-100"
+          >
+            <Image
+              src={logoUrl}
+              alt={p.logo?.alt || p.name}
+              width={160}
+              height={80}
+              className="max-h-16 w-auto object-contain grayscale hover:grayscale-0"
+            />
+          </Link>
+        );
+        })}
         </div>
       </div>
     </section>

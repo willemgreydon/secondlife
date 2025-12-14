@@ -28,7 +28,7 @@ import contactSection from './schemas/sections/contactSection'
 import team from './schemas/sections/team'
 import teamSection from './schemas/sections/teamSection'
 import eventsGrid from './schemas/sections/eventsGrid'
-import partnersSection from './schemas/sections/partners'
+import partnersSection from './schemas/sections/partnersSection'
 import impactStats from './schemas/sections/impactStats'
 import campaignGrid from './schemas/sections/campaignGrid'
 import campaignsSection from './schemas/sections/campaignsSection' // <-- NEU: behebt "Unknown type: campaignsSection"

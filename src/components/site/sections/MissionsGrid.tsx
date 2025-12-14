@@ -38,7 +38,7 @@ export default function MissionsGrid({
   if (!safeMissions.length) return null;
 
   return (
-    <section className="py-10 md:py-16">
+    <section className="mx-auto max-w-7xl px-4 py-4">
       <div className="container mx-auto px-4">
         {title && <h2 className="text-3xl font-bold mb-8">{title}</h2>}
 

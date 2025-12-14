@@ -248,20 +248,14 @@
 /* (keep the rest of your file as-is) */
 
 @keyframes partners-scroll {
-  from {
+  0% {
     transform: translateX(0);
   }
-  to {
+  100% {
     transform: translateX(-50%);
   }
 }
 
 .animate-partners-scroll {
-  animation: partners-scroll 35s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-partners-scroll {
-    animation: none;
-  }
+  animation: partners-scroll 30s linear infinite;
 }
