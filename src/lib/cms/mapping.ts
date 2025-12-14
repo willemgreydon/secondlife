@@ -11,7 +11,7 @@ import {
   Gallery,
   Quote,
   TeamGrid,
-  Partners,
+  PartnersSection,
   CampaignGrid,
   InitiativesGrid,
   MissionsGrid,
@@ -32,7 +32,7 @@ export const SECTION_COMPONENTS: Record<string, any> = {
   quoteSection: Quote,
   accordionSection: Accordion,
   teamSection: TeamGrid,
-  partnersSection: Partners,
+  partnersSection: PartnersSection,
   eventsGrid: EventsGrid,
   contactSection: Contact,
 

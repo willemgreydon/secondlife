@@ -18,7 +18,14 @@ export default defineType({
       name: 'logo',
       type: 'image',
       options: { hotspot: true },
-      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt text',
+          validation: r => r.required(),
+        },
+      ],
     }),
     defineField({ name: 'website', type: 'url' }),
     defineField({ name: 'excerpt', type: 'text', rows: 3 }),

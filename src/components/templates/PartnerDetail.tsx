@@ -21,7 +21,7 @@ export default function PartnerDetail({ partner }: { partner: any }) {
         <div className="relative h-40 w-60 mb-8">
           <Image
             src={partner.logo}
-            alt={partner.title}
+            alt={partner.logo?.alt || partner.name || "Partner logo"}
             fill
             className="object-contain"
           />

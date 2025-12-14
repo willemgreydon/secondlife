@@ -5,6 +5,7 @@ import statsSection from './statsSection'
 import splitSection from './splitSection'
 import gallerySection from './gallerySection'
 import quoteSection from './quoteSection'
+import partnersSection from './partnersSection'
 import videoSection from './videoSection'
 import accordionSection from './accordionSection'
 import contactSection from './contactSection'
@@ -23,6 +24,7 @@ export const sectionTypes = [
   splitSection,
   gallerySection,
   quoteSection,
+  partnersSection,
   videoSection,
   accordionSection,
   contactSection,

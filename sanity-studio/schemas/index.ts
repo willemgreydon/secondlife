@@ -44,13 +44,33 @@ const schemas = [
   page, home, mission, campaign, event, partner, teamMember, blogPost, post, initiative,
 
   // sections / blocks
-  heroSection, splitSection, statsSection, richTextSection, textBlock, imageBlock,
-  gallerySection, videoSection, quoteSection, accordionSection, contactSection,
-  team, teamSection, impactStats, initiativesGrid, eventsGrid, missionsGrid, partnersSection, campaignsSection, campaignGrid,
+  heroSection,
+  splitSection,
+  statsSection,
+  richTextSection,
+  textBlock,
+  imageBlock,
+  gallerySection,
+  videoSection,
+  quoteSection,
+  accordionSection,
+  contactSection,
+  team,
+  teamSection,
+  impactStats,
+  initiativesGrid,
+  eventsGrid,
+  missionsGrid,
+  partnersSection,
+  campaignsSection,
+  campaignGrid,
 
-  // legacy alias types (damit alte Inhalte geladen werden)
-  initiativesSection, missionsSection, eventsSection, impactStatsSection,
-  // missionsGrid,
+  // legacy alias types
+  initiativesSection,
+  missionsSection,
+  eventsSection,
+  impactStatsSection,
+
   // objects
   metric,
 ]

@@ -14,10 +14,10 @@ export default async function Page() {
 
   const [missions, initiatives, events, team, partners] = await Promise.all([
     getAllMissions(),
-    getAllPartners(),
     client.fetch(initiativesListQuery),
     client.fetch(eventsListQuery),
     client.fetch(teamListQuery),
+    getAllPartners(),
   ]);
 
   return (

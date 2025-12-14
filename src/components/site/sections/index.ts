@@ -15,7 +15,7 @@ export { default as CampaignGrid } from "./CampaignGrid";
 export { default as InitiativesGrid } from "./InitiativesGrid";
 export { default as MissionsGrid } from "./MissionsGrid";
 export { default as EventsGrid } from "./EventsGrid";
-export { default as Partners } from "./Partners";
+export { default as PartnersSection } from "./PartnersSection";
 
 // Aliases für Mappings (Falls du missionsSection/eventsSection nutzt)
 export { default as MissionsSection } from "./MissionsGrid";

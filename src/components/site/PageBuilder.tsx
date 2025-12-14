@@ -122,18 +122,23 @@ export default function PageBuilder({
           // Partners
           if (normalizedType === "partnersSection") {
             const all = Array.isArray(context.partners) ? context.partners : [];
-            const selected = Array.isArray(section.partners) ? section.partners : [];
 
-            const partners =
-              selected.length > 0
-                ? all.filter((p: any) =>
-                    selected.some((ref: any) => ref._ref === p._id)
+            const selected =
+              Array.isArray(section.partners) && section.partners.length > 0
+                ? all.filter(p =>
+                    section.partners.some((ref: any) => ref._ref === p._id)
                   )
                 : all;
 
             section = {
               ...section,
-              partners,
+              partners: selected.map(p => ({
+                ...p,
+                slug:
+                  typeof p.slug === "string"
+                    ? { current: p.slug }
+                    : p.slug,
+              })),
             };
           }
 
