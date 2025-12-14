@@ -246,3 +246,22 @@
 
 /* --- your brand utilities and hero overlay rules remain below --- */
 /* (keep the rest of your file as-is) */
+
+@keyframes partners-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-partners-scroll {
+  animation: partners-scroll 35s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-partners-scroll {
+    animation: none;
+  }
+}

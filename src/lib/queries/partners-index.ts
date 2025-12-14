@@ -1,8 +1,15 @@
-// src/lib/queries/partners-index.ts
+// lib/queries/partners-index.ts
+import { client } from "@/lib/sanity.client";
 import { groq } from "next-sanity";
-import { getServerClient } from "@/lib/sanity.preview";
 
 export async function getAllPartners() {
-  const client = await getServerClient();
-  return client.fetch(groq`*[_type == "partner"] | order(name asc)`);
+  return client.fetch(groq`
+    *[_type == "partner"] | order(name asc) {
+      _id,
+      name,
+      "slug": slug.current,
+      website,
+      "logo": logo.asset->url
+    }
+  `);
 }

@@ -20,14 +20,14 @@ export default function deskStructure(
   return S.list()
     .title("Content")
     .items([
-      singleton(S, "Home", "home"),
-      singleton(S, "TIDE", "tide"),
-      singleton(S, "Operations", "operations"),
-      singleton(S, "Join Us", "join-us"),
-      singleton(S, "Contact", "contact"),
-      singleton(S, "Organisation", "organisation"),
-
-      S.divider(),
+      // singleton(S, "Home", "home"),
+      // singleton(S, "TIDE", "tide"),
+      // singleton(S, "Operations", "operations"),
+      // singleton(S, "Join Us", "join-us"),
+      // singleton(S, "Contact", "contact"),
+      // singleton(S, "Organisation", "organisation"),
+      //
+      // S.divider(),
 
       // Page Overview
       S.listItem()
@@ -50,6 +50,11 @@ export default function deskStructure(
         .title("Campaigns")
         .schemaType("campaign")
         .child(S.documentTypeList("campaign").title("Campaigns")),
+
+      S.listItem()
+        .title("Initiatives")
+        .schemaType("initiative")
+        .child(S.documentTypeList("initiative").title("Initiatives")),
 
       S.listItem()
         .title("Partners")

@@ -16,11 +16,13 @@ type PageBuilderContext = {
   missions?: any[];
   initiatives?: any[];
   events?: any[];
+  team?: any[];
+  partners?: any[];
 };
 
 function UnknownSection({ section }: { section: any }) {
   return (
-    <div className="my-4 rounded-md bg-red-50 p-4 text-red-700 dark:bg-red-900/30 dark:text-red-200">
+    <div className="my-4 rounded-md bg-red-50 p-4 text-red-700">
       <div className="font-semibold">
         Unknown section type: <code>{String(section?._type)}</code>
       </div>
@@ -70,94 +72,85 @@ export default function PageBuilder({
   if (!sections.length) return null;
 
   return (
-    <div className="bg-white text-gray-900 transition-colors dark:bg-black dark:text-gray-100 pb-28">
+    <div className="bg-white text-gray-900 pb-28">
       <div className="space-y-10 md:space-y-14 lg:space-y-16">
         {sections.map((raw, idx) => {
           const normalizedType = normalizeSectionType(raw?._type);
           let section = { ...raw, _type: normalizedType };
 
-          // Impact Stats context fallback
+          // Impact Stats
           if (normalizedType === "impactStatsSection") {
-            const hasOwn = Array.isArray(section.metrics) && section.metrics.length > 0;
             section = {
               ...section,
-              metrics: hasOwn ? section.metrics : context.metrics ?? [],
+              metrics:
+                Array.isArray(section.metrics) && section.metrics.length
+                  ? section.metrics
+                  : context.metrics ?? [],
             };
           }
 
-          // Missions weighting & filtering
+          // Missions
           if (normalizedType === "missionsGrid") {
-            const all = Array.isArray(context.missions) ? context.missions : [];
+            const all = context.missions ?? [];
             const status = section.status ?? "all";
-            const limit =
-              typeof section.limit === "number" ? section.limit : 100;
+            const limit = typeof section.limit === "number" ? section.limit : 100;
 
             let missions = all;
             if (status !== "all") {
               missions = missions.filter((m: any) => m.status === status);
             }
-            missions = missions.slice(0, limit);
 
-            section = { ...section, missions, limit, status };
+            section = { ...section, missions: missions.slice(0, limit) };
           }
 
           // Initiatives
           if (normalizedType === "initiativesGrid") {
             const all = context.initiatives ?? [];
-            const limit =
-              typeof section.limit === "number" ? section.limit : 100;
+            const limit = typeof section.limit === "number" ? section.limit : 100;
 
-            section = {
-              ...section,
-              initiatives: all.slice(0, limit),
-              limit,
-            };
+            section = { ...section, initiatives: all.slice(0, limit) };
           }
 
           // Events
           if (normalizedType === "eventsGrid") {
             const all = context.events ?? [];
-            const limit =
-              typeof section.limit === "number" ? section.limit : 100;
+            const limit = typeof section.limit === "number" ? section.limit : 100;
+
+            section = { ...section, events: all.slice(0, limit) };
+          }
+
+          // Partners
+          if (normalizedType === "partnersSection") {
+            const all = Array.isArray(context.partners) ? context.partners : [];
+            const selected = Array.isArray(section.partners) ? section.partners : [];
+
+            const partners =
+              selected.length > 0
+                ? all.filter((p: any) =>
+                    selected.some((ref: any) => ref._ref === p._id)
+                  )
+                : all;
 
             section = {
               ...section,
-              events: all.slice(0, limit),
-              limit,
+              partners,
             };
           }
 
-          // Split-section migration (legacy support)
-          if (normalizedType === "splitSection") {
-            const isNew = section?.left || section?.right;
-            const isLegacy = section?.main || section?.side || section?.images;
+          // ✅ TEAM SECTION (CRITICAL FIX)
+          if (normalizedType === "teamSection") {
+            const all = context.team ?? [];
 
-            if (isNew) {
+            if (Array.isArray(section.members) && section.members.length > 0) {
+              const ids = section.members.map((m: any) => m._ref);
               section = {
                 ...section,
-                reversed:
-                  typeof section.reversed === "boolean"
-                    ? section.reversed
-                    : !!section.reverse,
+                members: all.filter((m: any) => ids.includes(m._id)),
               };
-            } else if (isLegacy) {
-              const firstImage = Array.isArray(section.images)
-                ? section.images[0]
-                : undefined;
-
+            } else {
               section = {
                 ...section,
-                layout: section.layout ?? "50-50",
-                reversed: !!section.reverse,
-                left: {
-                  kind: "text",
-                  text: Array.isArray(section.main) ? section.main : [],
-                },
-                right: {
-                  kind: firstImage ? "image" : "text",
-                  text: Array.isArray(section.side) ? section.side : [],
-                  image: firstImage,
-                },
+                members: all,
               };
             }
           }
@@ -165,8 +158,7 @@ export default function PageBuilder({
           const Component = SECTION_COMPONENTS[normalizedType];
           if (!Component) return <UnknownSection key={idx} section={raw} />;
 
-          const key = section._key ?? `${normalizedType}-${idx}`;
-          return <Component key={key} {...section} />;
+          return <Component key={section._key ?? idx} {...section} />;
         })}
       </div>
     </div>

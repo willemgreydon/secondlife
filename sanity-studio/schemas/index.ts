@@ -5,7 +5,7 @@ import post from './post'
 import blogPost from './blogPost'
 import mission from './mission'
 import campaign from './campaign'
-import event from './event'          // <— singular!
+import event from './event'
 import partner from './partner'
 import teamMember from './teamMember'
 import initiative from './initiative'
@@ -46,12 +46,11 @@ const schemas = [
   // sections / blocks
   heroSection, splitSection, statsSection, richTextSection, textBlock, imageBlock,
   gallerySection, videoSection, quoteSection, accordionSection, contactSection,
-  team, teamSection, impactStats, initiativesGrid, missionsGrid, eventsGrid,
-  partnersSection, campaignsSection, campaignGrid,
+  team, teamSection, impactStats, initiativesGrid, eventsGrid, missionsGrid, partnersSection, campaignsSection, campaignGrid,
 
   // legacy alias types (damit alte Inhalte geladen werden)
   initiativesSection, missionsSection, eventsSection, impactStatsSection,
-
+  // missionsGrid,
   // objects
   metric,
 ]
