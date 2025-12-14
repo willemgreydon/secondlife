@@ -1,24 +1,29 @@
 "use client";
 import Image from "next/image";
-import { getImageUrl } from "@/lib/sanity.image";
 
 type ImageBlockProps = {
-  imageUrl?: any;
+  image?: {
+    asset?: {
+      url?: string;
+    };
+  };
   alt?: string;
   caption?: string;
 };
 
-export default function ImageBlock(props: ImageBlockProps) {
-  const { imageUrl, alt, caption } = props;
-  
-  const url = typeof imageUrl === "string" ? imageUrl : getImageUrl(imageUrl);
+export default function ImageBlock({ image, alt, caption }: ImageBlockProps) {
+  const url = image?.asset?.url;
   if (!url) return null;
+
   return (
-    <figure className="mx-auto max-w-5xl px-4">
-      <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-neutral-100">
-        <Image src={url} alt={alt || ""} fill sizes="100vw" className="object-cover" />
+    <section className="mx-auto max-w-5xl px-4 py-12">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-neutral-100">
+        <Image src={url} alt={alt ?? ""} fill className="object-cover" />
       </div>
-      {caption && <figcaption className="mt-2 text-center text-sm opacity-70">{caption}</figcaption>}
-    </figure>
+
+      {caption && (
+        <p className="mt-2 text-sm text-gray-500 text-center">{caption}</p>
+      )}
+    </section>
   );
 }

@@ -1,24 +1,41 @@
 "use client";
 import Link from "next/link";
 
-type PartnersProps = {
+type Partner = {
+  _id?: string;
+  _key?: string;
+  slug?: string;
   title?: string;
-  partners?: any[];
 };
 
-export default function Partners(props: PartnersProps) {
-  const { title, partners = [] } = props;
+type PartnersProps = {
+  title?: string;
+  partners?: Partner[];
+};
 
+export default function Partners({ title, partners = [] }: PartnersProps) {
   if (!Array.isArray(partners) || partners.length === 0) return null;
+
   return (
     <section className="mx-auto max-w-6xl px-4">
       {title && <h2 className="mb-4 text-3xl font-semibold">{title}</h2>}
+
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {partners.map((p: any) => (
-          <li key={p._id} className="rounded-2xl border p-4">
-            <Link href={`/partners/${p.slug}`} className="text-lg font-semibold hover:underline">
-              {p.title}
-            </Link>
+        {partners.map((p, index) => (
+          <li
+            key={p._id ?? p._key ?? `${p.slug}-${index}`}
+            className="rounded-2xl border p-4"
+          >
+            {p.slug ? (
+              <Link
+                href={`/partners/${p.slug}`}
+                className="text-lg font-semibold hover:underline"
+              >
+                {p.title}
+              </Link>
+            ) : (
+              <span className="text-lg font-semibold">{p.title}</span>
+            )}
           </li>
         ))}
       </ul>

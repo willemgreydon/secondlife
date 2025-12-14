@@ -9,8 +9,8 @@ type HeroProps = {
   subtitle?: string;
   ctaText?: string;
   ctaHref?: string;
-  image?: any;        // ✅ NEW canonical field
-  bgImage?: any;      // ✅ legacy fallback
+  image?: any;
+  bgImage?: any;
 };
 
 export default function Hero({
@@ -22,7 +22,7 @@ export default function Hero({
   image,
   bgImage,
 }: HeroProps) {
-  // ✅ Prefer new field, fallback to legacy
+  
   const heroImage = image ?? bgImage;
   const bgUrl = getImageUrl(heroImage, { width: 1920 });
 

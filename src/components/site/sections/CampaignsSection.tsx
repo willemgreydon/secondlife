@@ -1,12 +1,10 @@
-// src/components/site/sections/CampaignsSection.tsx
-
 "use client";
 
-import CampaignGrid, { CampaignGridProps } from "./CampaignGrid";
+import CampaignGrid, { Campaign } from "./CampaignGrid";
 
 type CampaignsSectionProps = {
   title?: string;
-  campaigns?: CampaignGridProps["campaigns"];
+  campaigns?: Campaign[];
   limit?: number;
 };
 
@@ -15,6 +13,10 @@ export default function CampaignsSection({
   campaigns = [],
   limit = 100,
 }: CampaignsSectionProps) {
+  if (!Array.isArray(campaigns) || campaigns.length === 0) {
+    return null;
+  }
+
   return (
     <CampaignGrid
       title={title}

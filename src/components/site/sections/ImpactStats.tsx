@@ -13,7 +13,7 @@ type ImpactStatsProps = {
 
 export default function ImpactStats(props: ImpactStatsProps) {
   const { title = "Impact So Far", metrics = [] } = props;
-  
+
   if (!Array.isArray(metrics) || metrics.length === 0) return null;
   return (
     <section className="mx-auto max-w-6xl px-4">

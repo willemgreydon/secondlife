@@ -20,7 +20,7 @@ export type InitiativesGridProps = {
 
 export default function InitiativesGrid(props: InitiativesGridProps) {
   const { title, initiatives = [], limit = 100 } = props;
-  
+
   const items = initiatives.slice(0, limit);
 
   return (

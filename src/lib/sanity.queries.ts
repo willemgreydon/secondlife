@@ -42,18 +42,56 @@ export const pageBySlugQuery = groq`
  * PAGE WITH NORMALIZED CONTENT
  * ---------------------------------------------------------
  */
-export const pageWithContentBySlugQuery = groq`
-  *[_type == "page" && slug.current == $slug][0]{
-    _id,
-    title,
-    "slug": slug.current,
+ export const pageWithContentBySlugQuery = groq`
+   *[_type == "page" && slug.current == $slug][0]{
+     _id,
+     title,
+     "slug": slug.current,
 
-    // ✅ SINGLE SOURCE OF TRUTH
-    "content": coalesce(contentSections, content, sections, [])[]{
-      ...
-    }
-  }
-`;
+     // ✅ SINGLE SOURCE OF TRUTH
+     "content": coalesce(contentSections, content, sections, [])[]{
+       ...,
+
+       // -----------------------------
+       // HERO
+       // -----------------------------
+       _type == "heroSection" => {
+         _type,
+         _key,
+         eyebrow,
+         title,
+         subtitle,
+         ctaHref,
+         "ctaText": coalesce(ctaText, ctaLabel),
+         "bgImage": coalesce(image, bgImage)
+       },
+
+       // -----------------------------
+       // GALLERY (THIS WAS MISSING)
+       // -----------------------------
+       _type == "gallerySection" => {
+         _type,
+         _key,
+         columns,
+         images[]{
+           _key,
+           alt,
+           caption,
+           asset->{
+             _id,
+             url,
+             metadata {
+               dimensions {
+                 width,
+                 height
+               }
+             }
+           }
+         }
+       }
+     }
+   }
+ `;
 
 
 /**
