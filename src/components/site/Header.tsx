@@ -4,7 +4,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import ThemeToggle from '@/components/site/ThemeToggle'
-import Navigation, { type NavItem } from '@/components/ui/molecules/navigation'
+import Navigation from '@/components/ui/molecules/navigation'
+
+type NavLink = { href: string; label: string }
+type NavGroup = { label: string; children: NavLink[] }
+
+function isNavGroup(item: NavLink | NavGroup): item is NavGroup {
+  return 'children' in item
+}
 
 const MISSIONS = [
   { href: '/missions', label: 'Current Missions' },
@@ -13,7 +20,7 @@ const MISSIONS = [
   { href: '/missions/revolutionizing-beach-cleanups', label: 'Revolutionizing Beach Clean-Ups' },
 ]
 
-const NAV_MAIN: NavItem[] = [
+const NAV_MAIN = [
   { type: 'link', href: '/tide', label: 'TIDE' },
   {
     type: 'group',
@@ -97,23 +104,33 @@ export default function Header() {
       {open && (
         <div className="xl:hidden border-t border-border bg-background">
           <nav className="space-y-2 px-4 py-4">
-            {NAV_MAIN.map(item =>
-              'children' in item ? (
-                <details key={item.label}>
-                  <summary className="menu-anchor">{item.label}</summary>
-                  <div className="pl-4">
-                    {item.children.map(c => (
-                      <Link key={c.href} href={c.href} className="menu-anchor block">
-                        {c.label}
-                      </Link>
-                    ))}
-                  </div>
-                </details>
-              ) : (
-                <Link key={item.href} href={item.href} className="menu-anchor block">
-                  {item.label}
-                </Link>
-              )
+          {NAV_MAIN.map(item =>
+            isNavGroup(item) ? (
+              <details key={item.label}>
+                <summary className="menu-anchor">{item.label}</summary>
+                <div className="pl-4">
+                  {item.children.map(c => (
+                    <Link
+                      key={c.href}
+                      href={c.href}
+                      className="menu-anchor block"
+                      onClick={() => setOpen(false)}
+                    >
+                      {c.label}
+                    </Link>
+                  ))}
+                </div>
+              </details>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="menu-anchor block"
+                onClick={() => setOpen(false)}
+              >
+                {item.label}
+              </Link>
+            )
             )}
           </nav>
         </div>
