@@ -15,7 +15,7 @@ type Mission = {
 type MissionsGridProps = {
   title?: string;
   missions?: Mission[];
-  status?: string;     // ✅ ADD
+  status?: string;
   limit?: number;
 };
 
@@ -27,7 +27,7 @@ export default function MissionsGrid({
 }: MissionsGridProps) {
   if (!Array.isArray(missions)) return null;
 
-  // ✅ STATUS FILTER (editor-driven)
+  // Status filter (editor-driven)
   const filtered =
     status && status !== "all"
       ? missions.filter((m) => m.status === status)
@@ -40,14 +40,14 @@ export default function MissionsGrid({
   return (
     <section className="mx-auto max-w-7xl px-4 py-4">
       <div className="container mx-auto px-4">
-        {title && <h2 className="text-3xl font-bold mb-8">{title}</h2>}
+        {title && <h2 className="mb-8 text-3xl font-bold">{title}</h2>}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {safeMissions.map((m, i) => (
             <a
               key={m._key || m._id || i}
               href={m.slug ? `/missions/${m.slug}` : "#"}
-              className="block rounded-lg overflow-hidden bg-white shadow hover:shadow-lg transition"
+              className="block overflow-hidden rounded-lg bg-white shadow transition hover:shadow-lg"
             >
               {m.coverUrl && (
                 <div className="relative h-48 w-full">
@@ -55,16 +55,19 @@ export default function MissionsGrid({
                     src={m.coverUrl}
                     alt={m.title ?? ""}
                     fill
+                    sizes="(max-width: 640px) 100vw,
+                           (max-width: 1024px) 50vw,
+                           33vw"
                     className="object-cover"
                   />
                 </div>
               )}
 
               <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">{m.title}</h3>
+                <h3 className="mb-2 text-lg font-semibold">{m.title}</h3>
 
                 {m.status && (
-                  <p className="text-sm text-gray-500 mb-2">
+                  <p className="mb-2 text-sm text-gray-500">
                     Status: {m.status}
                   </p>
                 )}

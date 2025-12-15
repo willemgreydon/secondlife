@@ -35,31 +35,24 @@ export default function Navigation({ links }: NavigationProps) {
     return () => window.removeEventListener('keydown', onEsc)
   }, [])
 
-  const isExactActive = (href: string) =>
-    href.startsWith('/operations')
-      ? pathname === '/operations'
-      : pathname === href
-
-  const isSectionActive = (children: { href: string; label: string }[]) =>
-    children.some(c =>
-      c.href.startsWith('/operations')
-        ? pathname === '/operations'
-        : pathname === c.href || pathname.startsWith(c.href + '/')
-    )
+  const isExactActive = (href: string) => pathname === href
+  const isChildActive = (href: string) =>
+    pathname === href || pathname.startsWith(href + '/')
+  const isGroupActive = (children: { href: string; label: string }[]) =>
+    children.some(c => isChildActive(c.href))
 
   return (
     <nav className="flex items-center gap-6">
       {links.map(item => {
         if ('children' in item) {
-          const key = item.label
-          const openNow = openKey === key
-          const activeParent = isSectionActive(item.children)
+          const openNow = openKey === item.label
+          const activeParent = isGroupActive(item.children)
 
           return (
             <div
-              key={key}
+              key={item.label}
               className="relative"
-              onMouseEnter={() => open(key)}
+              onMouseEnter={() => open(item.label)}
               onMouseLeave={closeWithDelay}
             >
               <button
@@ -77,7 +70,7 @@ export default function Navigation({ links }: NavigationProps) {
                       key={c.href}
                       href={c.href}
                       className={`menu-anchor block ${
-                        isExactActive(c.href) ? 'active' : ''
+                        isChildActive(c.href) ? 'active' : ''
                       }`}
                     >
                       {c.label}

@@ -2,8 +2,7 @@ import { groq } from "next-sanity"
 import { client } from "@/lib/sanity.client"
 
 /**
- * Fetch single page by slug
- * Defensive: never send undefined params to Sanity
+ * Fetch single page by slug (defensive)
  */
 export async function getPageBySlug(slug?: string) {
   if (!slug) return null
@@ -22,8 +21,8 @@ export async function getPageBySlug(slug?: string) {
 }
 
 /**
- * Fetch ALL operation pages
- * Used by generateStaticParams()
+ * Fetch all operation pages
+ * Used for generateStaticParams()
  */
 export async function getAllOperationPages() {
   return client.fetch(
@@ -34,7 +33,7 @@ export async function getAllOperationPages() {
         && slug.current in [
           "beach-cleanups",
           "revolutionizing-beach-cleanups",
-          "dana-24-vlc"
+          "dana-24-valencia"
         ]
       ]{
         slug

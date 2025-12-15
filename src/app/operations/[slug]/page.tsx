@@ -8,7 +8,7 @@ type Props = {
 
 /**
  * Operations · Dynamic operation page
- * Next.js 16–compatible (async params)
+ * Next.js 16–correct implementation
  */
 export default async function Page({ params }: Props) {
   const { slug } = await params
@@ -37,6 +37,6 @@ export async function generateStaticParams() {
 }
 
 /**
- * Only allow statically generated slugs
+ * Only allow statically known slugs
  */
 export const dynamicParams = false
