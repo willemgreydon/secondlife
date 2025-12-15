@@ -17,6 +17,7 @@ import {
   MissionsGrid,
   EventsGrid,
   Contact,
+  ContactFormSection,
 } from "@/components/site/sections";
 
 export const SECTION_COMPONENTS: Record<string, any> = {
@@ -40,4 +41,5 @@ export const SECTION_COMPONENTS: Record<string, any> = {
   missionsGrid: MissionsGrid,
   initiativesGrid: InitiativesGrid,
   campaignGrid: CampaignGrid,
+  contactFormSection: ContactFormSection,
 };

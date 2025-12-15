@@ -41,6 +41,7 @@ export default defineType({
         {type: 'statsSection'},
         {type: 'accordionSection'},
         {type: 'contactSection'},
+        {type: 'contactFormSection'},
 
         // Grids
         {type: 'campaignsSection'},

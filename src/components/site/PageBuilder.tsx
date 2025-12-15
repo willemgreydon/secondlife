@@ -56,6 +56,7 @@ function normalizeSectionType(rawType: string): string {
     initiativesSection: "initiativesGrid",
     eventsSection: "eventsGrid",
     partnersSection: "partnersSection",
+    contactFormSection: "contactFormSection",
   };
 
   return alias[rawType] ?? rawType;

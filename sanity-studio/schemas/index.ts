@@ -15,6 +15,7 @@ import accordionSection from './sections/accordionSection'
 import campaignGrid from './sections/campaignGrid'
 import campaignsSection from './sections/campaignsSection'
 import contactSection from './sections/contactSection'
+import contactFormSection from "./sections/contactFormSection";
 import eventsGrid from './sections/eventsGrid'
 import eventsSection from './sections/eventsSection'
 import gallerySection from './sections/gallerySection'
@@ -70,6 +71,7 @@ const schemas = [
   missionsSection,
   eventsSection,
   impactStatsSection,
+  contactFormSection,
 
   // objects
   metric,

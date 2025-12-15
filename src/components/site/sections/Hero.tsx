@@ -11,6 +11,7 @@ type HeroProps = {
   ctaHref?: string;
   image?: any;
   bgImage?: any;
+  size?: 'large' | 'default' | 'small';
 };
 
 export default function Hero({
@@ -21,10 +22,20 @@ export default function Hero({
   ctaHref,
   image,
   bgImage,
+  size,
 }: HeroProps) {
   
   const heroImage = image ?? bgImage;
   const bgUrl = getImageUrl(heroImage, { width: 1920 });
+
+  const HERO_HEIGHTS: Record<
+    NonNullable<HeroProps['size']>,
+    string
+  > = {
+    large: 'min-h-[90vh] md:min-h-screen',
+    default: 'min-h-[64vh]',
+    small: 'min-h-[40vh] md:min-h-[48vh]',
+  };
 
   return (
     <section className="relative overflow-hidden">
@@ -47,7 +58,7 @@ export default function Hero({
       )}
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[64vh] items-center justify-center px-6 text-center text-white">
+      <div className={`relative z-10 flex items-center justify-center px-6 text-center text-white ${HERO_HEIGHTS[size ?? 'default']}`}>
         <div className="max-w-3xl">
           {eyebrow && (
             <p className="mb-3 text-sm uppercase tracking-widest opacity-90">

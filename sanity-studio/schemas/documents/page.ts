@@ -10,6 +10,7 @@ const sectionOf = [
   {type: 'statsSection'},
   {type: 'accordionSection'},
   {type: 'contactSection'},
+  {type: "contactFormSection"},
   {type: 'imageBlock'},
 
   {type: 'missionsGrid'},

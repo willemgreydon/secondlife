@@ -8,6 +8,23 @@ export default defineType({
   fields: [
     defineField({ name: 'eyebrow', type: 'string', title: 'Eyebrow' }),
     defineField({ name: 'title', type: 'string', validation: r => r.required() }),
+    defineField({
+      name: 'size',
+      title: 'Hero Height',
+      type: 'string',
+      initialValue: 'default',
+      options: {
+        list: [
+          { title: 'Large (Hero)', value: 'large' },
+          { title: 'Default', value: 'default' },
+          { title: 'Small (Compact)', value: 'small' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+      description:
+        'Controls the vertical height of the hero section.',
+    }),
     defineField({ name: 'subtitle', type: 'text', rows: 3 }),
 
     defineField({ name: 'ctaText', type: 'string', title: 'CTA Text' }),

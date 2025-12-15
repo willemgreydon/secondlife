@@ -20,3 +20,5 @@ export { default as PartnersSection } from "./PartnersSection";
 // Aliases für Mappings (Falls du missionsSection/eventsSection nutzt)
 export { default as MissionsSection } from "./MissionsGrid";
 export { default as EventsSection } from "./EventsGrid";
+
+export { default as ContactFormSection } from "./ContactFormSection";
