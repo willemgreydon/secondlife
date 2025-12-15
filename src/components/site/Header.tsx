@@ -13,33 +13,32 @@ function isNavGroup(item: NavLink | NavGroup): item is NavGroup {
   return 'children' in item
 }
 
-const MISSIONS = [
-  { href: '/missions', label: 'Current Missions' },
-  { href: '/missions/beach-cleanups', label: 'Beach Clean-Ups' },
-  { href: '/missions/dana-24-vlc', label: 'DANA 24 VLC' },
-  { href: '/missions/revolutionizing-beach-cleanups', label: 'Revolutionizing Beach Clean-Ups' },
-]
-
 const NAV_MAIN = [
-  { type: 'link', href: '/tide', label: 'TIDE' },
+  { 
+    href: '/tide', label: 'TIDE' 
+  },
+
+  // Missions = listing only
   {
-    type: 'group',
-    label: 'Missions',
+    href: '/missions', label: 'Missions', 
+  },
+
+  // Operations = anchors
+  {
+    label: 'Operations',
     children: [
-      { href: '/missions', label: 'Current Missions' },
-      { href: '/missions/beach-cleanups', label: 'Beach Clean-Ups' },
-      { href: '/missions/dana-24-vlc', label: 'DANA 24 VLC' },
+      { href: '/operations/beach-cleanups', label: 'Beach Clean-Ups' },
       {
-        href: '/missions/revolutionizing-beach-cleanups',
+        href: '/operations/revolutionizing-beach-cleanups',
         label: 'Revolutionizing Beach Clean-Ups',
       },
+      { href: '/operations/dana-24-valencia', label: 'DANA 24 Valencia' },
     ],
   },
-  { type: 'link', href: '/operations', label: 'Operations' },
-  { type: 'link', href: '/our-team', label: 'Our Team' },
-  { type: 'link', href: '/contact', label: 'Contact' },
-]
 
+  { href: '/our-team', label: 'Our Team' },
+  { href: '/contact', label: 'Contact' },
+]
 
 export default function Header() {
   const [open, setOpen] = useState(false)
@@ -47,19 +46,18 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-
-        {/* Logo (always left) */}
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image src="/emblem-sl.png" alt="Second Life e.V." width={28} height={28} />
           <span className="font-semibold">Second Life e.V.</span>
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop */}
         <div className="hidden xl:flex flex-1 items-center pl-10">
           <Navigation links={NAV_MAIN} />
         </div>
 
-        {/* Right cluster (tablet + desktop) */}
+        {/* Right cluster */}
         <div className="hidden md:flex items-center gap-3">
           <Link
             href="/join-us"
@@ -77,7 +75,6 @@ export default function Header() {
 
           <ThemeToggle />
 
-          {/* Burger only on tablet */}
           <button
             className="xl:hidden rounded p-2 hover:bg-black/5 dark:hover:bg-white/10"
             onClick={() => setOpen(v => !v)}
@@ -87,7 +84,7 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile right */}
+        {/* Mobile */}
         <div className="flex items-center gap-2 md:hidden">
           <ThemeToggle />
           <button
@@ -100,37 +97,37 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Dropdown (mobile + tablet) */}
+      {/* Mobile dropdown */}
       {open && (
         <div className="xl:hidden border-t border-border bg-background">
           <nav className="space-y-2 px-4 py-4">
-          {NAV_MAIN.map(item =>
-            isNavGroup(item) ? (
-              <details key={item.label}>
-                <summary className="menu-anchor">{item.label}</summary>
-                <div className="pl-4">
-                  {item.children.map(c => (
-                    <Link
-                      key={c.href}
-                      href={c.href}
-                      className="menu-anchor block"
-                      onClick={() => setOpen(false)}
-                    >
-                      {c.label}
-                    </Link>
-                  ))}
-                </div>
-              </details>
-            ) : (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="menu-anchor block"
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-              </Link>
-            )
+            {NAV_MAIN.map(item =>
+              isNavGroup(item) ? (
+                <details key={item.label}>
+                  <summary className="menu-anchor">{item.label}</summary>
+                  <div className="pl-4">
+                    {item.children.map(c => (
+                      <Link
+                        key={c.href}
+                        href={c.href}
+                        className="menu-anchor block"
+                        onClick={() => setOpen(false)}
+                      >
+                        {c.label}
+                      </Link>
+                    ))}
+                  </div>
+                </details>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="menu-anchor block"
+                  onClick={() => setOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              )
             )}
           </nav>
         </div>

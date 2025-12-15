@@ -35,15 +35,21 @@ export default function Navigation({ links }: NavigationProps) {
     return () => window.removeEventListener('keydown', onEsc)
   }, [])
 
-  const isExactActive = (href: string) => pathname === href
+  const isExactActive = (href: string) =>
+    href.startsWith('/operations')
+      ? pathname === '/operations'
+      : pathname === href
+
   const isSectionActive = (children: { href: string; label: string }[]) =>
-    children.some(
-      (c) => pathname === c.href || pathname.startsWith(c.href + '/')
+    children.some(c =>
+      c.href.startsWith('/operations')
+        ? pathname === '/operations'
+        : pathname === c.href || pathname.startsWith(c.href + '/')
     )
 
   return (
     <nav className="flex items-center gap-6">
-      {links.map((item) => {
+      {links.map(item => {
         if ('children' in item) {
           const key = item.label
           const openNow = openKey === key
@@ -66,7 +72,7 @@ export default function Navigation({ links }: NavigationProps) {
 
               {openNow && (
                 <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-border bg-popover p-2 shadow-lg">
-                  {item.children.map((c) => (
+                  {item.children.map(c => (
                     <Link
                       key={c.href}
                       href={c.href}
