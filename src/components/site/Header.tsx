@@ -2,29 +2,22 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ThemeToggle from '@/components/site/ThemeToggle'
 import Navigation from '@/components/ui/molecules/navigation'
 
 type NavLink = { href: string; label: string }
-type NavGroup = { label: string; children: NavLink[] }
+type NavGroup = { label: string; href: string; children: NavLink[] }
 
 function isNavGroup(item: NavLink | NavGroup): item is NavGroup {
   return 'children' in item
 }
 
-const NAV_MAIN = [
+const NAV_MAIN: (NavLink | NavGroup)[] = [
+  { href: '/tide', label: 'TIDE' },
+  { href: '/missions', label: 'Missions' },
   {
-    href: '/tide', label: 'TIDE'
-  },
-
-  // Missions = listing only
-  {
-    href: '/missions', label: 'Missions',
-  },
-
-  // Operations = anchors
-  {
+    href: '/operations',
     label: 'Operations',
     children: [
       { href: '/operations/beach-cleanups', label: 'Beach Clean-Ups' },
@@ -35,20 +28,30 @@ const NAV_MAIN = [
       { href: '/operations/dana-24-valencia', label: 'DANA 24 Valencia' },
     ],
   },
-
   { href: '/our-team', label: 'Our Team' },
   { href: '/contact', label: 'Contact' },
 ]
 
 export default function Header() {
   const [open, setOpen] = useState(false)
+  const [mobileOpenGroup, setMobileOpenGroup] = useState<string | null>(null)
+
+  // Reset expanded group when mobile menu closes
+  useEffect(() => {
+    if (!open) setMobileOpenGroup(null)
+  }, [open])
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/emblem-sl.png" alt="Second Life e.V." width={28} height={28} />
+          <Image
+            src="/emblem-sl.png"
+            alt="Second Life e.V."
+            width={28}
+            height={28}
+          />
           <span className="font-semibold">Second Life e.V.</span>
         </Link>
 
@@ -84,7 +87,7 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile */}
+        {/* Mobile header */}
         <div className="flex items-center gap-2 md:hidden">
           <ThemeToggle />
           <button
@@ -100,25 +103,58 @@ export default function Header() {
       {/* Mobile dropdown */}
       {open && (
         <div className="xl:hidden border-t border-border bg-background">
-          <nav className="space-y-2 px-4 py-4">
-            {NAV_MAIN.map(item =>
-              isNavGroup(item) ? (
-                <details key={item.label}>
-                  <summary className="menu-anchor">{item.label}</summary>
-                  <div className="pl-4">
-                    {item.children.map(c => (
+          <nav className="space-y-3 px-4 py-4">
+            {NAV_MAIN.map(item => {
+              if (isNavGroup(item)) {
+                const isOpen = mobileOpenGroup === item.label
+
+                return (
+                  <div key={item.label} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      {/* Parent link */}
                       <Link
-                        key={c.href}
-                        href={c.href}
-                        className="menu-anchor block"
+                        href={item.href}
+                        className="menu-anchor"
                         onClick={() => setOpen(false)}
                       >
-                        {c.label}
+                        {item.label}
                       </Link>
-                    ))}
+
+                      {/* Toggle */}
+                      <button
+                        type="button"
+                        aria-expanded={isOpen}
+                        aria-label={`Toggle ${item.label} menu`}
+                        className="rounded p-2 opacity-70 hover:opacity-100"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          setMobileOpenGroup(isOpen ? null : item.label)
+                        }}
+                      >
+                        ▾
+                      </button>
+                    </div>
+
+                    {isOpen && (
+                      <div className="pl-4">
+                        {item.children.map(c => (
+                          <Link
+                            key={c.href}
+                            href={c.href}
+                            className="menu-anchor block"
+                            onClick={() => setOpen(false)}
+                          >
+                            {c.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </details>
-              ) : (
+                )
+              }
+
+              return (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -128,7 +164,7 @@ export default function Header() {
                   {item.label}
                 </Link>
               )
-            )}
+            })}
           </nav>
         </div>
       )}

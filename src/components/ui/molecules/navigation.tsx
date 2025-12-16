@@ -4,9 +4,11 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 
+type NavLink = { href: string; label: string }
+
 type NavItem =
-  | { href: string; label: string }
-  | { label: string; children: { href: string; label: string }[] }
+  | NavLink
+  | { href: string; label: string; children: NavLink[] }
 
 interface NavigationProps {
   links: NavItem[]
@@ -35,10 +37,15 @@ export default function Navigation({ links }: NavigationProps) {
     return () => window.removeEventListener('keydown', onEsc)
   }, [])
 
+  // ✅ Close dropdown on route change
+  useEffect(() => {
+    setOpenKey(null)
+  }, [pathname])
+
   const isExactActive = (href: string) => pathname === href
   const isChildActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/')
-  const isGroupActive = (children: { href: string; label: string }[]) =>
+  const isGroupActive = (children: NavLink[]) =>
     children.some(c => isChildActive(c.href))
 
   return (
@@ -55,13 +62,28 @@ export default function Navigation({ links }: NavigationProps) {
               onMouseEnter={() => open(item.label)}
               onMouseLeave={closeWithDelay}
             >
-              <button
-                type="button"
-                className={`menu-anchor ${activeParent ? 'active' : ''}`}
-                aria-expanded={openNow}
-              >
-                {item.label}
-              </button>
+              <div className="flex items-center gap-1">
+                <Link
+                  href={item.href}
+                  className={`menu-anchor ${activeParent ? 'active' : ''}`}
+                >
+                  {item.label}
+                </Link>
+
+                <button
+                  type="button"
+                  className="rounded-md px-1 py-2 opacity-70 hover:opacity-100"
+                  aria-expanded={openNow}
+                  aria-label={`${item.label} menu`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setOpenKey(openNow ? null : item.label)
+                  }}
+                >
+                  ▾
+                </button>
+              </div>
 
               {openNow && (
                 <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-border bg-popover p-2 shadow-lg">
@@ -72,6 +94,7 @@ export default function Navigation({ links }: NavigationProps) {
                       className={`menu-anchor block ${
                         isChildActive(c.href) ? 'active' : ''
                       }`}
+                      onClick={() => setOpenKey(null)}
                     >
                       {c.label}
                     </Link>
