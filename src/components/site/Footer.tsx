@@ -20,6 +20,10 @@ export default function Footer() {
               <li><Link href="/missions" className="hover:underline">Missions</Link></li>
               <li><Link href="/operations" className="hover:underline">Operations</Link></li>
               <li><Link href="/our-team" className="hover:underline">Our Team</Link></li>
+              <li><Link href="/code-of-conduct" className="hover:underline">Code of Conduct</Link></li>
+              <li><Link href="/privacy-policy" className="hover:underline">Privacy Policy</Link></li>
+              <li><Link href="/data-access-portability" className="hover:underline">Data Access & Portability</Link></li>
+              <li><Link href="/accessibility" className="hover:underline">Accessibility</Link></li>
               <li><Link href="/imprint" className="hover:underline">Imprint</Link></li>
               <li><Link href="/contact" className="hover:underline">Contact</Link></li>
             </ul>
