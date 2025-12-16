@@ -12,20 +12,37 @@ const MONTHLY_PRICES: Record<number, string> = {
 export default function DonatePage() {
   const [recurring, setRecurring] = useState(false);
   const [amount, setAmount] = useState(10);
+  const [loading, setLoading] = useState(false);
 
   const startCheckout = async () => {
-    const res = await fetch("/api/stripe/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        recurring,
-        amount,
-        priceId: recurring ? MONTHLY_PRICES[amount] : null,
-      }),
-    });
+    try {
+      setLoading(true);
 
-    const data = await res.json();
-    window.location.href = data.url;
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          recurring
+            ? { recurring: true, priceId: MONTHLY_PRICES[amount] }
+            : { recurring: false, amount }
+        ),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.url) {
+        console.error("Checkout failed:", data);
+        alert("Spenden-Checkout fehlgeschlagen. Bitte erneut versuchen.");
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      console.error("Unexpected checkout error:", err);
+      alert("Ein Fehler ist aufgetreten. Bitte später erneut versuchen.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -65,7 +82,7 @@ export default function DonatePage() {
         ))}
       </div>
 
-      {/* Custom */}
+      {/* Custom amount (one-time only) */}
       {!recurring && (
         <input
           type="number"
@@ -79,9 +96,10 @@ export default function DonatePage() {
 
       <button
         onClick={startCheckout}
-        className="w-full bg-black text-white py-4 text-lg"
+        disabled={loading}
+        className="w-full bg-black text-white py-4 text-lg disabled:opacity-60"
       >
-        Jetzt unterstützen
+        {loading ? "Weiterleiten …" : "Jetzt unterstützen"}
       </button>
     </main>
   );
