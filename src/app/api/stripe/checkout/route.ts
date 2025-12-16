@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import Stripe from "stripe";
 
 // One-time donation product
