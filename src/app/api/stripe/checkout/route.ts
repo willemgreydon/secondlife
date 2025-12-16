@@ -2,38 +2,29 @@ export const runtime = "nodejs";
 
 import Stripe from "stripe";
 
-// One-time donation product
-const ONE_TIME_PRODUCT_ID = "prod_Tc9TqExZaN6ErS";
-
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
-
-  if (!key) {
-    throw new Error("STRIPE_SECRET_KEY is missing at runtime");
-  }
-
+  if (!key) throw new Error("STRIPE_SECRET_KEY missing");
   return new Stripe(key);
 }
 
 export async function POST(req: Request) {
   try {
-    const stripe = getStripe(); // ✅ lazy, runtime-only
+    const stripe = getStripe();
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
     if (!siteUrl || !siteUrl.startsWith("http")) {
-      throw new Error(
-        `Invalid NEXT_PUBLIC_SITE_URL: "${siteUrl}"`
-      );
+      throw new Error("Invalid NEXT_PUBLIC_SITE_URL");
     }
 
     const body = await req.json();
-    const { amount, recurring, priceId } = body;
+    const { amount, recurring } = body;
 
     // ======================
     // ONE-TIME DONATION
     // ======================
     if (!recurring) {
-      if (!amount || typeof amount !== "number" || amount <= 0) {
+      if (!amount || amount <= 0) {
         throw new Error("Invalid donation amount");
       }
 
@@ -44,8 +35,12 @@ export async function POST(req: Request) {
           {
             price_data: {
               currency: "eur",
-              product: ONE_TIME_PRODUCT_ID,
               unit_amount: Math.round(amount * 100),
+              product_data: {
+                name: "Spende an Second Life e.V.",
+                description:
+                  "Unterstützung für KI-gestützte Umwelt- und Küstenschutzprojekte",
+              },
             },
             quantity: 1,
           },
@@ -54,7 +49,6 @@ export async function POST(req: Request) {
         cancel_url: `${siteUrl}/donate`,
         metadata: {
           donation_type: "one_time",
-          organization: "Second Life e.V.",
         },
       });
 
@@ -64,8 +58,8 @@ export async function POST(req: Request) {
     // ======================
     // MONTHLY DONATION
     // ======================
-    if (!priceId || typeof priceId !== "string") {
-      throw new Error("Missing or invalid priceId");
+    if (!amount || amount <= 0) {
+      throw new Error("Invalid monthly amount");
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -73,7 +67,16 @@ export async function POST(req: Request) {
       payment_method_types: ["card", "sepa_debit"],
       line_items: [
         {
-          price: priceId,
+          price_data: {
+            currency: "eur",
+            unit_amount: Math.round(amount * 100),
+            recurring: { interval: "month" },
+            product_data: {
+              name: "Monatliche Spende an Second Life e.V.",
+              description:
+                "Regelmäßige Unterstützung für nachhaltige Umweltmissionen",
+            },
+          },
           quantity: 1,
         },
       ],
@@ -81,7 +84,6 @@ export async function POST(req: Request) {
       cancel_url: `${siteUrl}/donate`,
       metadata: {
         donation_type: "monthly",
-        organization: "Second Life e.V.",
       },
     });
 
@@ -91,7 +93,9 @@ export async function POST(req: Request) {
 
     return new Response(
       JSON.stringify({
-        error: error.message || "Stripe checkout failed",
+        error: error.message,
+        type: error.type,
+        code: error.code,
       }),
       { status: 500 }
     );

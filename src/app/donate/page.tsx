@@ -15,34 +15,27 @@ export default function DonatePage() {
   const [loading, setLoading] = useState(false);
 
   const startCheckout = async () => {
-    try {
-      setLoading(true);
+    setLoading(true);
 
-      const res = await fetch("/api/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          recurring
-            ? { recurring: true, priceId: MONTHLY_PRICES[amount] }
-            : { recurring: false, amount }
-        ),
-      });
+    const res = await fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        recurring,
+        amount,
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok || !data?.url) {
-        console.error("Checkout failed:", data);
-        alert("Spenden-Checkout fehlgeschlagen. Bitte erneut versuchen.");
-        return;
-      }
-
-      window.location.href = data.url;
-    } catch (err) {
-      console.error("Unexpected checkout error:", err);
-      alert("Ein Fehler ist aufgetreten. Bitte später erneut versuchen.");
-    } finally {
+    if (!res.ok || !data?.url) {
+      console.error("Checkout failed:", data);
+      alert("Spenden-Checkout fehlgeschlagen. Bitte erneut versuchen.");
       setLoading(false);
+      return;
     }
+
+    window.location.href = data.url;
   };
 
   return (
