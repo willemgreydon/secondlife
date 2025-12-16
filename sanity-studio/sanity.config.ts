@@ -20,7 +20,7 @@ const dataset =
 const apiVersion =
   process.env.SANITY_STUDIO_API_VERSION ||
   process.env.NEXT_PUBLIC_SANITY_API_VERSION ||
-  "2025-01-01"
+  "2024-10-01"
 
 // 2) Hard error if missing
 if (!projectId || !dataset) {
@@ -42,6 +42,7 @@ export default defineConfig({
   projectId,
   dataset,
   apiVersion,
+  token: process.env.SANITY_STUDIO_API_TOKEN,
   useCdn: false,
 
   name: 'default',
