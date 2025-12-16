@@ -14,13 +14,13 @@ function isNavGroup(item: NavLink | NavGroup): item is NavGroup {
 }
 
 const NAV_MAIN = [
-  { 
-    href: '/tide', label: 'TIDE' 
+  {
+    href: '/tide', label: 'TIDE'
   },
 
   // Missions = listing only
   {
-    href: '/missions', label: 'Missions', 
+    href: '/missions', label: 'Missions',
   },
 
   // Operations = anchors

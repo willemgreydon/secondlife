@@ -18,7 +18,9 @@ export default function Footer() {
             <ul className="mt-2 space-y-1 text-sm">
               <li><Link href="/tide" className="hover:underline">TIDE</Link></li>
               <li><Link href="/missions" className="hover:underline">Missions</Link></li>
+              <li><Link href="/operations" className="hover:underline">Operations</Link></li>
               <li><Link href="/our-team" className="hover:underline">Our Team</Link></li>
+              <li><Link href="/imprint" className="hover:underline">Imprint</Link></li>
               <li><Link href="/contact" className="hover:underline">Contact</Link></li>
             </ul>
           </div>
@@ -26,8 +28,9 @@ export default function Footer() {
             <h4 className="text-sm font-semibold uppercase tracking-wide">Connect</h4>
             <ul className="mt-2 space-y-1 text-sm">
               <li><a href="mailto:media.secondlife.ev@gmail.com" className="hover:underline">Email Us</a></li>
-              <li><a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:underline">LinkedIn</a></li>
-              <li><a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:underline">Instagram</a></li>
+              <li><a href="https://www.linkedin.com/company/second-life42" target="_blank" rel="noreferrer" className="hover:underline">LinkedIn</a></li>
+              <li><a href="https://www.instagram.com/secondlife.ngo" target="_blank" rel="noreferrer" className="hover:underline">Instagram</a></li>
+              <li><a href="https://www.youtube.com/@SecondLifeE.V" target="_blank" rel="noreferrer" className="hover:underline">Youtube</a></li>
             </ul>
           </div>
         </div>
