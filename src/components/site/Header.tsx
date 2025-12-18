@@ -89,6 +89,12 @@ export default function Header() {
 
         {/* Mobile header */}
         <div className="flex items-center gap-2 md:hidden">
+          <Link
+            href="/donate"
+            className="rounded-full bg-[var(--brand-primary)] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[var(--brand-primary-dark)]"
+          >
+            Donate
+          </Link>
           <ThemeToggle />
           <button
             className="rounded p-2 hover:bg-black/5 dark:hover:bg-white/10"
@@ -111,7 +117,6 @@ export default function Header() {
                 return (
                   <div key={item.label} className="space-y-1">
                     <div className="flex items-center justify-between">
-                      {/* Parent link */}
                       <Link
                         href={item.href}
                         className="menu-anchor"
@@ -120,7 +125,6 @@ export default function Header() {
                         {item.label}
                       </Link>
 
-                      {/* Toggle */}
                       <button
                         type="button"
                         aria-expanded={isOpen}
@@ -166,8 +170,28 @@ export default function Header() {
               )
             })}
           </nav>
+
+          {/* 🔵 Mobile CTAs */}
+          <div className="px-4 pb-4 space-y-3">
+            <Link
+              href="/join-us"
+              onClick={() => setOpen(false)}
+              className="block w-full rounded-full border border-[var(--brand-primary)] px-4 py-2 text-center text-sm font-semibold text-[var(--brand-primary)]"
+            >
+              Join Us
+            </Link>
+
+            <Link
+              href="/donate"
+              onClick={() => setOpen(false)}
+              className="block w-full rounded-full bg-[var(--brand-primary)] px-4 py-2 text-center text-sm font-semibold text-white"
+            >
+              Donate
+            </Link>
+          </div>
         </div>
       )}
+
     </header>
   )
 }
