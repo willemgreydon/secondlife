@@ -52,7 +52,7 @@ export default function Header() {
             width={28}
             height={28}
           />
-          <span className="font-semibold">Second Life e.V.</span>
+          <span className="font-semibold" style={{ color: 'var(--logo-foreground)' }}>Second Life e.V.</span>
         </Link>
 
         {/* Desktop */}
