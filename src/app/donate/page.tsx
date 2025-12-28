@@ -41,7 +41,7 @@ export default function DonatePage() {
   return (
     <main className="mx-auto max-w-xl px-6 py-16">
       <h1 className="text-3xl font-bold mb-6">
-        Unterstütze Second Life
+        Support Second Life
       </h1>
 
       {/* Toggle */}
@@ -50,13 +50,13 @@ export default function DonatePage() {
           className={!recurring ? "font-bold" : ""}
           onClick={() => setRecurring(false)}
         >
-          Einmalig
+          One-Time
         </button>
         <button
           className={recurring ? "font-bold" : ""}
           onClick={() => setRecurring(true)}
         >
-          Monatlich
+          Monthly
         </button>
       </div>
 
@@ -92,7 +92,7 @@ export default function DonatePage() {
         disabled={loading}
         className="w-full bg-black text-white py-4 text-lg disabled:opacity-60"
       >
-        {loading ? "Weiterleiten …" : "Jetzt unterstützen"}
+        {loading ? "Redirecting …" : "Support now"}
       </button>
     </main>
   );

@@ -1,4 +1,5 @@
 import "./globals.css";
+import Script from "next/script";
 import Header from "@/components/site/Header";
 import Footer from "@/components/site/Footer";
 import ThemeProvider from "@/components/providers/ThemeProvider";
@@ -38,9 +39,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${instrumentSans.variable} ${geistMono.variable}`}
     >
+      {/* Google Analytics (GA4) */}
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-CH7G5M3956"
+        strategy="afterInteractive"
+      />
+      <Script id="ga4-init" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-CH7G5M3956');
+        `}
+      </Script>
+
       <body
         suppressHydrationWarning
-        className="min-h-screen bg-white text-gray-900 transition-colors dark:bg-black dark:text-gray-100"
+        className="min-h-screen bg-white text-gray-900 transition-colors"
       >
         <ThemeProvider>
           <Header />

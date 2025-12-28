@@ -48,7 +48,7 @@ export default function MissionDetail({ mission }: MissionDetailProps) {
   return (
     <article className="pb-20">
       {/* HERO */}
-      <div className="relative w-full aspect-[16/7] bg-gray-200 dark:bg-gray-800">
+      <div className="relative w-full aspect-[16/5] bg-gray-200 dark:bg-gray-800">
         {heroImage ? (
           <Image
             src={heroImage}
