@@ -46,7 +46,7 @@ export default function MissionDetail({ mission }: MissionDetailProps) {
   const heroImage = coverUrl || fallbackUrl;
 
   return (
-    <article className="pb-20">
+    <article className="pb-20 bg-background dark:bg-black">
       {/* HERO */}
       <div className="relative w-full aspect-[16/5] bg-gray-200 dark:bg-gray-800">
         {heroImage ? (
@@ -85,19 +85,35 @@ export default function MissionDetail({ mission }: MissionDetailProps) {
 
         {/* METRICS */}
         {safeMetrics.length > 0 && (
-          <section className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3">
-            {safeMetrics.map((m) => (
-              <div
-                key={m.metric_key}
-                className="rounded-lg border bg-gray-50 p-4 text-center dark:bg-gray-900 dark:border-gray-700"
-              >
-                <div className="text-2xl font-bold">
-                  {m.current_value}
-                  {m.unit && <span className="text-sm opacity-60"> {m.unit}</span>}
+          <section className="mt-12 rounded-3xl bg-background dark:bg-black p-6">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+              {safeMetrics.map((m) => (
+                <div
+                  key={m.metric_key}
+                  className="
+                    rounded-xl
+                    border border-border
+                    bg-card
+                    p-5
+                    text-center
+                    dark:bg-neutral-900
+                  "
+                >
+                  <div className="text-2xl font-bold text-foreground dark:text-white">
+                    {m.current_value}
+                    {m.unit && (
+                      <span className="ml-1 text-sm text-muted-foreground dark:text-neutral-300">
+                        {m.unit}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-1 text-sm text-muted-foreground dark:text-neutral-300">
+                    {m.title}
+                  </div>
                 </div>
-                <div className="mt-1 text-sm opacity-80">{m.title}</div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         )}
 
