@@ -79,7 +79,7 @@ export default function Header() {
           <ThemeToggle />
 
           <button
-            className="xl:hidden rounded p-2 hover:bg-black/5 dark:hover:bg-white/10"
+            className="xl:hidden rounded p-2 text-foreground dark:text-white hover:bg-black/5 dark:hover:bg-white/10"
             onClick={() => setOpen(v => !v)}
             aria-label="Toggle menu"
           >
@@ -97,7 +97,7 @@ export default function Header() {
           </Link>
           <ThemeToggle />
           <button
-            className="rounded p-2 hover:bg-black/5 dark:hover:bg-white/10"
+            className="rounded p-2 text-foreground dark:text-white hover:bg-black/5 dark:hover:bg-white/10"
             onClick={() => setOpen(v => !v)}
             aria-label="Toggle menu"
           >

@@ -229,6 +229,10 @@
     outline: none;
   }
 
+  .header-icon {
+    color: var(--foreground);
+  }
+
   .nav-dropdown-icon {
     display: inline-block;
     font-size: 0.75rem;
@@ -253,6 +257,10 @@
   .dark .menu-anchor.active {
     background-color: var(--brand-primary);
     color: var(--brand-primary-foreground);
+  }
+
+  .dark .header-icon {
+    color: oklch(0.985 0 0); /* pure white */
   }
 
   .dark .nav-dropdown-icon {
