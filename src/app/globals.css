@@ -229,6 +229,17 @@
     outline: none;
   }
 
+  .nav-dropdown-icon {
+    display: inline-block;
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--foreground);
+    transition:
+      transform 160ms ease,
+      color 160ms ease,
+      opacity 160ms ease;
+  }
+
   /* Dark mode adjustments */
   .dark .menu-anchor {
     color: var(--foreground);
@@ -244,10 +255,47 @@
     color: var(--brand-primary-foreground);
   }
 
+  .dark .nav-dropdown-icon {
+    color: oklch(0.985 0 0); /* pure white */
+    opacity: 0.9;
+  }
+
+  .nav-dropdown-trigger:hover .nav-dropdown-icon {
+    transform: translateY(1px);
+  }
+
 }
 
 /* --- your brand utilities and hero overlay rules remain below --- */
 /* (keep the rest of your file as-is) */
+
+/* ===========================================================
+   PARTNER / LOGO CAROUSEL – DARK MODE NORMALIZATION
+   =========================================================== */
+
+.dark .logo-strip {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.02)
+  );
+}
+
+.logo-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.dark .logo-item {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dark .logo-item img {
+  opacity: 0.85;
+}
 
 @keyframes partners-scroll {
   0% {

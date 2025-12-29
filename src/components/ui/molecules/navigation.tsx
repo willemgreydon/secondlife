@@ -72,7 +72,7 @@ export default function Navigation({ links }: NavigationProps) {
 
                 <button
                   type="button"
-                  className="rounded-md px-1 py-2 opacity-70 hover:opacity-100"
+                  className="nav-dropdown-trigger rounded-md px-1 py-2 opacity-80 hover:opacity-100"
                   aria-expanded={openNow}
                   aria-label={`${item.label} menu`}
                   onClick={(e) => {
@@ -81,7 +81,9 @@ export default function Navigation({ links }: NavigationProps) {
                     setOpenKey(openNow ? null : item.label)
                   }}
                 >
-                  ▾
+                  <span className={`nav-dropdown-icon ${openNow ? 'rotate-180' : ''}`}>
+                    ▾
+                  </span>
                 </button>
               </div>
 

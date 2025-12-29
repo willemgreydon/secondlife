@@ -42,7 +42,7 @@ export default function Header() {
   }, [open])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/92 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
@@ -129,14 +129,16 @@ export default function Header() {
                         type="button"
                         aria-expanded={isOpen}
                         aria-label={`Toggle ${item.label} menu`}
-                        className="rounded p-2 opacity-70 hover:opacity-100"
+                        className="nav-dropdown-trigger rounded p-2 opacity-80 hover:opacity-100"
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
                           setMobileOpenGroup(isOpen ? null : item.label)
                         }}
                       >
-                        ▾
+                        <span className={`nav-dropdown-icon ${isOpen ? 'rotate-180' : ''}`}>
+                          ▾
+                        </span>
                       </button>
                     </div>
 
