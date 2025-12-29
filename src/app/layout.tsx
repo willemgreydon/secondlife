@@ -52,7 +52,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           gtag('config', 'G-CH7G5M3956');
         `}
       </Script>
-
+      {/* Cookiebot */}
+      <script
+        id="Cookiebot"
+        src="https://consent.cookiebot.com/uc.js"
+        data-cbid="7137279f-56e3-49fa-9ecb-35653279a142"
+        data-blockingmode="auto"
+        type="text/javascript">
+      </script>
       <body
         suppressHydrationWarning
         className="min-h-screen bg-white text-gray-900 transition-colors"
