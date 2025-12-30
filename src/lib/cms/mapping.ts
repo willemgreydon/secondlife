@@ -20,6 +20,8 @@ import {
   ContactFormSection,
 } from "@/components/site/sections";
 
+import KnowledgeTabs from "@/components/knowledge/KnowledgeTabs";
+
 export const SECTION_COMPONENTS: Record<string, any> = {
   heroSection: Hero,
   textBlock: TextBlock,
@@ -42,4 +44,7 @@ export const SECTION_COMPONENTS: Record<string, any> = {
   initiativesGrid: InitiativesGrid,
   campaignGrid: CampaignGrid,
   contactFormSection: ContactFormSection,
+
+  // KNOWLEDGE
+  knowledgeSection: KnowledgeTabs,
 };

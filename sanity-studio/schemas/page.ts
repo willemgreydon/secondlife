@@ -42,7 +42,7 @@ export default defineType({
         {type: 'accordionSection'},
         {type: 'contactSection'},
         {type: 'contactFormSection'},
-
+        {type: 'knowledgeSection' },
         // Grids
         {type: 'campaignsSection'},
         {type: 'initiativesSection'},

@@ -9,6 +9,9 @@ import event from './event'
 import partner from './partner'
 import teamMember from './teamMember'
 import initiative from './initiative'
+import policyBrief from './policyBrief'
+import publication from './publication'
+import knowledgeSection from './sections/knowledgeSection'
 
 // sections / blocks
 import accordionSection from './sections/accordionSection'
@@ -65,6 +68,7 @@ const schemas = [
   partnersSection,
   campaignsSection,
   campaignGrid,
+  knowledgeSection,
 
   // legacy alias types
   initiativesSection,
@@ -75,6 +79,8 @@ const schemas = [
 
   // objects
   metric,
+  policyBrief,
+  publication,
 ]
 
 export default schemas

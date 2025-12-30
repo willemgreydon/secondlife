@@ -11,6 +11,19 @@ type Metric = {
   description?: string;
 };
 
+type KnowledgeItem = {
+  _id: string;
+  title: string;
+  summary?: string;
+  publishedAt?: string;
+  type: "policyBrief" | "publication";
+  pdf?: {
+    asset?: {
+      url: string;
+    };
+  };
+};
+
 type PageBuilderContext = {
   metrics?: Metric[];
   missions?: any[];
@@ -18,6 +31,7 @@ type PageBuilderContext = {
   events?: any[];
   team?: any[];
   partners?: any[];
+  knowledgeItems?: KnowledgeItem[]; // ✅ NEW
 };
 
 function UnknownSection({ section }: { section: any }) {
@@ -57,6 +71,9 @@ function normalizeSectionType(rawType: string): string {
     eventsSection: "eventsGrid",
     partnersSection: "partnersSection",
     contactFormSection: "contactFormSection",
+
+    // ✅ NEW
+    knowledgeSection: "knowledgeSection",
   };
 
   return alias[rawType] ?? rawType;
@@ -94,7 +111,8 @@ export default function PageBuilder({
           if (normalizedType === "missionsGrid") {
             const all = context.missions ?? [];
             const status = section.status ?? "all";
-            const limit = typeof section.limit === "number" ? section.limit : 100;
+            const limit =
+              typeof section.limit === "number" ? section.limit : 100;
 
             let missions = all;
             if (status !== "all") {
@@ -107,7 +125,8 @@ export default function PageBuilder({
           // Initiatives
           if (normalizedType === "initiativesGrid") {
             const all = context.initiatives ?? [];
-            const limit = typeof section.limit === "number" ? section.limit : 100;
+            const limit =
+              typeof section.limit === "number" ? section.limit : 100;
 
             section = { ...section, initiatives: all.slice(0, limit) };
           }
@@ -115,14 +134,17 @@ export default function PageBuilder({
           // Events
           if (normalizedType === "eventsGrid") {
             const all = context.events ?? [];
-            const limit = typeof section.limit === "number" ? section.limit : 100;
+            const limit =
+              typeof section.limit === "number" ? section.limit : 100;
 
             section = { ...section, events: all.slice(0, limit) };
           }
 
           // Partners
           if (normalizedType === "partnersSection") {
-            const all = Array.isArray(context.partners) ? context.partners : [];
+            const all = Array.isArray(context.partners)
+              ? context.partners
+              : [];
 
             const selected =
               Array.isArray(section.partners) && section.partners.length > 0
@@ -143,7 +165,7 @@ export default function PageBuilder({
             };
           }
 
-          // ✅ TEAM SECTION (CRITICAL FIX)
+          // Team
           if (normalizedType === "teamSection") {
             const all = context.team ?? [];
 
@@ -159,6 +181,14 @@ export default function PageBuilder({
                 members: all,
               };
             }
+          }
+
+          // ✅ KNOWLEDGE SECTION
+          if (normalizedType === "knowledgeSection") {
+            section = {
+              ...section,
+              items: context.knowledgeItems ?? [],
+            };
           }
 
           const Component = SECTION_COMPONENTS[normalizedType];

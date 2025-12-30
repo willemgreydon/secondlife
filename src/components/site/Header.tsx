@@ -28,7 +28,7 @@ const NAV_MAIN: (NavLink | NavGroup)[] = [
       { href: '/operations/dana-24-valencia', label: 'DANA 24 Valencia' },
     ],
   },
-  { href: '/our-team', label: 'Our Team' },
+  { href: '/knowledge', label: 'Knowledge' },
   { href: '/contact', label: 'Contact' },
 ]
 

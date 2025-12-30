@@ -33,6 +33,7 @@ import impactStats from './schemas/sections/impactStats'
 import campaignGrid from './schemas/sections/campaignGrid'
 import campaignsSection from './schemas/sections/campaignsSection' // <-- NEU: behebt "Unknown type: campaignsSection"
 import initiativesGrid from './schemas/sections/initiativesGrid'
+import knowledgeSection from './schemas/sections/knowledgeSection'
 
 // -------- objects
 import metric from './schemas/objects/metric'
@@ -61,6 +62,7 @@ const types: SchemaTypeDefinition[] = [
   campaignGrid,
   campaignsSection,   // <- jetzt registriert
   initiativesGrid,
+  knowledgeSection,
 
   // objects
   metric,

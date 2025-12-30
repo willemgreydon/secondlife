@@ -32,34 +32,42 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
       suppressHydrationWarning
       className={`${instrumentSans.variable} ${geistMono.variable}`}
     >
-      {/* Google Analytics (GA4) */}
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-CH7G5M3956"
-        strategy="afterInteractive"
-      />
-      <Script id="ga4-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-CH7G5M3956');
-        `}
-      </Script>
-      {/* Cookiebot */}
-      <script
-        id="Cookiebot"
-        src="https://consent.cookiebot.com/uc.js"
-        data-cbid="7137279f-56e3-49fa-9ecb-35653279a142"
-        data-blockingmode="auto"
-        type="text/javascript">
-      </script>
+      <head>
+        {/* Google Analytics (GA4) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-CH7G5M3956"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-CH7G5M3956');
+          `}
+        </Script>
+
+        {/* Cookiebot (App Router safe) */}
+        <Script
+          id="Cookiebot"
+          src="https://consent.cookiebot.com/uc.js"
+          data-cbid="7137279f-56e3-49fa-9ecb-35653279a142"
+          data-blockingmode="auto"
+          strategy="afterInteractive"
+        />
+      </head>
+
       <body
         suppressHydrationWarning
         className="min-h-screen bg-white text-gray-900 transition-colors"

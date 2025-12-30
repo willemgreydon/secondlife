@@ -1,5 +1,5 @@
 // sanity-studio/deskStructure.ts
-import type { StructureBuilder, DeskToolContextValue } from "sanity/desk";
+import type { StructureBuilder } from "sanity/desk";
 
 // Mini-Helfer: Singleton-Editor
 const singleton = (S: StructureBuilder, title: string, id: string) =>
@@ -20,15 +20,6 @@ export default function deskStructure(
   return S.list()
     .title("Content")
     .items([
-      // singleton(S, "Home", "home"),
-      // singleton(S, "TIDE", "tide"),
-      // singleton(S, "Operations", "operations"),
-      // singleton(S, "Join Us", "join-us"),
-      // singleton(S, "Contact", "contact"),
-      // singleton(S, "Organisation", "organisation"),
-      //
-      // S.divider(),
-
       // Page Overview
       S.listItem()
         .title("Pages (all)")
@@ -70,5 +61,32 @@ export default function deskStructure(
         .title("Blog Posts")
         .schemaType("post")
         .child(S.documentTypeList("post").title("Blog Posts")),
+
+      S.divider(),
+
+      // Knowledge
+      S.listItem()
+        .title("Knowledge")
+        .child(
+          S.list()
+            .title("Knowledge")
+            .items([
+              S.listItem()
+                .title("Policy Briefs")
+                .schemaType("policyBrief")
+                .child(
+                  S.documentTypeList("policyBrief")
+                    .title("Policy Briefs")
+                ),
+
+              S.listItem()
+                .title("Publications")
+                .schemaType("publication")
+                .child(
+                  S.documentTypeList("publication")
+                    .title("Publications")
+                ),
+            ])
+        ),
     ]);
 }
