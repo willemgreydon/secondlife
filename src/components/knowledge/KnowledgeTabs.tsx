@@ -44,7 +44,7 @@ export default function KnowledgeTabs({
       : items.filter(item => item.type === filter);
 
   return (
-    <section className="bg-white dark:bg-neutral-900 pb-24">
+    <section className="bg-white dark:bg-black pb-24">
       <div className="mx-auto max-w-6xl px-6 py-12 space-y-12">
         {/* Intro */}
         <header className="max-w-3xl space-y-4">
