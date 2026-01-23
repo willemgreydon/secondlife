@@ -1,14 +1,11 @@
 // ---------------------------------------------------------
-// sanity.queries.ts — STABLE, NON-EMPTY CONTENT + TYPE-ALIAS VERSION
+// sanity.queries.ts — STABLE, NON-EMPTY CONTENT (FINAL)
 // ---------------------------------------------------------
 import { groq } from "next-sanity";
 
 /**
- * Helper logic:
- * We must NOT use plain coalesce(content, contentSections, sections, [])
- * because empty arrays are "defined" in GROQ and will win the coalesce.
- *
- * So we pick the first NON-EMPTY array.
+ * Pick the FIRST NON-EMPTY content array.
+ * (Empty arrays are "defined" in GROQ and must be ignored.)
  */
 const normalizedContentExpr = `
   select(
@@ -18,6 +15,10 @@ const normalizedContentExpr = `
     []
   )
 `;
+
+/* ---------------------------------------------------------
+   PAGES
+--------------------------------------------------------- */
 
 export const pageSlugsQuery = groq`
   *[_type == "page" && defined(slug.current)]{
@@ -37,76 +38,58 @@ export const pageBySlugQuery = groq`
   }
 `;
 
-/**
- * ---------------------------------------------------------
- * PAGE WITH NORMALIZED CONTENT
- * ---------------------------------------------------------
- */
- export const pageWithContentBySlugQuery = groq`
-   *[_type == "page" && slug.current == $slug][0]{
-     _id,
-     title,
-     "slug": slug.current,
+export const pageWithContentBySlugQuery = groq`
+  *[_type == "page" && slug.current == $slug][0]{
+    _id,
+    title,
+    "slug": slug.current,
 
-     // ✅ SINGLE SOURCE OF TRUTH
-     "content": coalesce(contentSections, content, sections, [])[]{
-       ...,
+    "content": ${normalizedContentExpr}[] {
+      ...,
 
-       // -----------------------------
-       // HERO
-       // -----------------------------
-       _type == "heroSection" => {
-         _type,
-         _key,
-         eyebrow,
-         title,
-         subtitle,
-         ctaHref,
-         "ctaText": coalesce(ctaText, ctaLabel),
-         "bgImage": coalesce(image, bgImage)
-       },
+      _type == "heroSection" => {
+        _type,
+        _key,
+        eyebrow,
+        title,
+        subtitle,
+        ctaHref,
+        "ctaText": coalesce(ctaText, ctaLabel),
+        "bgImage": coalesce(image, bgImage)
+      },
 
-       // -----------------------------
-       // GALLERY (THIS WAS MISSING)
-       // -----------------------------
-       _type == "gallerySection" => {
-         _type,
-         _key,
-         columns,
-         images[]{
-           _key,
-           alt,
-           caption,
-           asset->{
-             _id,
-             url,
-             metadata {
-               dimensions {
-                 width,
-                 height
-               }
-             }
-           }
-         }
-       }
-     }
-   }
- `;
+      _type == "gallerySection" => {
+        _type,
+        _key,
+        columns,
+        images[]{
+          _key,
+          alt,
+          caption,
+          asset->{
+            _id,
+            url,
+            metadata {
+              dimensions { width, height }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
+/* ---------------------------------------------------------
+   HOME (OPTIONAL)
+--------------------------------------------------------- */
 
-/**
- * ---------------------------------------------------------
- * (Optional) HOME QUERY
- * You said: Home should be a normal page.
- * If you switch / to getPageBySlug("home"), you can delete this later.
- * ---------------------------------------------------------
- */
 export const homePageQuery = groq`
   *[_type == "home"][0]{
     _id,
     title,
     "slug": slug.current,
-    "content": ${normalizedContentExpr}[]{
+
+    "content": ${normalizedContentExpr}[] {
       ...,
       _type == "heroSection" => {
         _type,
@@ -122,11 +105,10 @@ export const homePageQuery = groq`
   }
 `;
 
-/**
- * ---------------------------------------------------------
- * LIST / DETAIL QUERIES (unchanged)
- * ---------------------------------------------------------
- */
+/* ---------------------------------------------------------
+   MISSIONS (FIXED)
+--------------------------------------------------------- */
+
 export const missionsListQuery = groq`
   *[_type == "mission"] | order(_createdAt desc){
     _id,
@@ -150,30 +132,74 @@ export const missionBySlugQuery = groq`
     "slug": slug.current,
     status,
     excerpt,
-    body,
     startDate,
     endDate,
     location,
+
     "coverUrl": coalesce(
       cover.asset->url,
       fallback.asset->url,
       image.asset->url,
       gallery[0].asset->url
     ),
-    metrics[]{
+
+    metrics[] {
       metric_key,
+      title,
       current_value,
-      label
+      unit,
+      description
     },
-    gallery[]{
-      asset->{
-        _id,
-        url,
-        metadata { lqip, dimensions }
+
+    // ✅ NORMALIZED GALLERY (already fixed earlier)
+    "gallery": gallery[]{
+      "url": asset->url,
+      caption,
+      alt
+    },
+
+    // ✅ THIS IS THE MISSING PART FOR SPLIT SECTIONS
+    "content": ${normalizedContentExpr}[] {
+      ...,
+
+      _type == "splitSection" => {
+        _type,
+        _key,
+        title,
+        layout,
+        reversed,
+
+        left {
+          kind,
+          text,
+          image {
+            asset->{
+              _id,
+              url,
+              metadata { dimensions }
+            }
+          }
+        },
+
+        right {
+          kind,
+          text,
+          image {
+            asset->{
+              _id,
+              url,
+              metadata { dimensions }
+            }
+          }
+        }
       }
     }
   }
 `;
+
+/* ---------------------------------------------------------
+   CAMPAIGNS / INITIATIVES / EVENTS / PARTNERS
+--------------------------------------------------------- */
 
 export const campaignsListQuery = groq`
   *[_type == "campaign"] | order(_createdAt desc){

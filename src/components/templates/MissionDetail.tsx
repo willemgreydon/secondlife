@@ -2,6 +2,23 @@
 
 import Image from "next/image";
 import classNames from "clsx";
+import { PortableText } from "@portabletext/react";
+
+/* ---------------------------------------------------------
+   HELPERS
+--------------------------------------------------------- */
+
+// Converts Sanity image _ref → CDN URL
+function sanityRefToUrl(ref?: string) {
+  if (!ref) return null;
+  // image-<hash>-<width>x<height>-<format>
+  const [, id, size, format] = ref.split("-");
+  return `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/${id}-${size}.${format}`;
+}
+
+/* ---------------------------------------------------------
+   TYPES (FIXED)
+--------------------------------------------------------- */
 
 export interface MissionDetailType {
   _id: string;
@@ -10,12 +27,13 @@ export interface MissionDetailType {
   status?: string;
   excerpt?: string;
   coverUrl?: string | null;
-  fallbackUrl?: string | null;
+
   gallery?: {
-    url: string;
-    alt?: string;
+    url?: string;
     caption?: string;
+    alt?: string;
   }[] | null;
+
   metrics?: {
     metric_key: string;
     title: string;
@@ -23,6 +41,7 @@ export interface MissionDetailType {
     unit?: string;
     description?: string;
   }[] | null;
+
   content?: any[] | null;
 }
 
@@ -30,26 +49,26 @@ interface MissionDetailProps {
   mission: MissionDetailType;
 }
 
+/* ---------------------------------------------------------
+   MAIN COMPONENT
+--------------------------------------------------------- */
+
 export default function MissionDetail({ mission }: MissionDetailProps) {
-  // FULL defensive normalization
   const title = mission?.title ?? "";
   const status = mission?.status ?? "";
   const excerpt = mission?.excerpt ?? "";
 
-  const coverUrl = mission?.coverUrl ?? null;
-  const fallbackUrl = mission?.fallbackUrl ?? null;
+  const heroImage = mission?.coverUrl ?? null;
 
-  const safeGallery = Array.isArray(mission?.gallery) ? mission.gallery! : [];
-  const safeMetrics = Array.isArray(mission?.metrics) ? mission.metrics! : [];
-  const safeContent = Array.isArray(mission?.content) ? mission.content! : [];
-
-  const heroImage = coverUrl || fallbackUrl;
+  const safeGallery = Array.isArray(mission?.gallery) ? mission.gallery : [];
+  const safeMetrics = Array.isArray(mission?.metrics) ? mission.metrics : [];
+  const safeContent = Array.isArray(mission?.content) ? mission.content : [];
 
   return (
-    <article className="pb-20 bg-background dark:bg-black">
+    <article className="pb-24 bg-background dark:bg-black">
       {/* HERO */}
       <div className="relative w-full aspect-[16/5] bg-gray-200 dark:bg-gray-800">
-        {heroImage ? (
+        {heroImage && (
           <Image
             src={heroImage}
             alt={title}
@@ -57,91 +76,84 @@ export default function MissionDetail({ mission }: MissionDetailProps) {
             className="object-cover"
             sizes="100vw"
           />
-        ) : (
-          <div className="flex h-full items-center justify-center text-gray-500">
-            No image available
-          </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
         <div className="absolute bottom-6 left-6">
           {status && (
-            <span className="mb-2 inline-block rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white backdrop-blur">
+            <span className="mb-2 inline-block rounded-full bg-white/20 px-3 py-1 text-sm text-white backdrop-blur">
               {status}
             </span>
           )}
-          <h1 className="mt-2 text-4xl font-bold text-white drop-shadow">
-            {title}
-          </h1>
+          <h1 className="mt-2 text-4xl font-bold text-white">{title}</h1>
         </div>
       </div>
 
-      <div className="mx-auto max-w-3xl px-6">
+      <div className="mx-auto max-w-4xl px-6">
         {/* EXCERPT */}
         {excerpt && (
-          <p className="mt-8 text-lg text-muted-foreground">{excerpt}</p>
+          <p className="mt-10 text-lg text-muted-foreground">{excerpt}</p>
         )}
 
         {/* METRICS */}
         {safeMetrics.length > 0 && (
-          <section className="mt-12 rounded-3xl bg-background dark:bg-black p-6">
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-              {safeMetrics.map((m) => (
-                <div
-                  key={m.metric_key}
-                  className="
-                    rounded-xl
-                    border border-border
-                    bg-card
-                    p-5
-                    text-center
-                    dark:bg-neutral-900
-                  "
-                >
-                  <div className="text-2xl font-bold text-foreground dark:text-white">
-                    {m.current_value}
-                    {m.unit && (
-                      <span className="ml-1 text-sm text-muted-foreground dark:text-neutral-300">
-                        {m.unit}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mt-1 text-sm text-muted-foreground dark:text-neutral-300">
-                    {m.title}
-                  </div>
+          <section className="mt-14 grid grid-cols-2 gap-4 md:grid-cols-3">
+            {safeMetrics.map((m) => (
+              <div
+                key={m.metric_key}
+                className="rounded-xl border border-border bg-card p-5 text-center"
+              >
+                <div className="text-2xl font-bold">
+                  {m.current_value}
+                  {m.unit && (
+                    <span className="ml-1 text-sm text-muted-foreground">
+                      {m.unit}
+                    </span>
+                  )}
                 </div>
-              ))}
-            </div>
+                <div className="mt-1 text-sm text-muted-foreground">
+                  {m.title}
+                </div>
+              </div>
+            ))}
+          </section>
+        )}
+
+        {/* CONTENT */}
+        {safeContent.length > 0 && (
+          <section className="mt-20 space-y-20">
+            {safeContent.map((section) => (
+              <ContentRenderer key={section._key} section={section} />
+            ))}
           </section>
         )}
 
         {/* GALLERY */}
         {safeGallery.length > 0 && (
-          <section className="mt-14">
-            <h2 className="mb-4 text-xl font-semibold">Gallery</h2>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-              {safeGallery.map((g, i) => (
-                <div key={i} className="relative aspect-square">
-                  <Image
-                    src={g.url}
-                    alt={g.alt || title}
-                    fill
-                    className="object-cover rounded-lg"
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+          <section className="mt-24">
+            <h2 className="mb-6 text-xl font-semibold">Gallery</h2>
 
-        {/* CONTENT SECTIONS */}
-        {safeContent.length > 0 && (
-          <section className="mt-16 space-y-14">
-            {safeContent.map((section, index) => (
-              <ContentRenderer key={index} section={section} />
-            ))}
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+              {safeGallery
+                .filter((g) => g?.url)
+                .map((g, i) => (
+                  <div key={i} className="overflow-hidden rounded-lg bg-muted">
+                    <Image
+                      src={g.url!}
+                      alt={g.alt || title}
+                      width={800}
+                      height={800}
+                      className="h-full w-full object-cover"
+                    />
+                    {g.caption && (
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        {g.caption}
+                      </p>
+                    )}
+                  </div>
+                ))}
+            </div>
           </section>
         )}
       </div>
@@ -149,70 +161,65 @@ export default function MissionDetail({ mission }: MissionDetailProps) {
   );
 }
 
-/* ------------------------------
-   CONTENT RENDERER
------------------------------- */
+/* ---------------------------------------------------------
+   CONTENT RENDERER (FIXED)
+--------------------------------------------------------- */
 
 function ContentRenderer({ section }: { section: any }) {
-  switch (section._type) {
-    case "textBlock":
-      return (
-        <div className="prose prose-neutral dark:prose-invert">
-          <h2>{section.title}</h2>
-          <p>{section.body}</p>
-        </div>
-      );
+  if (section._type !== "splitSection") return null;
 
-    case "imageBlock":
-      return (
-        <div className="my-8">
-          {section.url && (
-            <Image
-              src={section.url}
-              alt={section.alt || ""}
-              width={1200}
-              height={600}
-              className="rounded-lg object-cover"
-            />
-          )}
-          {section.caption && (
-            <p className="mt-2 text-sm text-muted-foreground">{section.caption}</p>
-          )}
-        </div>
-      );
+  const leftImageUrl =
+    section.left?.image?.asset?.url ??
+    sanityRefToUrl(section.left?.image?.asset?._ref);
 
-    case "splitSection":
-      return (
-        <div className="grid gap-6 md:grid-cols-2">
-          {section.leftImage && (
-            <Image
-              src={section.leftImage}
-              alt=""
-              width={800}
-              height={600}
-              className="rounded-lg object-cover"
-            />
-          )}
-          {section.rightImage && (
-            <Image
-              src={section.rightImage}
-              alt=""
-              width={800}
-              height={600}
-              className="rounded-lg object-cover"
-            />
-          )}
-        </div>
-      );
+  const rightImageUrl =
+    section.right?.image?.asset?.url ??
+    sanityRefToUrl(section.right?.image?.asset?._ref);
 
-    case "quoteSection":
-      return (
-        <blockquote className="border-l-4 pl-4 italic text-lg text-muted-foreground">
-          “{section.quote}”
-        </blockquote>
-      );
+  return (
+    <div
+      className={classNames(
+        "grid gap-10 md:grid-cols-2 items-center",
+        section.reversed && "md:[&>*:first-child]:order-2"
+      )}
+    >
+      {/* LEFT */}
+      <div>
+        {section.left?.kind === "text" && section.left.text && (
+          <div className="prose prose-neutral dark:prose-invert">
+            <PortableText value={section.left.text} />
+          </div>
+        )}
 
-    default:
-      return null;
-  }
+        {section.left?.kind === "image" && leftImageUrl && (
+          <Image
+            src={leftImageUrl}
+            alt=""
+            width={900}
+            height={600}
+            className="rounded-xl object-cover"
+          />
+        )}
+      </div>
+
+      {/* RIGHT */}
+      <div>
+        {section.right?.kind === "text" && section.right.text && (
+          <div className="prose prose-neutral dark:prose-invert">
+            <PortableText value={section.right.text} />
+          </div>
+        )}
+
+        {section.right?.kind === "image" && rightImageUrl && (
+          <Image
+            src={rightImageUrl}
+            alt=""
+            width={900}
+            height={600}
+            className="rounded-xl object-cover"
+          />
+        )}
+      </div>
+    </div>
+  );
 }
