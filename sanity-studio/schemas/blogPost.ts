@@ -1,5 +1,5 @@
-import { defineType, defineField } from "sanity";
-import { FileText } from "lucide-react";
+import { defineType, defineField } from "sanity"
+import { FileText } from "lucide-react"
 
 export default defineType({
   name: "post",
@@ -11,14 +11,14 @@ export default defineType({
     defineField({
       name: "title",
       type: "string",
-      validation: r => r.required(),
+      validation: (r) => r.required(),
     }),
 
     defineField({
       name: "slug",
       type: "slug",
       options: { source: "title" },
-      validation: r => r.required(),
+      validation: (r) => r.required(),
     }),
 
     defineField({
@@ -27,18 +27,26 @@ export default defineType({
       rows: 3,
     }),
 
+    // ✅ NEW: teaser / cover image
+    defineField({
+      name: "cover",
+      title: "Teaser Image",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
+    }),
+
     defineField({
       name: "publishedAt",
       type: "datetime",
       initialValue: () => new Date().toISOString(),
     }),
 
-    // ✅ PAGEBUILDER CONTENT (FULL SUPPORT)
     defineField({
       name: "content",
       title: "Content (Sections)",
       type: "array",
-      options: { sortable: true },
       of: [
         { type: "heroSection" },
         { type: "splitSection" },
@@ -55,6 +63,9 @@ export default defineType({
   ],
 
   preview: {
-    select: { title: "title" },
+    select: {
+      title: "title",
+      media: "cover",
+    },
   },
-});
+})

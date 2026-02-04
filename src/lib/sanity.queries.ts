@@ -20,16 +20,22 @@ const normalizedContentExpr = `
    SHARED: BLOG POST CARD PROJECTION
 --------------------------------------------------------- */
 
-const blogPostCardProjection = `
+export const blogPostCardProjection = `
   _id,
   title,
   "slug": slug.current,
   publishedAt,
   excerpt,
-  "coverUrl": coalesce(
-    cover.asset->url,
-    image.asset->url
-  )
+  "coverUrl": cover.asset->url
+`
+
+export const blogPostsForGridQuery = groq`
+  *[
+    _type == "post"
+    && defined(slug.current)
+    && defined(publishedAt)
+  ]
+  | order(publishedAt desc)
 `
 
 /* ---------------------------------------------------------
@@ -100,11 +106,17 @@ export const pageWithContentBySlugQuery = groq`
         limit,
 
         "posts": *[
-          _type == "blogPost"
+          _type == "post"
+          && defined(slug.current)
+          && defined(publishedAt)
         ]
-        | order(publishedAt desc)
-        [0...6]{
-          ${blogPostCardProjection}
+        | order(publishedAt desc){
+          _id,
+          title,
+          "slug": slug.current,
+          publishedAt,
+          excerpt,
+          "coverUrl": cover.asset->url
         }
       }
     }
@@ -116,13 +128,18 @@ export const pageWithContentBySlugQuery = groq`
 --------------------------------------------------------- */
 
 export const blogPostBySlugQuery = groq`
-  *[_type == "blogPost" && slug.current == $slug][0]{
+  *[
+    _type in ["post","blogPost"] &&
+    slug.current == $slug
+  ][0]{
     _id,
+    _type,
     title,
     excerpt,
     publishedAt,
+    "coverUrl": cover.asset->url,
 
-    "content": content[] {
+    "content": ${normalizedContentExpr}[] {
       ...,
 
       _type == "heroSection" => {
