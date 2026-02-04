@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation"
 import PageBuilder from "@/components/site/PageBuilder"
-import { getPageBySlug, getAllOperationPages } from "@/lib/queries/page"
+import {
+  getPageBySlug,
+  getAllOperationPages,
+} from "@/lib/queries/page"
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -27,12 +30,13 @@ export default async function Page({ params }: Props) {
 
 /**
  * Static generation for known operation pages
+ * GUARANTEED: slug is always a string
  */
 export async function generateStaticParams() {
   const pages = await getAllOperationPages()
 
-  return pages.map((p: any) => ({
-    slug: p.slug.current,
+  return pages.map((p) => ({
+    slug: p.slug,
   }))
 }
 

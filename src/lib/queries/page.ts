@@ -1,18 +1,29 @@
-import { groq } from "next-sanity";
-import { client } from "@/lib/sanity.client";
+import { groq } from "next-sanity"
+import { client } from "@/lib/sanity.client"
 import {
   pageBySlugQuery,
   pageWithContentBySlugQuery,
-} from "@/lib/sanity.queries";
+} from "@/lib/sanity.queries"
+
+/* ---------------------------------------------------------
+   TYPES
+--------------------------------------------------------- */
+
+export type PageSlug = {
+  slug: string
+}
+
+/* ---------------------------------------------------------
+   PAGE FETCHERS
+--------------------------------------------------------- */
 
 /**
  * Lightweight page fetch (no enriched sections)
  * Use ONLY where grids are not required
  */
 export async function getPageBySlug(slug?: string) {
-  if (!slug) return null;
-
-  return client.fetch(pageBySlugQuery, { slug });
+  if (!slug) return null
+  return client.fetch(pageBySlugQuery, { slug })
 }
 
 /**
@@ -20,16 +31,19 @@ export async function getPageBySlug(slug?: string) {
  * REQUIRED for pages using grids (blog, missions, etc.)
  */
 export async function getPageWithContentBySlug(slug: string) {
-  if (!slug) return null;
-
-  return client.fetch(pageWithContentBySlugQuery, { slug });
+  if (!slug) return null
+  return client.fetch(pageWithContentBySlugQuery, { slug })
 }
+
+/* ---------------------------------------------------------
+   OPERATION SLUGS (STATIC ROUTING)
+--------------------------------------------------------- */
 
 /**
  * Fetch all operation pages
- * Used for generateStaticParams()
+ * GUARANTEED: slug is always a string
  */
-export async function getAllOperationPages() {
+export async function getAllOperationPages(): Promise<PageSlug[]> {
   return client.fetch(
     groq`
       *[
@@ -44,5 +58,5 @@ export async function getAllOperationPages() {
         "slug": slug.current
       }
     `
-  );
+  )
 }

@@ -11,7 +11,6 @@ import mission from './schemas/mission'
 import campaign from './schemas/campaign'
 import event from './schemas/event'
 import blogPost from './schemas/blogPost'
-import post from './schemas/post'
 
 // -------- sections / objects
 import heroSection from './schemas/sections/heroSection'
@@ -40,7 +39,7 @@ import metric from './schemas/objects/metric'
 
 const types: SchemaTypeDefinition[] = [
   // documents
-  home, initiative, partner, page, teamMember, mission, campaign, event, blogPost, post,
+  home, initiative, partner, page, teamMember, mission, campaign, event, blogPost,
 
   // sections / objects
   heroSection,

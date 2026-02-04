@@ -1,7 +1,7 @@
 // ---------------------------------------------------------
 // sanity.queries.ts — STABLE, NON-EMPTY CONTENT (FINAL)
 // ---------------------------------------------------------
-import { groq } from "next-sanity";
+import { groq } from "next-sanity"
 
 /**
  * Pick the FIRST NON-EMPTY content array.
@@ -14,7 +14,7 @@ const normalizedContentExpr = `
     defined(sections) && count(sections) > 0 => sections,
     []
   )
-`;
+`
 
 /* ---------------------------------------------------------
    SHARED: BLOG POST CARD PROJECTION
@@ -30,7 +30,7 @@ const blogPostCardProjection = `
     cover.asset->url,
     image.asset->url
   )
-`;
+`
 
 /* ---------------------------------------------------------
    PAGES
@@ -40,7 +40,7 @@ export const pageSlugsQuery = groq`
   *[_type == "page" && defined(slug.current)]{
     "slug": slug.current
   }
-`;
+`
 
 export const pageBySlugQuery = groq`
   *[_type == "page" && slug.current == $slug][0]{
@@ -52,7 +52,7 @@ export const pageBySlugQuery = groq`
     contentSections,
     sections
   }
-`;
+`
 
 export const pageWithContentBySlugQuery = groq`
   *[_type == "page" && slug.current == $slug][0]{
@@ -78,7 +78,7 @@ export const pageWithContentBySlugQuery = groq`
         _type,
         _key,
         columns,
-        images[]{
+        images[] {
           _key,
           alt,
           caption,
@@ -109,7 +109,7 @@ export const pageWithContentBySlugQuery = groq`
       }
     }
   }
-`;
+`
 
 /* ---------------------------------------------------------
    BLOG POSTS (DETAIL)
@@ -153,11 +153,10 @@ export const blogPostBySlugQuery = groq`
       }
     }
   }
-`;
-
+`
 
 /* ---------------------------------------------------------
-   HOME (OPTIONAL)
+   HOME
 --------------------------------------------------------- */
 
 export const homePageQuery = groq`
@@ -180,14 +179,15 @@ export const homePageQuery = groq`
       }
     }
   }
-`;
+`
 
 /* ---------------------------------------------------------
-   MISSIONS (FIXED)
+   MISSIONS
 --------------------------------------------------------- */
 
 export const missionsListQuery = groq`
-  *[_type == "mission"] | order(_createdAt desc){
+  *[_type == "mission" && defined(slug.current)]
+  | order(_createdAt desc){
     _id,
     title,
     "slug": slug.current,
@@ -200,7 +200,7 @@ export const missionsListQuery = groq`
       gallery[0].asset->url
     )
   }
-`;
+`
 
 export const missionBySlugQuery = groq`
   *[_type == "mission" && slug.current == $slug][0]{
@@ -228,7 +228,7 @@ export const missionBySlugQuery = groq`
       description
     },
 
-    "gallery": gallery[]{
+    "gallery": gallery[] {
       "url": asset->url,
       caption,
       alt
@@ -270,21 +270,22 @@ export const missionBySlugQuery = groq`
       }
     }
   }
-`;
+`
 
 /* ---------------------------------------------------------
    CAMPAIGNS / INITIATIVES / EVENTS / PARTNERS
 --------------------------------------------------------- */
 
 export const campaignsListQuery = groq`
-  *[_type == "campaign"] | order(_createdAt desc){
+  *[_type == "campaign" && defined(slug.current)]
+  | order(_createdAt desc){
     _id,
     title,
     "slug": slug.current,
     excerpt,
     "coverUrl": cover.asset->url
   }
-`;
+`
 
 export const campaignBySlugQuery = groq`
   *[_type == "campaign" && slug.current == $slug][0]{
@@ -302,17 +303,18 @@ export const campaignBySlugQuery = groq`
       }
     }
   }
-`;
+`
 
 export const initiativesListQuery = groq`
-  *[_type == "initiative"] | order(_createdAt desc){
+  *[_type == "initiative" && defined(slug.current)]
+  | order(_createdAt desc){
     _id,
     title,
     "slug": slug.current,
     excerpt,
     "coverUrl": cover.asset->url
   }
-`;
+`
 
 export const initiativeBySlugQuery = groq`
   *[_type == "initiative" && slug.current == $slug][0]{
@@ -330,10 +332,11 @@ export const initiativeBySlugQuery = groq`
       }
     }
   }
-`;
+`
 
 export const eventsListQuery = groq`
-  *[_type == "event"] | order(date desc){
+  *[_type == "event" && defined(slug.current)]
+  | order(date desc){
     _id,
     title,
     "slug": slug.current,
@@ -342,7 +345,7 @@ export const eventsListQuery = groq`
     excerpt,
     "coverUrl": cover.asset->url
   }
-`;
+`
 
 export const eventBySlugQuery = groq`
   *[_type == "event" && slug.current == $slug][0]{
@@ -362,10 +365,11 @@ export const eventBySlugQuery = groq`
       }
     }
   }
-`;
+`
 
 export const partnersListQuery = groq`
-  *[_type == "partner"] | order(_createdAt desc){
+  *[_type == "partner" && defined(slug.current)]
+  | order(_createdAt desc){
     _id,
     title,
     "slug": slug.current,
@@ -373,7 +377,7 @@ export const partnersListQuery = groq`
     excerpt,
     "logo": logo.asset->url
   }
-`;
+`
 
 export const partnerBySlugQuery = groq`
   *[_type == "partner" && slug.current == $slug][0]{
@@ -385,4 +389,4 @@ export const partnerBySlugQuery = groq`
     "logo": logo.asset->url,
     body
   }
-`;
+`
