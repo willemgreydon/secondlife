@@ -1,23 +1,28 @@
-import { groq } from "next-sanity"
-import { client } from "@/lib/sanity.client"
+import { groq } from "next-sanity";
+import { client } from "@/lib/sanity.client";
+import {
+  pageBySlugQuery,
+  pageWithContentBySlugQuery,
+} from "@/lib/sanity.queries";
 
 /**
- * Fetch single page by slug (defensive)
+ * Lightweight page fetch (no enriched sections)
+ * Use ONLY where grids are not required
  */
 export async function getPageBySlug(slug?: string) {
-  if (!slug) return null
+  if (!slug) return null;
 
-  return client.fetch(
-    groq`
-      *[_type == "page" && slug.current == $slug][0]{
-        _id,
-        title,
-        slug,
-        content
-      }
-    `,
-    { slug }
-  )
+  return client.fetch(pageBySlugQuery, { slug });
+}
+
+/**
+ * Full PageBuilder-ready fetch
+ * REQUIRED for pages using grids (blog, missions, etc.)
+ */
+export async function getPageWithContentBySlug(slug: string) {
+  if (!slug) return null;
+
+  return client.fetch(pageWithContentBySlugQuery, { slug });
 }
 
 /**
@@ -36,8 +41,8 @@ export async function getAllOperationPages() {
           "dana-24-valencia"
         ]
       ]{
-        slug
+        "slug": slug.current
       }
     `
-  )
+  );
 }

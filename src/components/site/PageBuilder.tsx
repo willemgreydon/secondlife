@@ -31,7 +31,7 @@ type PageBuilderContext = {
   events?: any[];
   team?: any[];
   partners?: any[];
-  knowledgeItems?: KnowledgeItem[]; // ✅ NEW
+  knowledgeItems?: KnowledgeItem[];
 };
 
 function UnknownSection({ section }: { section: any }) {
@@ -47,33 +47,42 @@ function UnknownSection({ section }: { section: any }) {
   );
 }
 
+/**
+ * IMPORTANT:
+ * We do NOT normalize textBlock → richTextSection.
+ * Each Sanity _type must map to a compatible component.
+ */
 function normalizeSectionType(rawType: string): string {
   const alias: Record<string, string> = {
     heroSection: "heroSection",
     splitSection: "splitSection",
     statsSection: "statsSection",
     richTextSection: "richTextSection",
-    textBlock: "richTextSection",
     videoSection: "videoSection",
     gallerySection: "gallerySection",
     quoteSection: "quoteSection",
     accordionSection: "accordionSection",
     contactSection: "contactSection",
     imageBlock: "imageBlock",
+
     team: "teamSection",
     teamSection: "teamSection",
+
     metrics: "impactStatsSection",
     metricsSection: "impactStatsSection",
     impactStatsSection: "impactStatsSection",
+
     campaignsSection: "campaignGrid",
     missionsSection: "missionsGrid",
     initiativesSection: "initiativesGrid",
     eventsSection: "eventsGrid",
+
     partnersSection: "partnersSection",
     contactFormSection: "contactFormSection",
 
-    // ✅ NEW
     knowledgeSection: "knowledgeSection",
+
+    blogPostsGridSection: "blogPostsGridSection",
   };
 
   return alias[rawType] ?? rawType;
@@ -90,13 +99,12 @@ export default function PageBuilder({
   if (!sections.length) return null;
 
   return (
-    <div className="pb-0 bg-white text-gray-900 dark:bg-black dark:text-gray-100 transition-colors">
+    <div className="bg-white text-gray-900 dark:bg-black dark:text-gray-100 transition-colors">
       <div className="space-y-10 md:space-y-14 lg:space-y-16">
         {sections.map((raw, idx) => {
           const normalizedType = normalizeSectionType(raw?._type);
           let section = { ...raw, _type: normalizedType };
 
-          // Impact Stats
           if (normalizedType === "impactStatsSection") {
             section = {
               ...section,
@@ -107,22 +115,20 @@ export default function PageBuilder({
             };
           }
 
-          // Missions
           if (normalizedType === "missionsGrid") {
             const all = context.missions ?? [];
             const status = section.status ?? "all";
             const limit =
               typeof section.limit === "number" ? section.limit : 100;
 
-            let missions = all;
-            if (status !== "all") {
-              missions = missions.filter((m: any) => m.status === status);
-            }
+            const filtered =
+              status === "all"
+                ? all
+                : all.filter((m: any) => m.status === status);
 
-            section = { ...section, missions: missions.slice(0, limit) };
+            section = { ...section, missions: filtered.slice(0, limit) };
           }
 
-          // Initiatives
           if (normalizedType === "initiativesGrid") {
             const all = context.initiatives ?? [];
             const limit =
@@ -131,7 +137,6 @@ export default function PageBuilder({
             section = { ...section, initiatives: all.slice(0, limit) };
           }
 
-          // Events
           if (normalizedType === "eventsGrid") {
             const all = context.events ?? [];
             const limit =
@@ -140,32 +145,21 @@ export default function PageBuilder({
             section = { ...section, events: all.slice(0, limit) };
           }
 
-          // Partners
           if (normalizedType === "partnersSection") {
             const all = Array.isArray(context.partners)
               ? context.partners
               : [];
 
             const selected =
-              Array.isArray(section.partners) && section.partners.length > 0
+              Array.isArray(section.partners) && section.partners.length
                 ? all.filter(p =>
                     section.partners.some((ref: any) => ref._ref === p._id)
                   )
                 : all;
 
-            section = {
-              ...section,
-              partners: selected.map(p => ({
-                ...p,
-                slug:
-                  typeof p.slug === "string"
-                    ? { current: p.slug }
-                    : p.slug,
-              })),
-            };
+            section = { ...section, partners: selected };
           }
 
-          // Team
           if (normalizedType === "teamSection") {
             const all = context.team ?? [];
 
@@ -176,23 +170,25 @@ export default function PageBuilder({
                 members: all.filter((m: any) => ids.includes(m._id)),
               };
             } else {
-              section = {
-                ...section,
-                members: all,
-              };
+              section = { ...section, members: all };
             }
           }
 
-          // ✅ KNOWLEDGE SECTION
           if (normalizedType === "knowledgeSection") {
+            section = { ...section, items: context.knowledgeItems ?? [] };
+          }
+
+          if (normalizedType === "blogPostsGridSection") {
             section = {
               ...section,
-              items: context.knowledgeItems ?? [],
+              posts: Array.isArray(section.posts) ? section.posts : [],
             };
           }
 
           const Component = SECTION_COMPONENTS[normalizedType];
-          if (!Component) return <UnknownSection key={idx} section={raw} />;
+          if (!Component) {
+            return <UnknownSection key={idx} section={raw} />;
+          }
 
           return <Component key={section._key ?? idx} {...section} />;
         })}

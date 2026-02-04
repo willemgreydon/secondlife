@@ -1,7 +1,10 @@
-import GenericPage from "@/components/templates/GenericPage"
-import { getPageBySlug } from "@/lib/queries/page"
+import GenericPage from "@/components/templates/GenericPage";
+import { getPageWithContentBySlug } from "@/lib/queries/page";
+import { notFound } from "next/navigation";
 
 export default async function Page() {
-  const doc = await getPageBySlug("blog")
-  return <GenericPage doc={doc} />
+  const doc = await getPageWithContentBySlug("blog");
+  if (!doc) return notFound();
+
+  return <GenericPage doc={doc} />;
 }

@@ -21,8 +21,10 @@ import {
 } from "@/components/site/sections";
 
 import KnowledgeTabs from "@/components/knowledge/KnowledgeTabs";
+import BlogPostsGrid from "@/components/site/sections/BlogPostsGrid";
 
 export const SECTION_COMPONENTS: Record<string, any> = {
+  // CORE
   heroSection: Hero,
   textBlock: TextBlock,
   richTextSection: RichText,
@@ -34,17 +36,24 @@ export const SECTION_COMPONENTS: Record<string, any> = {
   gallerySection: Gallery,
   quoteSection: Quote,
   accordionSection: Accordion,
+
+  // PEOPLE / ORG
   teamSection: TeamGrid,
   partnersSection: PartnersSection,
-  eventsGrid: EventsGrid,
-  contactSection: Contact,
 
-  // GRID SECTIONS
+  // GRIDS
   missionsGrid: MissionsGrid,
   initiativesGrid: InitiativesGrid,
   campaignGrid: CampaignGrid,
+  eventsGrid: EventsGrid,
+
+  // CONTACT
+  contactSection: Contact,
   contactFormSection: ContactFormSection,
 
   // KNOWLEDGE
   knowledgeSection: KnowledgeTabs,
+
+  // BLOG
+  blogPostsGridSection: BlogPostsGrid,
 };

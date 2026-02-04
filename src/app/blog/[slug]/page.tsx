@@ -8,8 +8,10 @@ type PageProps = {
   }>;
 };
 
-export default async function Page(props: PageProps) {
-  const { slug } = await props.params;
+export default async function Page({ params }: PageProps) {
+  const { slug } = await params;
+
+  if (!slug) return notFound();
 
   const post = await getPostBySlug(slug);
   if (!post) return notFound();

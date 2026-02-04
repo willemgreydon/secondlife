@@ -12,6 +12,7 @@ import contactSection from './contactSection'
 import richTextSection from './richTextSection'
 import team from './team'
 import knowledgeSection from "./knowledgeSection";
+import blogPostsGridSection from "./blogPostsGridSection";
 
 // NEU:
 import missionsGrid from './missionsGrid'
@@ -31,6 +32,7 @@ export const sectionTypes = [
   contactSection,
   richTextSection,
   team,
+  blogPostsGridSection,
   missionsGrid,
   knowledgeSection,
 ]

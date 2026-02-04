@@ -1,7 +1,6 @@
 // sanity-studio/schemas/index.ts
 import home from './home'
 import page from './page'
-import post from './post'
 import blogPost from './blogPost'
 import mission from './mission'
 import campaign from './campaign'
@@ -40,12 +39,14 @@ import teamSection from './sections/teamSection'
 import textBlock from './sections/textBlock'
 import videoSection from './sections/videoSection'
 
+import blogPostsGridSection from "./sections/blogPostsGridSection";
+
 // objects
 import metric from './objects/metric'
 
 const schemas = [
   // documents
-  page, home, mission, campaign, event, partner, teamMember, blogPost, post, initiative,
+  page, home, mission, campaign, event, partner, teamMember, blogPost, initiative,
 
   // sections / blocks
   heroSection,
@@ -69,6 +70,7 @@ const schemas = [
   campaignsSection,
   campaignGrid,
   knowledgeSection,
+  blogPostsGridSection,
 
   // legacy alias types
   initiativesSection,

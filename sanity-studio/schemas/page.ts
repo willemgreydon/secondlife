@@ -48,6 +48,7 @@ export default defineType({
         {type: 'initiativesSection'},
         {type: 'missionsSection'},
         {type: 'eventsSection'},
+        {type: 'blogPostsGridSection'},
 
         // Team / Partners / Impact
         {type: 'teamSection'},

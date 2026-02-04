@@ -17,6 +17,22 @@ const normalizedContentExpr = `
 `;
 
 /* ---------------------------------------------------------
+   SHARED: BLOG POST CARD PROJECTION
+--------------------------------------------------------- */
+
+const blogPostCardProjection = `
+  _id,
+  title,
+  "slug": slug.current,
+  publishedAt,
+  excerpt,
+  "coverUrl": coalesce(
+    cover.asset->url,
+    image.asset->url
+  )
+`;
+
+/* ---------------------------------------------------------
    PAGES
 --------------------------------------------------------- */
 
@@ -74,10 +90,71 @@ export const pageWithContentBySlugQuery = groq`
             }
           }
         }
+      },
+
+      _type == "blogPostsGridSection" => {
+        _type,
+        _key,
+        title,
+        intro,
+        limit,
+
+        "posts": *[
+          _type == "blogPost"
+        ]
+        | order(publishedAt desc)
+        [0...6]{
+          ${blogPostCardProjection}
+        }
       }
     }
   }
 `;
+
+/* ---------------------------------------------------------
+   BLOG POSTS (DETAIL)
+--------------------------------------------------------- */
+
+export const blogPostBySlugQuery = groq`
+  *[_type == "blogPost" && slug.current == $slug][0]{
+    _id,
+    title,
+    excerpt,
+    publishedAt,
+
+    "content": content[] {
+      ...,
+
+      _type == "heroSection" => {
+        _type,
+        _key,
+        eyebrow,
+        title,
+        subtitle,
+        ctaHref,
+        "ctaText": coalesce(ctaText, ctaLabel),
+        "bgImage": coalesce(image, bgImage)
+      },
+
+      _type == "gallerySection" => {
+        _type,
+        _key,
+        columns,
+        images[] {
+          _key,
+          alt,
+          caption,
+          asset->{
+            _id,
+            url,
+            metadata { dimensions }
+          }
+        }
+      }
+    }
+  }
+`;
+
 
 /* ---------------------------------------------------------
    HOME (OPTIONAL)
@@ -151,14 +228,12 @@ export const missionBySlugQuery = groq`
       description
     },
 
-    // ✅ NORMALIZED GALLERY (already fixed earlier)
     "gallery": gallery[]{
       "url": asset->url,
       caption,
       alt
     },
 
-    // ✅ THIS IS THE MISSING PART FOR SPLIT SECTIONS
     "content": ${normalizedContentExpr}[] {
       ...,
 
