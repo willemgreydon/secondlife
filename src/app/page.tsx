@@ -1,9 +1,13 @@
 import PageBuilder from "@/components/site/PageBuilder";
 import { getPageBySlug } from "@/lib/queries/page";
 import { getAllMissions } from "@/lib/queries/missions-index";
-import { initiativesListQuery, eventsListQuery } from "@/lib/sanity.queries";
 import { teamListQuery } from "@/lib/queries/team";
 import { getAllPartners } from "@/lib/queries/partners-index";
+import {
+  initiativesListQuery,
+  eventsListQuery,
+  jobsListQuery,
+} from "@/lib/sanity.queries";
 import { getServerClient } from "@/lib/sanity.preview";
 
 export default async function Page() {
@@ -12,18 +16,21 @@ export default async function Page() {
 
   const client = await getServerClient();
 
-  const [missions, initiatives, events, team, partners] = await Promise.all([
-    getAllMissions(),
-    client.fetch(initiativesListQuery),
-    client.fetch(eventsListQuery),
-    client.fetch(teamListQuery),
-    getAllPartners(),
-  ]);
+  const [missions, initiatives, events, team, partners, jobs] = await Promise.all(
+    [
+      getAllMissions(),
+      client.fetch(initiativesListQuery),
+      client.fetch(eventsListQuery),
+      client.fetch(teamListQuery),
+      getAllPartners(),
+      client.fetch(jobsListQuery),
+    ]
+  );
 
   return (
     <PageBuilder
       content={page.content}
-      context={{ missions, initiatives, events, team, partners }}
+      context={{ missions, initiatives, events, team, partners, jobs }}
     />
   );
 }

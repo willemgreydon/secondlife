@@ -62,6 +62,40 @@ export default function deskStructure(
         .schemaType("post")
         .child(S.documentTypeList("post").title("Blog Posts")),
 
+      // 🔥 JOBS SECTION
+      S.listItem()
+        .title("Jobs")
+        .child(
+          S.list()
+            .title("Jobs")
+            .items([
+              S.listItem()
+                .title("Open Positions")
+                .child(
+                  S.documentList()
+                    .title("Open Positions")
+                    .filter('_type == "jobPosition" && isOpen == true')
+                ),
+
+              S.listItem()
+                .title("Closed Positions")
+                .child(
+                  S.documentList()
+                    .title("Closed Positions")
+                    .filter('_type == "jobPosition" && isOpen == false')
+                ),
+
+              S.divider(),
+
+              S.listItem()
+                .title("All Jobs")
+                .schemaType("jobPosition")
+                .child(
+                  S.documentTypeList("jobPosition").title("All Jobs")
+                ),
+            ])
+        ),
+
       S.divider(),
 
       // Knowledge

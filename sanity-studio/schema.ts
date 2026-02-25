@@ -11,12 +11,13 @@ import mission from './schemas/mission'
 import campaign from './schemas/campaign'
 import event from './schemas/event'
 import blogPost from './schemas/blogPost'
+import jobPosition from './schemas/jobPosition'
 
 // -------- sections / objects
 import heroSection from './schemas/sections/heroSection'
 import splitSection from './schemas/sections/splitSection'
 import richTextSection from './schemas/sections/richTextSection'
-import textBlock from './schemas/sections/textBlock'            // <-- NEU: behebt "Unknown type: textBlock"
+import textBlock from './schemas/sections/textBlock'
 import gallerySection from './schemas/sections/gallerySection'
 import videoSection from './schemas/sections/videoSection'
 import quoteSection from './schemas/sections/quoteSection'
@@ -30,7 +31,7 @@ import eventsGrid from './schemas/sections/eventsGrid'
 import partnersSection from './schemas/sections/partnersSection'
 import impactStats from './schemas/sections/impactStats'
 import campaignGrid from './schemas/sections/campaignGrid'
-import campaignsSection from './schemas/sections/campaignsSection' // <-- NEU: behebt "Unknown type: campaignsSection"
+import campaignsSection from './schemas/sections/campaignsSection'
 import initiativesGrid from './schemas/sections/initiativesGrid'
 import knowledgeSection from './schemas/sections/knowledgeSection'
 
@@ -39,13 +40,22 @@ import metric from './schemas/objects/metric'
 
 const types: SchemaTypeDefinition[] = [
   // documents
-  home, initiative, partner, page, teamMember, mission, campaign, event, blogPost,
+  home,
+  initiative,
+  partner,
+  page,
+  teamMember,
+  mission,
+  campaign,
+  event,
+  blogPost,
+  jobPosition,
 
   // sections / objects
   heroSection,
   splitSection,
   richTextSection,
-  textBlock,          // <- jetzt registriert
+  textBlock,
   gallerySection,
   videoSection,
   quoteSection,
@@ -59,7 +69,7 @@ const types: SchemaTypeDefinition[] = [
   partnersSection,
   impactStats,
   campaignGrid,
-  campaignsSection,   // <- jetzt registriert
+  campaignsSection,
   initiativesGrid,
   knowledgeSection,
 

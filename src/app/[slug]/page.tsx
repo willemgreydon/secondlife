@@ -4,7 +4,11 @@ import { getPageBySlug } from "@/lib/queries/page";
 import { getAllMissions } from "@/lib/queries/missions-index";
 import { teamListQuery } from "@/lib/queries/team";
 import { getAllPartners } from "@/lib/queries/partners-index";
-import { initiativesListQuery, eventsListQuery } from "@/lib/sanity.queries";
+import {
+  initiativesListQuery,
+  eventsListQuery,
+  jobsListQuery,
+} from "@/lib/sanity.queries";
 import { getServerClient } from "@/lib/sanity.preview";
 
 type PageProps = {
@@ -19,18 +23,21 @@ export default async function Page(props: PageProps) {
 
   const client = await getServerClient();
 
-  const [missions, initiatives, events, team, partners] = await Promise.all([
-    getAllMissions(),
-    client.fetch(initiativesListQuery),
-    client.fetch(eventsListQuery),
-    client.fetch(teamListQuery),
-    getAllPartners(),
-  ]);
+  const [missions, initiatives, events, team, partners, jobs] = await Promise.all(
+    [
+      getAllMissions(),
+      client.fetch(initiativesListQuery),
+      client.fetch(eventsListQuery),
+      client.fetch(teamListQuery),
+      getAllPartners(),
+      client.fetch(jobsListQuery),
+    ]
+  );
 
   return (
     <PageBuilder
       content={page.content}
-      context={{ missions, initiatives, events, team, partners }}
+      context={{ missions, initiatives, events, team, partners, jobs }}
     />
   );
 }

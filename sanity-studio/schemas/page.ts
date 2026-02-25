@@ -1,6 +1,6 @@
 // sanity-studio/schemas/page.ts
-import {defineType, defineField} from 'sanity'
-import {FileText} from 'lucide-react'
+import { defineType, defineField } from 'sanity'
+import { FileText } from 'lucide-react'
 
 export default defineType({
   name: 'page',
@@ -14,6 +14,7 @@ export default defineType({
       title: 'Title',
       validation: (r) => r.required(),
     }),
+
     defineField({
       name: 'slug',
       type: 'slug',
@@ -25,35 +26,40 @@ export default defineType({
       validation: (r) => r.required(),
     }),
 
-    // Neuer, einheitlicher Page-Builder-Container:
     defineField({
       name: 'content',
       title: 'Content Sections',
       type: 'array',
       of: [
-        {type: 'heroSection'},
-        {type: 'richTextSection'},
-        {type: 'imageBlock'},
-        {type: 'splitSection'},
-        {type: 'videoSection'},
-        {type: 'gallerySection'},
-        {type: 'quoteSection'},
-        {type: 'statsSection'},
-        {type: 'accordionSection'},
-        {type: 'contactSection'},
-        {type: 'contactFormSection'},
-        {type: 'knowledgeSection' },
+        // Core Sections
+        { type: 'heroSection' },
+        { type: 'richTextSection' },
+        { type: 'imageBlock' },
+        { type: 'splitSection' },
+        { type: 'videoSection' },
+        { type: 'gallerySection' },
+        { type: 'quoteSection' },
+        { type: 'statsSection' },
+        { type: 'accordionSection' },
+        { type: 'contactSection' },
+        { type: 'contactFormSection' },
+        { type: 'knowledgeSection' },
+
         // Grids
-        {type: 'campaignsSection'},
-        {type: 'initiativesSection'},
-        {type: 'missionsSection'},
-        {type: 'eventsSection'},
-        {type: 'blogPostsGridSection'},
+        { type: 'campaignsSection' },
+        { type: 'initiativesSection' },
+        { type: 'missionsSection' },
+        { type: 'eventsSection' },
+        { type: 'blogPostsGridSection' },
 
         // Team / Partners / Impact
-        {type: 'teamSection'},
-        {type: 'partnersSection'},
-        {type: 'impactStatsSection'},
+        { type: 'teamSection' },
+        { type: 'partnersSection' },
+        { type: 'impactStatsSection' },
+
+        // 🔥 CAREERS
+        { type: 'jobOpeningsSection' },
+        { type: 'talentNetworkSection' }, // ✅ ADD THIS
       ],
     }),
   ],

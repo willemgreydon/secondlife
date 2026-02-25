@@ -1,4 +1,6 @@
 // sanity-studio/schemas/index.ts
+
+// documents
 import home from './home'
 import page from './page'
 import blogPost from './blogPost'
@@ -10,79 +12,38 @@ import teamMember from './teamMember'
 import initiative from './initiative'
 import policyBrief from './policyBrief'
 import publication from './publication'
-import knowledgeSection from './sections/knowledgeSection'
+import jobPosition from './jobPosition'
 
-// sections / blocks
-import accordionSection from './sections/accordionSection'
-import campaignGrid from './sections/campaignGrid'
-import campaignsSection from './sections/campaignsSection'
-import contactSection from './sections/contactSection'
-import contactFormSection from "./sections/contactFormSection";
-import eventsGrid from './sections/eventsGrid'
-import eventsSection from './sections/eventsSection'
-import gallerySection from './sections/gallerySection'
-import heroSection from './sections/heroSection'
-import imageBlock from './sections/imageBlock'
-import impactStats from './sections/impactStats'
-import impactStatsSection from './sections/impactStatsSection'
-import initiativesGrid from './sections/initiativesGrid'
-import initiativesSection from './sections/initiativesSection'
-import missionsGrid from './sections/missionsGrid'
-import missionsSection from './sections/missionsSection'
-import partnersSection from './sections/partnersSection'
-import quoteSection from './sections/quoteSection'
-import richTextSection from './sections/richTextSection'
-import splitSection from './sections/splitSection'
-import statsSection from './sections/statsSection'
-import team from './sections/team'
-import teamSection from './sections/teamSection'
-import textBlock from './sections/textBlock'
-import videoSection from './sections/videoSection'
+// sections (single source of truth)
+import { sectionTypes } from './sections'
 
-import blogPostsGridSection from "./sections/blogPostsGridSection";
+// standalone root-level section (as in your project)
+import jobOpeningsSection from './jobOpeningsSection'
 
 // objects
 import metric from './objects/metric'
 
 const schemas = [
   // documents
-  page, home, mission, campaign, event, partner, teamMember, blogPost, initiative,
+  page,
+  home,
+  mission,
+  campaign,
+  event,
+  partner,
+  teamMember,
+  blogPost,
+  initiative,
+  jobPosition,
+  policyBrief,
+  publication,
 
   // sections / blocks
-  heroSection,
-  splitSection,
-  statsSection,
-  richTextSection,
-  textBlock,
-  imageBlock,
-  gallerySection,
-  videoSection,
-  quoteSection,
-  accordionSection,
-  contactSection,
-  team,
-  teamSection,
-  impactStats,
-  initiativesGrid,
-  eventsGrid,
-  missionsGrid,
-  partnersSection,
-  campaignsSection,
-  campaignGrid,
-  knowledgeSection,
-  blogPostsGridSection,
-
-  // legacy alias types
-  initiativesSection,
-  missionsSection,
-  eventsSection,
-  impactStatsSection,
-  contactFormSection,
+  ...sectionTypes,
+  jobOpeningsSection,
 
   // objects
   metric,
-  policyBrief,
-  publication,
 ]
 
 export default schemas

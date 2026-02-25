@@ -24,6 +24,16 @@ type KnowledgeItem = {
   };
 };
 
+type JobPosition = {
+  _id: string;
+  title: string;
+  department?: string;
+  location?: string;
+  engagementType?: string;
+  shortDescription?: string;
+  isOpen?: boolean;
+};
+
 type PageBuilderContext = {
   metrics?: Metric[];
   missions?: any[];
@@ -32,6 +42,7 @@ type PageBuilderContext = {
   team?: any[];
   partners?: any[];
   knowledgeItems?: KnowledgeItem[];
+  jobs?: JobPosition[];
 };
 
 function UnknownSection({ section }: { section: any }) {
@@ -47,11 +58,6 @@ function UnknownSection({ section }: { section: any }) {
   );
 }
 
-/**
- * IMPORTANT:
- * We do NOT normalize textBlock → richTextSection.
- * Each Sanity _type must map to a compatible component.
- */
 function normalizeSectionType(rawType: string): string {
   const alias: Record<string, string> = {
     heroSection: "heroSection",
@@ -83,6 +89,11 @@ function normalizeSectionType(rawType: string): string {
     knowledgeSection: "knowledgeSection",
 
     blogPostsGridSection: "blogPostsGridSection",
+
+    jobOpeningsSection: "jobOpeningsSection",
+
+    // NEW
+    talentNetworkSection: "talentNetworkSection",
   };
 
   return alias[rawType] ?? rawType;
@@ -105,6 +116,7 @@ export default function PageBuilder({
           const normalizedType = normalizeSectionType(raw?._type);
           let section = { ...raw, _type: normalizedType };
 
+          // IMPACT STATS
           if (normalizedType === "impactStatsSection") {
             section = {
               ...section,
@@ -115,6 +127,7 @@ export default function PageBuilder({
             };
           }
 
+          // MISSIONS GRID
           if (normalizedType === "missionsGrid") {
             const all = context.missions ?? [];
             const status = section.status ?? "all";
@@ -129,6 +142,7 @@ export default function PageBuilder({
             section = { ...section, missions: filtered.slice(0, limit) };
           }
 
+          // INITIATIVES GRID
           if (normalizedType === "initiativesGrid") {
             const all = context.initiatives ?? [];
             const limit =
@@ -137,6 +151,7 @@ export default function PageBuilder({
             section = { ...section, initiatives: all.slice(0, limit) };
           }
 
+          // EVENTS GRID
           if (normalizedType === "eventsGrid") {
             const all = context.events ?? [];
             const limit =
@@ -145,6 +160,7 @@ export default function PageBuilder({
             section = { ...section, events: all.slice(0, limit) };
           }
 
+          // PARTNERS
           if (normalizedType === "partnersSection") {
             const all = Array.isArray(context.partners)
               ? context.partners
@@ -152,7 +168,7 @@ export default function PageBuilder({
 
             const selected =
               Array.isArray(section.partners) && section.partners.length
-                ? all.filter(p =>
+                ? all.filter((p) =>
                     section.partners.some((ref: any) => ref._ref === p._id)
                   )
                 : all;
@@ -160,6 +176,7 @@ export default function PageBuilder({
             section = { ...section, partners: selected };
           }
 
+          // TEAM
           if (normalizedType === "teamSection") {
             const all = context.team ?? [];
 
@@ -174,10 +191,12 @@ export default function PageBuilder({
             }
           }
 
+          // KNOWLEDGE
           if (normalizedType === "knowledgeSection") {
             section = { ...section, items: context.knowledgeItems ?? [] };
           }
 
+          // BLOG GRID
           if (normalizedType === "blogPostsGridSection") {
             section = {
               ...section,
@@ -185,7 +204,24 @@ export default function PageBuilder({
             };
           }
 
+          // JOB OPENINGS
+          if (normalizedType === "jobOpeningsSection") {
+            const all = context.jobs ?? [];
+            const onlyOpen = section.showOnlyOpen ?? true;
+
+            section = {
+              ...section,
+              jobs: onlyOpen ? all.filter((j) => j.isOpen) : all,
+            };
+          }
+
+          // TALENT NETWORK (no context injection required)
+          if (normalizedType === "talentNetworkSection") {
+            section = { ...section };
+          }
+
           const Component = SECTION_COMPONENTS[normalizedType];
+
           if (!Component) {
             return <UnknownSection key={idx} section={raw} />;
           }

@@ -1,7 +1,7 @@
 // ---------------------------------------------------------
 // sanity.queries.ts — STABLE, NON-EMPTY CONTENT (FINAL)
 // ---------------------------------------------------------
-import { groq } from "next-sanity"
+import { groq } from "next-sanity";
 
 /**
  * Pick the FIRST NON-EMPTY content array.
@@ -14,7 +14,7 @@ const normalizedContentExpr = `
     defined(sections) && count(sections) > 0 => sections,
     []
   )
-`
+`;
 
 /* ---------------------------------------------------------
    SHARED: BLOG POST CARD PROJECTION
@@ -27,7 +27,7 @@ export const blogPostCardProjection = `
   publishedAt,
   excerpt,
   "coverUrl": cover.asset->url
-`
+`;
 
 export const blogPostsForGridQuery = groq`
   *[
@@ -36,7 +36,21 @@ export const blogPostsForGridQuery = groq`
     && defined(publishedAt)
   ]
   | order(publishedAt desc)
-`
+`;
+
+export const jobsListQuery = groq`
+  *[_type == "jobPosition"]
+  | order(coalesce(order, 9999) asc, _createdAt desc){
+    _id,
+    title,
+    "slug": slug.current,
+    department,
+    location,
+    engagementType,
+    shortDescription,
+    isOpen
+  }
+`;
 
 /* ---------------------------------------------------------
    PAGES
@@ -46,7 +60,7 @@ export const pageSlugsQuery = groq`
   *[_type == "page" && defined(slug.current)]{
     "slug": slug.current
   }
-`
+`;
 
 export const pageBySlugQuery = groq`
   *[_type == "page" && slug.current == $slug][0]{
@@ -58,7 +72,7 @@ export const pageBySlugQuery = groq`
     contentSections,
     sections
   }
-`
+`;
 
 export const pageWithContentBySlugQuery = groq`
   *[_type == "page" && slug.current == $slug][0]{
@@ -118,10 +132,17 @@ export const pageWithContentBySlugQuery = groq`
           excerpt,
           "coverUrl": cover.asset->url
         }
+      },
+
+      _type == "jobOpeningsSection" => {
+        _type,
+        _key,
+        headline,
+        showOnlyOpen
       }
     }
   }
-`
+`;
 
 /* ---------------------------------------------------------
    BLOG POSTS (DETAIL)
@@ -170,7 +191,7 @@ export const blogPostBySlugQuery = groq`
       }
     }
   }
-`
+`;
 
 /* ---------------------------------------------------------
    HOME
@@ -196,7 +217,7 @@ export const homePageQuery = groq`
       }
     }
   }
-`
+`;
 
 /* ---------------------------------------------------------
    MISSIONS
@@ -217,7 +238,7 @@ export const missionsListQuery = groq`
       gallery[0].asset->url
     )
   }
-`
+`;
 
 export const missionBySlugQuery = groq`
   *[_type == "mission" && slug.current == $slug][0]{
@@ -287,7 +308,7 @@ export const missionBySlugQuery = groq`
       }
     }
   }
-`
+`;
 
 /* ---------------------------------------------------------
    CAMPAIGNS / INITIATIVES / EVENTS / PARTNERS
@@ -302,7 +323,7 @@ export const campaignsListQuery = groq`
     excerpt,
     "coverUrl": cover.asset->url
   }
-`
+`;
 
 export const campaignBySlugQuery = groq`
   *[_type == "campaign" && slug.current == $slug][0]{
@@ -320,7 +341,7 @@ export const campaignBySlugQuery = groq`
       }
     }
   }
-`
+`;
 
 export const initiativesListQuery = groq`
   *[_type == "initiative" && defined(slug.current)]
@@ -331,7 +352,7 @@ export const initiativesListQuery = groq`
     excerpt,
     "coverUrl": cover.asset->url
   }
-`
+`;
 
 export const initiativeBySlugQuery = groq`
   *[_type == "initiative" && slug.current == $slug][0]{
@@ -349,7 +370,7 @@ export const initiativeBySlugQuery = groq`
       }
     }
   }
-`
+`;
 
 export const eventsListQuery = groq`
   *[_type == "event" && defined(slug.current)]
@@ -362,7 +383,7 @@ export const eventsListQuery = groq`
     excerpt,
     "coverUrl": cover.asset->url
   }
-`
+`;
 
 export const eventBySlugQuery = groq`
   *[_type == "event" && slug.current == $slug][0]{
@@ -382,7 +403,7 @@ export const eventBySlugQuery = groq`
       }
     }
   }
-`
+`;
 
 export const partnersListQuery = groq`
   *[_type == "partner" && defined(slug.current)]
@@ -394,7 +415,7 @@ export const partnersListQuery = groq`
     excerpt,
     "logo": logo.asset->url
   }
-`
+`;
 
 export const partnerBySlugQuery = groq`
   *[_type == "partner" && slug.current == $slug][0]{
@@ -406,4 +427,18 @@ export const partnerBySlugQuery = groq`
     "logo": logo.asset->url,
     body
   }
-`
+`;
+
+export const jobBySlugQuery = groq`
+  *[_type == "jobPosition" && slug.current == $slug][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    department,
+    location,
+    engagementType,
+    shortDescription,
+    description,
+    isOpen
+  }
+`;
