@@ -38,6 +38,10 @@ export const blogPostsForGridQuery = groq`
   | order(publishedAt desc)
 `;
 
+/* ---------------------------------------------------------
+   JOBS
+--------------------------------------------------------- */
+
 export const jobsListQuery = groq`
   *[_type == "jobPosition"]
   | order(coalesce(order, 9999) asc, _createdAt desc){
@@ -139,6 +143,13 @@ export const pageWithContentBySlugQuery = groq`
         _key,
         headline,
         showOnlyOpen
+      },
+
+      _type == "talentNetworkSection" => {
+        _type,
+        _key,
+        headline,
+        intro
       }
     }
   }
@@ -428,6 +439,10 @@ export const partnerBySlugQuery = groq`
     body
   }
 `;
+
+/* ---------------------------------------------------------
+   JOB DETAIL
+--------------------------------------------------------- */
 
 export const jobBySlugQuery = groq`
   *[_type == "jobPosition" && slug.current == $slug][0]{
