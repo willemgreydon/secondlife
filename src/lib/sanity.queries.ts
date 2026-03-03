@@ -436,7 +436,37 @@ export const partnerBySlugQuery = groq`
     website,
     excerpt,
     "logo": logo.asset->url,
-    body
+
+    "content": ${normalizedContentExpr}[] {
+      ...,
+
+      _type == "heroSection" => {
+        _type,
+        _key,
+        eyebrow,
+        title,
+        subtitle,
+        ctaHref,
+        "ctaText": coalesce(ctaText, ctaLabel),
+        "bgImage": coalesce(image, bgImage)
+      },
+
+      _type == "gallerySection" => {
+        _type,
+        _key,
+        columns,
+        images[] {
+          _key,
+          alt,
+          caption,
+          asset->{
+            _id,
+            url,
+            metadata { dimensions }
+          }
+        }
+      }
+    }
   }
 `;
 

@@ -6,7 +6,7 @@ export async function getAllPartners() {
     groq`
       *[_type == "partner"]{
         _id,
-        name,
+        title,
         "slug": slug.current,
         website,
         logo{

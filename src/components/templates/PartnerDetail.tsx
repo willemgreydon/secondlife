@@ -2,7 +2,7 @@
 
 "use client";
 
-import Image from "next/image";
+import PageBuilder from "@/components/site/PageBuilder";
 
 export default function PartnerDetail({ partner }: { partner: any }) {
   if (!partner) {
@@ -14,35 +14,9 @@ export default function PartnerDetail({ partner }: { partner: any }) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16">
-      <h1 className="text-4xl font-bold mb-6">{partner.title}</h1>
-
-      {partner.logo && (
-        <div className="relative h-40 w-60 mb-8">
-          <Image
-            src={partner.logo}
-            alt={partner.logo?.alt || partner.name || "Partner logo"}
-            fill
-            className="object-contain"
-          />
-        </div>
-      )}
-
-      {partner.url && (
-        <a
-          href={partner.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 underline dark:text-blue-400"
-        >
-          Visit Partner Website
-        </a>
-      )}
-
-      {partner.description && (
-        <p className="mt-6 text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-          {partner.description}
-        </p>
+    <div className="bg-white text-gray-900 dark:bg-black dark:text-gray-100 transition-colors">
+      {Array.isArray(partner.content) && partner.content.length > 0 && (
+        <PageBuilder content={partner.content} />
       )}
     </div>
   );
