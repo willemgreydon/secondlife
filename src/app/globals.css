@@ -307,13 +307,24 @@
 
 @keyframes partners-scroll {
   0% {
-    transform: translateX(0);
+    transform: translate3d(0,0,0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translate3d(-50%,0,0);
   }
 }
 
 .animate-partners-scroll {
-  animation: partners-scroll 6s linear infinite;
+  animation: partners-scroll 20s linear infinite;
+  will-change: transform;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }

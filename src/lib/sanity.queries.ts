@@ -209,25 +209,51 @@ export const blogPostBySlugQuery = groq`
 --------------------------------------------------------- */
 
 export const homePageQuery = groq`
-  *[_type == "home"][0]{
-    _id,
-    title,
-    "slug": slug.current,
+*[_type == "home"][0]{
+  _id,
+  title,
+  "slug": slug.current,
 
-    "content": ${normalizedContentExpr}[] {
-      ...,
-      _type == "heroSection" => {
-        _type,
-        _key,
-        eyebrow,
-        title,
-        subtitle,
-        ctaHref,
-        "ctaText": coalesce(ctaText, ctaLabel),
-        "bgImage": coalesce(image, bgImage)
+  "content": ${normalizedContentExpr}[] {
+    ...,
+
+    _type == "heroSection" => {
+      _type,
+      _key,
+      eyebrow,
+      title,
+      subtitle,
+      ctaHref,
+      "ctaText": coalesce(ctaText, ctaLabel),
+      "bgImage": coalesce(image, bgImage)
+    },
+
+    _type == "partnersSection" => {
+      _type,
+      _key,
+      title,
+      description,
+      linksOnly,
+
+      "partners": partners[]->{
+        _id,
+        name,
+        "slug": slug.current,
+        website,
+
+        logo {
+          alt,
+          "url": asset->url
+        },
+
+        logoDark {
+          alt,
+          "url": asset->url
+        }
       }
     }
   }
+}
 `;
 
 /* ---------------------------------------------------------
@@ -420,22 +446,40 @@ export const partnersListQuery = groq`
   *[_type == "partner" && defined(slug.current)]
   | order(_createdAt desc){
     _id,
-    title,
+    name,
     "slug": slug.current,
     website,
     excerpt,
-    "logo": logo.asset->url
+
+    "logo": {
+      "url": logo.asset->url,
+      "alt": logo.alt
+    },
+
+    "logoDark": {
+      "url": logoDark.asset->url,
+      "alt": logoDark.alt
+    }
   }
 `;
 
 export const partnerBySlugQuery = groq`
   *[_type == "partner" && slug.current == $slug][0]{
     _id,
-    title,
+    name,
     "slug": slug.current,
     website,
     excerpt,
-    "logo": logo.asset->url,
+
+    "logo": {
+      "url": logo.asset->url,
+      "alt": logo.alt
+    },
+
+    "logoDark": {
+      "url": logoDark.asset->url,
+      "alt": logoDark.alt
+    },
 
     "content": ${normalizedContentExpr}[] {
       ...,

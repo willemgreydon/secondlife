@@ -2,18 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRef, useState } from "react";
 
 type Partner = {
   _id: string;
   name: string;
   slug?: string | { current: string };
   website?: string;
-  logo?: {
-    asset?: {
-      url?: string;
-    };
-    alt?: string;
-  };
+  logo?: { url?: string; alt?: string };
+  logoDark?: { url?: string; alt?: string };
 };
 
 type Props = {
@@ -29,6 +26,29 @@ export default function PartnersSection({
   partners = [],
   linksOnly = false,
 }: Props) {
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const startDrag = (e: React.MouseEvent) => {
+    if (!sliderRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - sliderRef.current.offsetLeft);
+    setScrollLeft(sliderRef.current.scrollLeft);
+  };
+
+  const stopDrag = () => setIsDragging(false);
+
+  const onDrag = (e: React.MouseEvent) => {
+    if (!isDragging || !sliderRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - sliderRef.current.offsetLeft;
+    const walk = (x - startX) * 1.2;
+    sliderRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   if (!partners.length) return null;
 
   if (linksOnly) {
@@ -52,7 +72,7 @@ export default function PartnersSection({
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-4">
+    <section className="mx-auto max-w-7xl px-4 py-0">
       {(title || description) && (
         <div className="mb-10 text-center">
           {title && <h2 className="text-3xl font-semibold">{title}</h2>}
@@ -64,36 +84,60 @@ export default function PartnersSection({
         </div>
       )}
 
-      <div className="overflow-hidden">
-      <div className="flex gap-14 animate-partners-scroll hover:[animation-play-state:paused]">
-      {[...partners, ...partners].map((p, i) => {
-        const logoUrl = p.logo?.asset?.url;
-        if (!logoUrl) return null;
+      <div
+        ref={sliderRef}
+        className="overflow-x-scroll scrollbar-hide cursor-grab active:cursor-grabbing"
+        onMouseDown={startDrag}
+        onMouseLeave={stopDrag}
+        onMouseUp={stopDrag}
+        onMouseMove={onDrag}
+      >
+        <div
+          className={`flex gap-6 ${
+            isDragging ? "" : "animate-partners-scroll"
+          } hover:[animation-play-state:paused]`}
+        >
+          {[...partners, ...partners].map((p, i) => {
+            const lightLogo = p.logo?.url;
+            const darkLogo = p.logoDark?.url;
 
-        const slug =
-        typeof p.slug === "string"
-          ? p.slug
-          : p.slug?.current;
+            if (!lightLogo) return null;
 
-        const href = p.website || (slug ? `/partners/${slug}` : "#");
+            const slug =
+              typeof p.slug === "string" ? p.slug : p.slug?.current;
 
-        return (
-          <Link
-            key={`${p._id}-${i}`}
-            href={href}
-            target={p.website ? "_blank" : undefined}
-            className="flex min-w-[160px] items-center justify-center opacity-80 hover:opacity-100"
-          >
-            <Image
-              src={logoUrl}
-              alt={p.logo?.alt || p.name}
-              width={160}
-              height={80}
-              className="max-h-16 w-auto object-contain grayscale hover:grayscale-0"
-            />
-          </Link>
-        );
-        })}
+            const href = p.website || (slug ? `/partners/${slug}` : "#");
+
+            return (
+              <Link
+                key={`${p._id}-${i}`}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-w-[180px] items-center justify-center transition-transform duration-300 hover:scale-105"
+              >
+                <div className="relative flex items-center justify-center">
+                  <Image
+                    src={lightLogo}
+                    alt={p.logo?.alt || p.name}
+                    width={240}
+                    height={120}
+                    className="max-h-20 w-auto object-contain dark:hidden"
+                  />
+
+                  {darkLogo && (
+                    <Image
+                      src={darkLogo}
+                      alt={p.logoDark?.alt || p.name}
+                      width={240}
+                      height={120}
+                      className="hidden max-h-20 w-auto object-contain dark:block"
+                    />
+                  )}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
