@@ -93,7 +93,7 @@ export default function PartnersSection({
         onMouseMove={onDrag}
       >
         <div
-          className={`flex gap-6 ${
+          className={`flex gap-3 sm:gap-4 md:gap-6 ${
             isDragging ? "" : "animate-partners-scroll"
           } hover:[animation-play-state:paused]`}
         >
