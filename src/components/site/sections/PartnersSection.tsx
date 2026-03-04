@@ -114,7 +114,7 @@ export default function PartnersSection({
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex min-w-[180px] items-center justify-center transition-transform duration-300 hover:scale-105"
+                className="flex min-w-[130px] sm:min-w-[150px] md:min-w-[180px] items-center justify-center transition-transform duration-300 hover:scale-105"
               >
                 <div className="relative flex items-center justify-center">
                   <Image

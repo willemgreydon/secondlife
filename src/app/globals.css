@@ -315,8 +315,20 @@
 }
 
 .animate-partners-scroll {
-  animation: partners-scroll 35s linear infinite;
+  animation: partners-scroll 9s linear infinite;
   will-change: transform;
+}
+
+@media (min-width: 640px) {
+  .animate-partners-scroll {
+    animation-duration: 25s;
+  }
+}
+
+@media (min-width: 1024px) {
+  .animate-partners-scroll {
+    animation-duration: 30s;
+  }
 }
 
 /* Hide scrollbar but keep scroll functionality */
